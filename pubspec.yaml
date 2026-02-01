@@ -1,0 +1,25 @@
+name: iatros_ui
+description: UI Kit Iatros - paquete Flutter con componentes, tema y utilidades para aplicaciones médicas.
+version: 1.0.0
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.5.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  image_picker: ^1.0.7
+  file_picker: ^8.0.0+1
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+  image_picker_loading_jm: ^0.0.10
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+  test: ^1.25.6
+  # Code Generation
+  build_runner: ^2.4.7
+  freezed: ^2.4.6
+  json_serializable: ^6.7.1
+  riverpod_generator: ^2.3.9

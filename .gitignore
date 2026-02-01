@@ -1,0 +1,38 @@
+# Dart / Flutter
+.dart_tool/
+.packages
+build/
+pubspec.lock
+
+# Flutter
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+
+# IDE
+.idea/
+.vscode/
+*.ipr
+*.iws
+
+# Metadatos
+.metadata
+
+# Pub
+.pub-cache/
+.pub/
+
+# Tests / coverage
+coverage/
+.test_coverage.dart
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Archivos generados (opcional; descomenta si generas con build_runner y no los subes)
+# *.g.dart
+# *.freezed.dart
