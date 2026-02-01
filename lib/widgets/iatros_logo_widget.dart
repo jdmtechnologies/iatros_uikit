@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:iatros_ui/utils/spacing.dart';
+import 'package:iatros_uikit/utils/spacing.dart';
 
 class UiIatrosLogo extends StatelessWidget {
   final double? width;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:iatros_ui/models/input_type.dart';
-import 'package:iatros_ui/widgets/text_input_widget.dart';
+import 'package:iatros_uikit/models/input_type.dart';
+import 'package:iatros_uikit/widgets/text_input_widget.dart';
 
 class UiPasswordInput extends StatefulWidget {
   final String? hint;

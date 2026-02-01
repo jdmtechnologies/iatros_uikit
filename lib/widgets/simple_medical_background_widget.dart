@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:iatros_ui/utils/ui_color.dart';
+import 'package:iatros_uikit/utils/ui_color.dart';
 
 class UiSimpleMedicalBackground extends StatelessWidget {
   final Widget child;

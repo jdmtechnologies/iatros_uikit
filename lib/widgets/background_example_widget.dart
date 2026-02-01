@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:iatros_ui/utils/ui_color.dart';
-import 'package:iatros_ui/utils/text_style.dart';
-import 'package:iatros_ui/utils/spacing.dart';
-import 'package:iatros_ui/utils/ui_helpers.dart';
-import 'package:iatros_ui/widgets/base_card_widget.dart';
-import 'package:iatros_ui/widgets/simple_medical_background_widget.dart';
-import 'package:iatros_ui/widgets/medical_background_widget.dart';
+import 'package:iatros_uikit/utils/ui_color.dart';
+import 'package:iatros_uikit/utils/text_style.dart';
+import 'package:iatros_uikit/utils/spacing.dart';
+import 'package:iatros_uikit/utils/ui_helpers.dart';
+import 'package:iatros_uikit/widgets/base_card_widget.dart';
+import 'package:iatros_uikit/widgets/simple_medical_background_widget.dart';
+import 'package:iatros_uikit/widgets/medical_background_widget.dart';
 
 class UiBackgroundExample extends StatelessWidget {
   const UiBackgroundExample({super.key});

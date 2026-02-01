@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:iatros_ui/iatros_ui_kit.dart';
+import 'package:iatros_uikit/iatros_ui_kit.dart';
 class ResizableInput extends StatefulWidget {
   final TextEditingController controller;
   final String? hintText;

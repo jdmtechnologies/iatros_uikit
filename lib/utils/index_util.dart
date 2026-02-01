@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:iatros_ui/utils/ui_color.dart';
-import 'package:iatros_ui/utils/app_theme.dart';
-import 'package:iatros_ui/utils/text_style.dart';
-import 'package:iatros_ui/utils/spacing.dart';
-import 'package:iatros_ui/utils/ui_helpers.dart';
+import 'package:iatros_uikit/utils/ui_color.dart';
+import 'package:iatros_uikit/utils/app_theme.dart';
+import 'package:iatros_uikit/utils/text_style.dart';
+import 'package:iatros_uikit/utils/spacing.dart';
+import 'package:iatros_uikit/utils/ui_helpers.dart';
 
 /// Wrapper de colores para acceso vía IatrosUi.util.color.primary, etc.
 class _ColorAccessor {

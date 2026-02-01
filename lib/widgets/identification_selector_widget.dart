@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:iatros_ui/utils/ui_color.dart';
-import 'package:iatros_ui/utils/text_style.dart';
-import 'package:iatros_ui/utils/spacing.dart';
-import 'package:iatros_ui/models/input_type.dart';
+import 'package:iatros_uikit/utils/ui_color.dart';
+import 'package:iatros_uikit/utils/text_style.dart';
+import 'package:iatros_uikit/utils/spacing.dart';
+import 'package:iatros_uikit/models/input_type.dart';
 
 class UiIdentificationSelector extends StatelessWidget {
   final ValueNotifier<String?>? selectedTypeNotifier;

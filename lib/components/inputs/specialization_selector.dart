@@ -1,10 +1,10 @@
-import 'package:iatros_ui/models/medical_specialization.dart';
+import 'package:iatros_uikit/models/medical_specialization.dart';
 
 import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
 import '../../theme/typography.dart';
 import 'package:flutter/material.dart';
-import 'package:iatros_ui/models/input_type.dart';
+import 'package:iatros_uikit/models/input_type.dart';
 
 class SpecializationSelector extends StatefulWidget {
   final String? selectedSpecialization;

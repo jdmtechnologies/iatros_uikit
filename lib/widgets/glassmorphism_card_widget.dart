@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:iatros_ui/utils/ui_color.dart';
-import 'package:iatros_ui/utils/spacing.dart';
+import 'package:iatros_uikit/utils/ui_color.dart';
+import 'package:iatros_uikit/utils/spacing.dart';
 
 class UiGlassmorphismCard extends StatelessWidget {
   final Widget child;

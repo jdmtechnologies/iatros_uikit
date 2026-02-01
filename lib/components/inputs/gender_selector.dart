@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:iatros_ui/iatros_ui_kit.dart';
-import 'package:iatros_ui/utils/text_style.dart';
-import 'package:iatros_ui/models/input_type.dart';
-import 'package:iatros_ui/models/gender_type.dart';
+import 'package:iatros_uikit/iatros_ui_kit.dart';
+import 'package:iatros_uikit/utils/text_style.dart';
+import 'package:iatros_uikit/models/input_type.dart';
+import 'package:iatros_uikit/models/gender_type.dart';
 
 class GenderSelector extends StatelessWidget {
    final ValueNotifier<Gender?>? selectedGenderNotifier;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:iatros_ui/iatros_ui_kit.dart';
-import 'package:iatros_ui/models/input_type.dart';
-import 'package:iatros_ui/models/place_details.dart';
-import 'package:iatros_ui/utils/debouncer_util.dart';
-import 'package:iatros_ui/models/address_location_model.dart';
+import 'package:iatros_uikit/iatros_ui_kit.dart';
+import 'package:iatros_uikit/models/input_type.dart';
+import 'package:iatros_uikit/models/place_details.dart';
+import 'package:iatros_uikit/utils/debouncer_util.dart';
+import 'package:iatros_uikit/models/address_location_model.dart';
 
 class AddressAutocompleteInput extends StatefulWidget {
    final String? hint;

@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
-import 'package:iatros_ui/components/cards/base_card.dart';
-import 'package:iatros_ui/iatros_ui_kit.dart';
+import 'package:iatros_uikit/components/cards/base_card.dart';
+import 'package:iatros_uikit/iatros_ui_kit.dart';
 
 class BackgroundExample extends StatelessWidget {
   const BackgroundExample({super.key});

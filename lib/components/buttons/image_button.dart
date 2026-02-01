@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:iatros_ui/iatros_ui_kit.dart';
+import 'package:iatros_uikit/iatros_ui_kit.dart';
 import 'package:image_picker_loading_jm/image_picker_loading_jm.dart';
 
 class ImageButton extends StatelessWidget {

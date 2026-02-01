@@ -2,9 +2,9 @@
 // Iatros UI Kit - Archivo principal con facade y exports
 // =============================================================================
 
-import 'package:iatros_ui/utils/index_util.dart';
-import 'package:iatros_ui/models/index.dart';
-import 'package:iatros_ui/widgets/index_widget.dart';
+import 'package:iatros_uikit/utils/index_util.dart';
+import 'package:iatros_uikit/models/index.dart';
+import 'package:iatros_uikit/widgets/index_widget.dart';
 
 // Models y tipos (para uso externo)
 export 'models/input_type.dart';
@@ -52,7 +52,7 @@ export 'widgets/index_widget.dart';
 ///
 /// Uso en una app consumidora:
 /// ```dart
-/// import 'package:iatros_ui/iatros_ui.dart';
+/// import 'package:iatros_uikit/iatros_ui.dart';
 ///
 /// IatrosUi.util.color.primary
 /// IatrosUi.util.theme.lightTheme

@@ -1,4 +1,4 @@
-import 'package:iatros_ui/iatros_ui_kit.dart';
+import 'package:iatros_uikit/iatros_ui_kit.dart';
 
 enum TypeUser { MEDICAL_STAFF, PATIENT }
 

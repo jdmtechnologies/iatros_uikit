@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:iatros_ui/iatros_ui_kit.dart';
-import 'package:iatros_ui/models/user_model.dart';
+import 'package:iatros_uikit/iatros_ui_kit.dart';
+import 'package:iatros_uikit/models/user_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserSearchInput extends ConsumerStatefulWidget {

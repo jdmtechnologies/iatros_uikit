@@ -1,6 +1,6 @@
-import 'package:iatros_ui/models/input_type.dart';
-import 'package:iatros_ui/models/gender_type.dart';
-import 'package:iatros_ui/models/blood_type.dart';
+import 'package:iatros_uikit/models/input_type.dart';
+import 'package:iatros_uikit/models/gender_type.dart';
+import 'package:iatros_uikit/models/blood_type.dart';
 
 /// Agrupa todos los modelos y tipos del paquete.
 class Models {

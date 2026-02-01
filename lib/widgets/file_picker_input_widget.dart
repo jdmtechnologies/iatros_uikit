@@ -3,9 +3,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:file_picker/file_picker.dart';
-import 'package:iatros_ui/utils/ui_color.dart';
-import 'package:iatros_ui/utils/text_style.dart';
-import 'package:iatros_ui/utils/spacing.dart';
+import 'package:iatros_uikit/utils/ui_color.dart';
+import 'package:iatros_uikit/utils/text_style.dart';
+import 'package:iatros_uikit/utils/spacing.dart';
 
 class UiFilePickerInput extends StatefulWidget {
   final String? label;
