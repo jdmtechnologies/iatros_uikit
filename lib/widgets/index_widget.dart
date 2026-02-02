@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:iatros_uikit/components/inputs/address_autocomplete_input.dart';
 import 'package:iatros_uikit/components/inputs/specialization_selector.dart';
 import 'package:iatros_uikit/models/blood_type.dart';
 import 'package:iatros_uikit/models/gender_type.dart';
 import 'package:iatros_uikit/models/input_type.dart';
+import 'package:iatros_uikit/models/address_location_model.dart';
 import 'package:iatros_uikit/models/medical_specialization.dart';
+import 'package:iatros_uikit/models/place_details.dart';
 import 'package:iatros_uikit/widgets/primary_button_widget.dart';
 import 'package:iatros_uikit/widgets/secondary_button_widget.dart';
 import 'package:iatros_uikit/widgets/icon_button_widget.dart';
@@ -365,6 +368,35 @@ class UiInputs {
         isRequired: isRequired,
         allowedExtensions: allowedExtensions,
         fileName: fileName,
+      );
+
+  Widget addressAutocompleteInput({
+    Key? key,
+    String? hint,
+    String? label,
+    String? errorText,
+    String? initialValue,
+    TextEditingController? controller,
+    required ValueChanged<String> onAddressSelected,
+    required Future<PlaceDetails?> Function(String) getPlaceDetails,
+    ValueChanged<PlaceDetails>? onPlaceDetailsSelected,
+    required Future<List<AddressLocationModel>> Function(String) searchAddressWeb,
+    bool isRequired = false,
+    InputType type = InputType.dark,
+  }) =>
+      AddressAutocompleteInput(
+        key: key,
+        hint: hint,
+        label: label,
+        errorText: errorText,
+        initialValue: initialValue,
+        controller: controller,
+        onAddressSelected: onAddressSelected,
+        getPlaceDetails: getPlaceDetails,
+        onPlaceDetailsSelected: onPlaceDetailsSelected,
+        searchAddressWeb: searchAddressWeb,
+        isRequired: isRequired,
+        type: type,
       );
 
   Widget multiSelectDropdown<T>({
