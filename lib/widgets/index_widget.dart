@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iatros_uikit/components/inputs/address_autocomplete_input.dart';
+import 'package:iatros_uikit/components/inputs/resizable_input.dart';
 import 'package:iatros_uikit/components/inputs/specialization_selector.dart';
 import 'package:iatros_uikit/models/blood_type.dart';
 import 'package:iatros_uikit/models/gender_type.dart';
@@ -240,6 +241,19 @@ class UiInputs {
         controller: controller,
         onChanged: onChanged,
         validator: validator,
+      );
+
+  Widget resizableInput({
+    Key? key,
+    required TextEditingController controller,
+    String? hintText,
+    bool isRequired = false,
+  }) =>
+      ResizableInput(
+        key: key,
+        controller: controller,
+        hintText: hintText,
+        isRequired: isRequired,
       );
 
   Widget datePickerInput({
