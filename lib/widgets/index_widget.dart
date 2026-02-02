@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:iatros_uikit/components/inputs/specialization_selector.dart';
 import 'package:iatros_uikit/models/blood_type.dart';
 import 'package:iatros_uikit/models/gender_type.dart';
 import 'package:iatros_uikit/models/input_type.dart';
+import 'package:iatros_uikit/models/medical_specialization.dart';
 import 'package:iatros_uikit/widgets/primary_button_widget.dart';
 import 'package:iatros_uikit/widgets/secondary_button_widget.dart';
 import 'package:iatros_uikit/widgets/icon_button_widget.dart';
@@ -390,6 +392,25 @@ class UiInputs {
         isMultiselect: isMultiselect,
         errorText: errorText,
         onSearch: onSearch,
+      );
+
+  Widget specializationSelector({
+    Key? key,
+    String? selectedSpecialization,
+    required ValueChanged<String?> onChanged,
+    required List<MedicalSpecialization> initialList,
+    String? errorText,
+    bool isRequired = false,
+    InputType type = InputType.dark,
+  }) =>
+      SpecializationSelector(
+        key: key,
+        selectedSpecialization: selectedSpecialization,
+        onChanged: onChanged,
+        initialList: initialList,
+        errorText: errorText,
+        isRequired: isRequired,
+        type: type,
       );
 }
 
