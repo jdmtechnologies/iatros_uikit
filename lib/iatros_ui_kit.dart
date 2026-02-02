@@ -64,6 +64,10 @@ export 'widgets/index_widget.dart';
 /// // Widgets por acceso anidado
 /// IatrosUi.widget.backgrounds.medicalBackground
 /// IatrosUi.widget.buttons.primaryButton
+/// IatrosUi.widget.cards.baseCard
+/// IatrosUi.widget.inputs.textInput
+/// IatrosUi.widget.logo.iatrosLogo
+/// IatrosUi.widget.popUp.loadingOverlay
 ///
 /// // Widgets por clase
 /// UiPrimaryButton(label: 'Guardar', onPressed: () {})
