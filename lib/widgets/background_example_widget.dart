@@ -18,7 +18,7 @@ class UiBackgroundExample extends StatelessWidget {
         backgroundColor: AppColors.surface,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.paddingLG),
+        padding: EdgeInsets.all(AppSpacing.paddingLG),
         child: Column(
           children: [
             UiBaseCard(
@@ -135,7 +135,7 @@ class _ColorSwatch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
+      padding: EdgeInsets.symmetric(
         horizontal: AppSpacing.paddingSM,
         vertical: AppSpacing.paddingXS,
       ),

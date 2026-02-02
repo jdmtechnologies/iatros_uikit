@@ -19,13 +19,37 @@ import 'package:iatros_uikit/widgets/simple_medical_background_widget.dart';
 import 'package:iatros_uikit/widgets/background_example_widget.dart';
 import 'package:iatros_uikit/utils/loading_overlay.dart';
 
+/// Accessor de fondos: IatrosUi.widget.backgrounds.medicalBackground, etc.
+class BackgroundsAccessor {
+  Type get medicalBackground => UiMedicalBackground;
+  Type get simpleMedicalBackground => UiSimpleMedicalBackground;
+  Type get backgroundExample => UiBackgroundExample;
+}
+
+/// Accessor de botones: IatrosUi.widget.buttons.primaryButton, etc.
+class ButtonsAccessor {
+  Type get primaryButton => UiPrimaryButton;
+  Type get secondaryButton => UiSecondaryButton;
+  Type get iconButton => UiIconButton;
+  Type get imageButton => UiImageButton;
+}
+
 /// Agrupa todos los widgets del paquete.
 class UiWidget {
   UiWidget._();
   static final UiWidget _instance = UiWidget._();
   factory UiWidget() => _instance;
 
-  // Buttons
+  static final BackgroundsAccessor _backgrounds = BackgroundsAccessor();
+  static final ButtonsAccessor _buttons = ButtonsAccessor();
+
+  /// Acceso a fondos: medicalBackground, simpleMedicalBackground, backgroundExample.
+  BackgroundsAccessor get backgrounds => _backgrounds;
+
+  /// Acceso a botones: primaryButton, secondaryButton, iconButton, imageButton.
+  ButtonsAccessor get buttons => _buttons;
+
+  // Buttons (legacy - use buttons.primaryButton)
   static Type get primaryButton => UiPrimaryButton;
   static Type get secondaryButton => UiSecondaryButton;
   static Type get iconButton => UiIconButton;

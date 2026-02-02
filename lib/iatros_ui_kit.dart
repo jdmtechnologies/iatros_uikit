@@ -52,16 +52,20 @@ export 'widgets/index_widget.dart';
 ///
 /// Uso en una app consumidora:
 /// ```dart
-/// import 'package:iatros_uikit/iatros_ui.dart';
+/// import 'package:iatros_uikit/iatros_ui_kit.dart';
 ///
-/// IatrosUi.util.color.primary
-/// IatrosUi.util.theme.lightTheme
-/// IatrosUi.util.textStyle.h1
+/// // Utilidades
+/// IatrosUi.util.colors.primary
+/// IatrosUi.util.typography.h4
 /// IatrosUi.util.spacing.paddingMD
 /// IatrosUi.util.helpers.verticalSpaceMD
-/// IatrosUi.model
+/// IatrosUi.util.theme
 ///
-/// // Widgets por clase:
+/// // Widgets por acceso anidado
+/// IatrosUi.widget.backgrounds.medicalBackground
+/// IatrosUi.widget.buttons.primaryButton
+///
+/// // Widgets por clase
 /// UiPrimaryButton(label: 'Guardar', onPressed: () {})
 /// UiBaseCard(child: ...)
 /// ```
