@@ -1,0 +1,9 @@
+# Configuración de análisis para el paquete Iatros UI
+# https://dart.dev/guides/language/analysis-options
+
+include: package:flutter_lints/flutter.yaml
+
+# Reglas adicionales opcionales:
+# linter:
+#   rules:
+#     - camel_case_types
