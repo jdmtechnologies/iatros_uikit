@@ -189,10 +189,8 @@ class _SpecializationSelectorState extends State<SpecializationSelector> {
                         padding: const EdgeInsets.all(AppSpacing.paddingSM),
                         child: TextField(
                           controller: _searchController,
-                          style: TextStyle(
-                            color: widget.type == InputType.dark
-                                ? AppColors.textPrimary
-                                : AppColors.white,
+                          style: const TextStyle(
+                            color: AppColors.textPrimary,
                           ),
                           decoration: InputDecoration(
                             hintText: 'Buscar especialización...',
