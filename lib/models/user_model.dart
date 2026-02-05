@@ -184,11 +184,14 @@ class UserModel {
       "name": name,
       "email": email,
       "phone": phone,
+      "is_root": isRoot,
+      "address": address,
       "image_url": imageUrl,
       "last_name": lastName,
+      "is_active": isActive,
+      "is_deleted": isDeleted,
       "type_user": typeUser.name,
       "country_code": countryCode,
-      "specialization": specialization,
       "medical_license": medicalLicense,
       "update_at": updateAt.toIso8601String(),
       "created_at": createdAt.toIso8601String(),
@@ -198,10 +201,7 @@ class UserModel {
       "identification_number": identificationNumber,
       "professional_biography": professionalBiography,
       "identity_document_back_url": identityDocumentBackUrl,
-      "address": address,
-      "is_deleted": isDeleted,
-      "is_active": isActive,
-      "is_root": isRoot,
+      "specialization": specialization.isEmpty ? null : specialization,
     };
 
     if (id != null) data["id"] = id!;
