@@ -199,9 +199,7 @@ class _SpecializationSelectorState extends State<SpecializationSelector> {
                             ),
                             prefixIcon: Icon(
                               Icons.search,
-                              color: widget.type == InputType.dark
-                                  ? AppColors.textSecondary
-                                  : AppColors.white.withOpacity(0.7),
+                              color: AppColors.textPrimary,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
@@ -259,29 +257,27 @@ class _SpecializationSelectorState extends State<SpecializationSelector> {
                                             spec.name,
                                             style: AppTypography.bodyMedium
                                                 .copyWith(
-                                                  fontWeight: isSelected
-                                                      ? FontWeight.w600
-                                                      : FontWeight.normal,
-                                                  color: isSelected
-                                                      ? AppColors.primary
-                                                      : (widget.type ==
-                                                                InputType.dark
-                                                            ? AppColors
-                                                                  .textPrimary
-                                                            : AppColors.white),
-                                                ),
+                                              fontWeight: isSelected
+                                                  ? FontWeight.w600
+                                                  : FontWeight.normal,
+                                              color: isSelected
+                                                  ? AppColors.primary
+                                                  : (widget.type ==
+                                                          InputType.dark
+                                                      ? AppColors.textPrimary
+                                                      : AppColors.white),
+                                            ),
                                           ),
                                           Text(
                                             spec.description,
-                                            style: AppTypography.caption
-                                                .copyWith(
-                                                  color:
-                                                      widget.type ==
-                                                          InputType.dark
+                                            style:
+                                                AppTypography.caption.copyWith(
+                                              color:
+                                                  widget.type == InputType.dark
                                                       ? AppColors.textSecondary
                                                       : AppColors.white
-                                                            .withOpacity(0.7),
-                                                ),
+                                                          .withOpacity(0.7),
+                                            ),
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                           ),
