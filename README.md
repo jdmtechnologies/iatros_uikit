@@ -20,8 +20,30 @@ TODO: List what your package can do. Maybe include images, gifs, or videos.
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+### Dependencia desde otro proyecto (Git)
+
+En el `pubspec.yaml` del proyecto que usa este paquete:
+
+```yaml
+dependencies:
+  iatros_uikit:
+    git:
+      url: https://github.com/TU_USUARIO/iatros_uikit.git  # o la URL de tu repo
+      ref: main   # usa la rama principal (o un tag) para tener todos los widgets
+```
+
+**Importante:** usa siempre `ref: main` (o la rama/tag actual), no un commit antiguo.
+
+### Si ves errores "Not found: package:iatros_uikit/..."
+
+Eso indica que pub está usando una versión antigua en caché. En el **otro proyecto** ejecuta:
+
+```bash
+flutter pub cache repair
+flutter pub get
+```
+
+Y en su `pubspec.yaml` asegúrate de que la dependencia apunte a la rama actual (`ref: main`) y no a un commit viejo.
 
 ## Usage
 

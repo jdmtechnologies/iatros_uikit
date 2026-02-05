@@ -27,6 +27,9 @@ class UserModel {
   final String identityDocumentBackUrl;
   final String identificationNumber;
   final String professionalBiography;
+  final bool isDeleted;
+  final bool isActive;
+  final bool isRoot;
 
   UserModel({
     this.id,
@@ -47,6 +50,9 @@ class UserModel {
     required this.identityDocumentBackUrl,
     required this.professionalBiography,
     required this.identificationNumber,
+    this.isDeleted = false,
+    this.isActive = true,
+    this.isRoot = false,
     this.address = "",
     this.latitude,
     this.longitude,
@@ -80,6 +86,9 @@ class UserModel {
     DateTime? dateOfBirth,
     Gender? gender,
     BloodType? bloodType,
+    bool? isDeleted,
+    bool? isActive,
+    bool? isRoot,
   }) => UserModel(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -106,6 +115,9 @@ class UserModel {
         identityDocumentBackUrl ?? this.identityDocumentBackUrl,
     identificationNumber: identificationNumber ?? this.identificationNumber,
     professionalBiography: professionalBiography ?? this.professionalBiography,
+    isDeleted: isDeleted ?? this.isDeleted,
+    isActive: isActive ?? this.isActive,
+    isRoot: isRoot ?? this.isRoot,
   );
 
   factory UserModel.fromJson(json) => UserModel(
@@ -133,6 +145,9 @@ class UserModel {
     updateAt: json["update_at"] != null ? DateTime.parse(json["update_at"]): DateTime.now(),
     dateOfBirth: json["date_of_birth"] != null ? DateTime.parse(json["date_of_birth"]) : null,
     createdAt: json["created_at"] != null ? DateTime.parse(json["created_at"]) : DateTime.now(),
+    isDeleted: json["is_deleted"] == true,
+    isActive: json["is_active"] != false,
+    isRoot: json["is_root"] == true,
   );
 
   factory UserModel.init() => UserModel(
@@ -159,6 +174,9 @@ class UserModel {
     professionalBiography: "",
     typeUser: TypeUser.PATIENT,
     identityDocumentBackUrl: "",
+    isDeleted: false,
+    isActive: true,
+    isRoot: false,
   );
 
   Map<String, dynamic> toJson() {
@@ -181,6 +199,9 @@ class UserModel {
       "professional_biography": professionalBiography,
       "identity_document_back_url": identityDocumentBackUrl,
       "address": address,
+      "is_deleted": isDeleted,
+      "is_active": isActive,
+      "is_root": isRoot,
     };
 
     if (id != null) data["id"] = id!;
@@ -226,7 +247,10 @@ class UserModel {
       identityDocumentUrl == other.identityDocumentUrl &&
       identityDocumentBackUrl == other.identityDocumentBackUrl &&
       identificationNumber == other.identificationNumber &&
-      professionalBiography == other.professionalBiography;
+      professionalBiography == other.professionalBiography &&
+      isDeleted == other.isDeleted &&
+      isActive == other.isActive &&
+      isRoot == other.isRoot;
   }
 }
 
