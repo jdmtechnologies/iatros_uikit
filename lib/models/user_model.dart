@@ -24,6 +24,7 @@ class UserModel {
   final String identificationType;
   final String professionalCardUrl;
   final String identityDocumentUrl;
+  final String professionalCardBackUrl;
   final String identityDocumentBackUrl;
   final String identificationNumber;
   final String professionalBiography;
@@ -46,6 +47,7 @@ class UserModel {
     required this.specialization,
     required this.identificationType,
     required this.professionalCardUrl,
+    required this.professionalCardBackUrl,
     required this.identityDocumentUrl,
     required this.identityDocumentBackUrl,
     required this.professionalBiography,
@@ -75,6 +77,7 @@ class UserModel {
     String? specialization,
     String? medicalLicense,
     String? professionalCardUrl,
+    String? professionalCardBackUrl,
     String? identityDocumentUrl,
     String? identityDocumentBackUrl,
     String? professionalBiography,
@@ -110,6 +113,7 @@ class UserModel {
     specialization: specialization ?? this.specialization,
     identificationType: identificationType ?? this.identificationType,
     professionalCardUrl: professionalCardUrl ?? this.professionalCardUrl,
+    professionalCardBackUrl: professionalCardBackUrl ?? this.professionalCardBackUrl,
     identityDocumentUrl: identityDocumentUrl ?? this.identityDocumentUrl,
     identityDocumentBackUrl:
         identityDocumentBackUrl ?? this.identityDocumentBackUrl,
@@ -136,6 +140,7 @@ class UserModel {
     typeUser: _generateTypeUser(json["type_user"]),
     identificationType: json["identification_type"] ?? "",
     professionalCardUrl: json["professional_card_url"] ?? "",
+    professionalCardBackUrl: json["professional_card_back_url"] ?? "",
     identityDocumentUrl: json["identity_document_url"] ?? "",
     professionalBiography: json["professional_biography"] ?? "",
     identificationNumber: json["identification_number"] ?? "",
@@ -167,6 +172,7 @@ class UserModel {
     medicalLicense: "",
     identificationType: "",
     professionalCardUrl: "",
+    professionalCardBackUrl: "",
     identityDocumentUrl: "",
     updateAt: DateTime.now(),
     identificationNumber: "",
@@ -197,6 +203,7 @@ class UserModel {
       "created_at": createdAt.toIso8601String(),
       "identification_type": identificationType,
       "professional_card_url": professionalCardUrl,
+      "professional_card_back_url": professionalCardBackUrl,
       "identity_document_url": identityDocumentUrl,
       "identification_number": identificationNumber,
       "professional_biography": professionalBiography,
@@ -244,6 +251,7 @@ class UserModel {
         dateOfBirth!.isAtSameMomentAs(other.dateOfBirth!)) &&
       identificationType == other.identificationType &&
       professionalCardUrl == other.professionalCardUrl &&
+      professionalCardBackUrl == other.professionalCardBackUrl &&
       identityDocumentUrl == other.identityDocumentUrl &&
       identityDocumentBackUrl == other.identityDocumentBackUrl &&
       identificationNumber == other.identificationNumber &&
