@@ -51,9 +51,9 @@ class CompanyModel {
         nitUrl: json['nit_url']?.toString(),
         isActive: json['is_active'] != false,
         isDeleted: json['is_deleted'] == true,
-        nit: json['nit']?.toString() ?? 'No tiene NIT',
+        nit: json['nit'] != null && json['nit'] != '' ? json['nit'].toString() : 'No tiene NIT',
         userOwnerId: json['user_owner_id']?.toString(),
-        companyName: json['company_name']?.toString() ?? 'No tiene nombre',
+        companyName: json['company_name'] != null && json['company_name'] != '' ? json['company_name'].toString() : 'No tiene nombre',
         companyType: json['company_type'] != null
             ? CompanyType.fromString(json['company_type'].toString())
             : CompanyType.personal,
