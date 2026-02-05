@@ -6,17 +6,17 @@ import 'package:iatros_uikit/utils/debouncer_util.dart';
 import 'package:iatros_uikit/models/address_location_model.dart';
 
 class AddressAutocompleteInput extends StatefulWidget {
-   final String? hint;
-   final String? label;
-   final InputType type;
-   final bool isRequired;
-   final String? errorText;
-   final String? initialValue;
-   final TextEditingController? controller;
-   final ValueChanged<String> onAddressSelected;
-   final Future<PlaceDetails?> Function(String) getPlaceDetails;
-   final ValueChanged<PlaceDetails>? onPlaceDetailsSelected;
-   final Future<List<AddressLocationModel>> Function(String) searchAddressWeb;
+  final String? hint;
+  final String? label;
+  final InputType type;
+  final bool isRequired;
+  final String? errorText;
+  final String? initialValue;
+  final TextEditingController? controller;
+  final ValueChanged<String> onAddressSelected;
+  final Future<PlaceDetails?> Function(String) getPlaceDetails;
+  final ValueChanged<PlaceDetails>? onPlaceDetailsSelected;
+  final Future<List<AddressLocationModel>> Function(String) searchAddressWeb;
 
   const AddressAutocompleteInput({
     super.key,
@@ -34,7 +34,8 @@ class AddressAutocompleteInput extends StatefulWidget {
   });
 
   @override
-  State<AddressAutocompleteInput> createState() => _AddressAutocompleteInputState();
+  State<AddressAutocompleteInput> createState() =>
+      _AddressAutocompleteInputState();
 }
 
 class _AddressAutocompleteInputState extends State<AddressAutocompleteInput> {
@@ -42,6 +43,7 @@ class _AddressAutocompleteInputState extends State<AddressAutocompleteInput> {
   OverlayEntry? _overlayEntry;
   late DebouncerUtil _debouncer;
   bool _showPredictions = false;
+  bool _disabledListener = false;
   late TextEditingController _controller;
   final LayerLink _layerLink = LayerLink();
   List<AddressLocationModel> _predictions = [];
@@ -69,8 +71,13 @@ class _AddressAutocompleteInputState extends State<AddressAutocompleteInput> {
   }
 
   void _onTextChanged() {
+    if (_disabledListener) {
+      setState(() => _disabledListener = false);
+      return;
+    }
+
     final query = _controller.text.trim();
-    
+
     if (query.isEmpty) {
       setState(() {
         _predictions = [];
@@ -100,15 +107,15 @@ class _AddressAutocompleteInputState extends State<AddressAutocompleteInput> {
     });
 
     try {
-      final  predictions = await widget.searchAddressWeb(query);
-      
+      final predictions = await widget.searchAddressWeb(query);
+
       if (mounted) {
         setState(() {
           _predictions = predictions;
           _isLoading = false;
           _showPredictions = predictions.isNotEmpty;
         });
-        
+
         if (_showPredictions) {
           _showOverlay();
         } else {
@@ -128,6 +135,7 @@ class _AddressAutocompleteInputState extends State<AddressAutocompleteInput> {
   }
 
   Future<void> _selectPrediction(AddressLocationModel prediction) async {
+    setState(() => _disabledListener = true);
     _controller.text = prediction.description;
     setState(() {
       _showPredictions = false;
@@ -150,7 +158,7 @@ class _AddressAutocompleteInputState extends State<AddressAutocompleteInput> {
 
   void _showOverlay() {
     _removeOverlay();
-    
+
     final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
 
@@ -184,7 +192,8 @@ class _AddressAutocompleteInputState extends State<AddressAutocompleteInput> {
                         return InkWell(
                           onTap: () => _selectPrediction(prediction),
                           child: ListTile(
-                            leading: const Icon(Icons.location_on, color: AppColors.primary),
+                            leading: const Icon(Icons.location_on,
+                                color: AppColors.primary),
                             title: Text(
                               prediction.mainText,
                               style: AppTypography.bodyMedium,
@@ -220,26 +229,26 @@ class _AddressAutocompleteInputState extends State<AddressAutocompleteInput> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Label
-         if (widget.label != null) ...[
-           RichText(
-             text: TextSpan(
-               text: widget.label,
-               style: AppTypography.label.copyWith(
-                 color: widget.type == InputType.dark
-                     ? AppColors.black
-                     : AppColors.white,
-               ),
-               children: [
-                 if (widget.isRequired)
-                   const TextSpan(
-                     text: ' *',
-                     style: TextStyle(color: AppColors.error),
-                   ),
-               ],
-             ),
-           ),
-           const SizedBox(height: AppSpacing.sm),
-         ],
+        if (widget.label != null) ...[
+          RichText(
+            text: TextSpan(
+              text: widget.label,
+              style: AppTypography.label.copyWith(
+                color: widget.type == InputType.dark
+                    ? AppColors.black
+                    : AppColors.white,
+              ),
+              children: [
+                if (widget.isRequired)
+                  const TextSpan(
+                    text: ' *',
+                    style: TextStyle(color: AppColors.error),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+        ],
 
         // Input field
         CompositedTransformTarget(
@@ -253,19 +262,25 @@ class _AddressAutocompleteInputState extends State<AddressAutocompleteInput> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
                 borderSide: BorderSide(
-                  color: widget.errorText != null ? AppColors.error : AppColors.gray300,
+                  color: widget.errorText != null
+                      ? AppColors.error
+                      : AppColors.gray300,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
                 borderSide: BorderSide(
-                  color: widget.errorText != null ? AppColors.error : AppColors.gray300,
+                  color: widget.errorText != null
+                      ? AppColors.error
+                      : AppColors.gray300,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
                 borderSide: BorderSide(
-                  color: widget.errorText != null ? AppColors.error : AppColors.primary,
+                  color: widget.errorText != null
+                      ? AppColors.error
+                      : AppColors.primary,
                   width: 2,
                 ),
               ),
@@ -313,4 +328,3 @@ class _AddressAutocompleteInputState extends State<AddressAutocompleteInput> {
     );
   }
 }
-

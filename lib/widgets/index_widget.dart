@@ -401,16 +401,16 @@ class UiInputs {
       AddressAutocompleteInput(
         key: key,
         hint: hint,
+        type: type,
         label: label,
         errorText: errorText,
-        initialValue: initialValue,
         controller: controller,
-        onAddressSelected: onAddressSelected,
-        getPlaceDetails: getPlaceDetails,
-        onPlaceDetailsSelected: onPlaceDetailsSelected,
-        searchAddressWeb: searchAddressWeb,
         isRequired: isRequired,
-        type: type,
+        initialValue: initialValue,
+        getPlaceDetails: getPlaceDetails,
+        searchAddressWeb: searchAddressWeb,
+        onAddressSelected: onAddressSelected,
+        onPlaceDetailsSelected: onPlaceDetailsSelected,
       );
 
   Widget multiSelectDropdown<T>({
