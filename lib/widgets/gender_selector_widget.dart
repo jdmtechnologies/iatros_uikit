@@ -32,7 +32,7 @@ class UiGenderSelector extends StatelessWidget {
           children: [
             RichText(
               text: TextSpan(
-                text: 'Sexo',
+                text: 'Género',
                 style: AppTypography.label.copyWith(
                   color: type == InputType.dark
                       ? AppColors.black
