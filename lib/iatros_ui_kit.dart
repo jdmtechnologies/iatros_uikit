@@ -15,6 +15,7 @@ export 'models/index.dart';
 
 // Extensiones
 export 'extension/context_extension.dart';
+export 'extensions/string_extension.dart';
 
 // Utils (colores, tema, estilos, helpers)
 export 'utils/ui_color.dart';
