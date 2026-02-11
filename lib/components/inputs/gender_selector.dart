@@ -31,7 +31,7 @@ class GenderSelector extends StatelessWidget {
             // Label
             RichText(
               text: TextSpan(
-                text: 'Sexo',
+                text: 'Género',
                 style: AppTypography.label.copyWith(
                   color: type == InputType.dark
                       ? AppColors.black
@@ -62,7 +62,7 @@ class GenderSelector extends StatelessWidget {
                   value: selectedGender,
                   hint: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: AppSpacing.paddingMD),
-                    child: Text('Selecciona tu sexo'),
+                    child: Text('Selecciona tu género'),
                   ),
                   items: Gender.values.map((gender) {
                     return DropdownMenuItem<Gender>(
