@@ -29,6 +29,10 @@ import 'package:iatros_uikit/widgets/medical_background_widget.dart';
 import 'package:iatros_uikit/widgets/simple_medical_background_widget.dart';
 import 'package:iatros_uikit/widgets/background_example_widget.dart';
 import 'package:iatros_uikit/utils/loading_overlay.dart';
+import 'package:iatros_uikit/utils/ui_color.dart';
+import 'package:iatros_uikit/utils/text_style.dart';
+import 'package:iatros_uikit/utils/spacing.dart';
+import 'package:iatros_uikit/extension/context_extension.dart';
 
 class UiBackgrounds {
   Widget medicalBackground({
@@ -501,6 +505,100 @@ class UiLogo {
       );
 }
 
+enum _FeedbackPopUpType { success, error, info }
+
+class _FeedbackPopUpContent extends StatelessWidget {
+  const _FeedbackPopUpContent({
+    required this.type,
+    required this.title,
+    this.description,
+    required this.onOk,
+  });
+
+  final _FeedbackPopUpType type;
+  final String title;
+  final String? description;
+  final VoidCallback onOk;
+
+  Color get _iconColor {
+    switch (type) {
+      case _FeedbackPopUpType.success:
+        return AppColors.success;
+      case _FeedbackPopUpType.error:
+        return AppColors.error;
+      case _FeedbackPopUpType.info:
+        return AppColors.info;
+    }
+  }
+
+  IconData get _icon {
+    switch (type) {
+      case _FeedbackPopUpType.success:
+        return Icons.check_circle_outline;
+      case _FeedbackPopUpType.error:
+        return Icons.error_outline;
+      case _FeedbackPopUpType.info:
+        return Icons.info_outline;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: context.sizeWidth(0.85),
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.paddingXL,
+        vertical: AppSpacing.paddingLG,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.black.withValues(alpha: 0.1),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            _icon,
+            size: 56,
+            color: _iconColor,
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          Text(
+            title,
+            style: AppTypography.h4.copyWith(color: AppColors.textPrimary),
+            textAlign: TextAlign.center,
+          ),
+          if (description != null && description!.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              description!,
+              style: AppTypography.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+          const SizedBox(height: AppSpacing.xl),
+          UiPrimaryButton(
+            label: 'OK',
+            width: double.infinity,
+            onPressed: onOk,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class UiPopUp {
   Widget loadingOverlay({
     Key? key,
@@ -512,6 +610,81 @@ class UiPopUp {
         isLoading: isLoading,
         child: child,
       );
+
+  /// Muestra un pop-up de éxito (icono verde, título y descripción opcional).
+  Future<void> showSuccess(
+    BuildContext context, {
+    required String title,
+    String? description,
+  }) async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: AppColors.black.withValues(alpha: 0.4),
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: _FeedbackPopUpContent(
+            type: _FeedbackPopUpType.success,
+            title: title,
+            description: description,
+            onOk: () => Navigator.of(context).pop(),
+          ),
+        );
+      },
+    );
+  }
+
+  /// Muestra un pop-up de error (icono rojo, título y descripción opcional).
+  Future<void> showError(
+    BuildContext context, {
+    required String title,
+    String? description,
+  }) async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: AppColors.black.withValues(alpha: 0.4),
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: _FeedbackPopUpContent(
+            type: _FeedbackPopUpType.error,
+            title: title,
+            description: description,
+            onOk: () => Navigator.of(context).pop(),
+          ),
+        );
+      },
+    );
+  }
+
+  /// Muestra un pop-up de información (icono azul, título y descripción opcional).
+  Future<void> showInfo(
+    BuildContext context, {
+    required String title,
+    String? description,
+  }) async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: AppColors.black.withValues(alpha: 0.4),
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: _FeedbackPopUpContent(
+            type: _FeedbackPopUpType.info,
+            title: title,
+            description: description,
+            onOk: () => Navigator.of(context).pop(),
+          ),
+        );
+      },
+    );
+  }
 }
 
 /// Agrupa todos los widgets del paquete.
