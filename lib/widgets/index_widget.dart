@@ -507,18 +507,27 @@ class UiLogo {
 
 enum _FeedbackPopUpType { success, error, info }
 
+/// Tamaño visual del pop-up de alerta: [short], [medium], [large].
+enum AlertSize {
+  short,
+  medium,
+  large,
+}
+
 class _FeedbackPopUpContent extends StatelessWidget {
   const _FeedbackPopUpContent({
     required this.type,
     required this.title,
     this.description,
     required this.onOk,
+    this.size = AlertSize.medium,
   });
 
   final _FeedbackPopUpType type;
   final String title;
   final String? description;
   final VoidCallback onOk;
+  final AlertSize size;
 
   Color get _iconColor {
     switch (type) {
@@ -542,19 +551,111 @@ class _FeedbackPopUpContent extends StatelessWidget {
     }
   }
 
+  double get _iconSize {
+    switch (size) {
+      case AlertSize.short:
+        return 40;
+      case AlertSize.medium:
+        return 56;
+      case AlertSize.large:
+        return 72;
+    }
+  }
+
+  double get _maxWidthFactor {
+    switch (size) {
+      case AlertSize.short:
+        return 0.65;
+      case AlertSize.medium:
+        return 0.85;
+      case AlertSize.large:
+        return 0.92;
+    }
+  }
+
+  EdgeInsets get _padding {
+    switch (size) {
+      case AlertSize.short:
+        return const EdgeInsets.symmetric(
+          horizontal: AppSpacing.paddingMD,
+          vertical: AppSpacing.paddingMD,
+        );
+      case AlertSize.medium:
+        return const EdgeInsets.symmetric(
+          horizontal: AppSpacing.paddingXL,
+          vertical: AppSpacing.paddingLG,
+        );
+      case AlertSize.large:
+        return const EdgeInsets.symmetric(
+          horizontal: AppSpacing.paddingXL * 1.25,
+          vertical: AppSpacing.paddingXL,
+        );
+    }
+  }
+
+  double get _spacingAfterIcon {
+    switch (size) {
+      case AlertSize.short:
+        return AppSpacing.sm;
+      case AlertSize.medium:
+        return AppSpacing.lg;
+      case AlertSize.large:
+        return AppSpacing.xl;
+    }
+  }
+
+  TextStyle get _titleStyle {
+    switch (size) {
+      case AlertSize.short:
+        return AppTypography.bodyLarge.copyWith(
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.w600,
+        );
+      case AlertSize.medium:
+        return AppTypography.h4.copyWith(color: AppColors.textPrimary);
+      case AlertSize.large:
+        return AppTypography.h3.copyWith(color: AppColors.textPrimary);
+    }
+  }
+
+  TextStyle get _descriptionStyle {
+    switch (size) {
+      case AlertSize.short:
+        return AppTypography.bodySmall.copyWith(
+          color: AppColors.textSecondary,
+        );
+      case AlertSize.medium:
+        return AppTypography.bodyMedium.copyWith(
+          color: AppColors.textSecondary,
+        );
+      case AlertSize.large:
+        return AppTypography.bodyLarge.copyWith(
+          color: AppColors.textSecondary,
+        );
+    }
+  }
+
+  double get _radius {
+    switch (size) {
+      case AlertSize.short:
+        return AppSpacing.radiusSM;
+      case AlertSize.medium:
+        return AppSpacing.radiusMD;
+      case AlertSize.large:
+        return AppSpacing.radiusLG;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       constraints: BoxConstraints(
-        maxWidth: context.sizeWidth(0.85),
+        maxWidth: context.sizeWidth(_maxWidthFactor),
       ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.paddingXL,
-        vertical: AppSpacing.paddingLG,
-      ),
+      padding: _padding,
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+        borderRadius: BorderRadius.circular(_radius),
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withValues(alpha: 0.1),
@@ -568,26 +669,24 @@ class _FeedbackPopUpContent extends StatelessWidget {
         children: [
           Icon(
             _icon,
-            size: 56,
+            size: _iconSize,
             color: _iconColor,
           ),
-          const SizedBox(height: AppSpacing.lg),
+          SizedBox(height: _spacingAfterIcon),
           Text(
             title,
-            style: AppTypography.h4.copyWith(color: AppColors.textPrimary),
+            style: _titleStyle,
             textAlign: TextAlign.center,
           ),
           if (description != null && description!.isNotEmpty) ...[
-            const SizedBox(height: AppSpacing.sm),
+            SizedBox(height: size == AlertSize.short ? AppSpacing.xs : AppSpacing.sm),
             Text(
               description!,
-              style: AppTypography.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
-              ),
+              style: _descriptionStyle,
               textAlign: TextAlign.center,
             ),
           ],
-          const SizedBox(height: AppSpacing.xl),
+          SizedBox(height: size == AlertSize.short ? AppSpacing.md : AppSpacing.xl),
           UiPrimaryButton(
             label: 'OK',
             width: double.infinity,
@@ -612,14 +711,17 @@ class UiPopUp {
       );
 
   /// Muestra un pop-up de éxito (icono verde, título y descripción opcional).
+  /// [size]: [AlertSize.short], [AlertSize.medium] o [AlertSize.large].
+  /// Al tocar el fondo transparente se cierra el pop-up.
   Future<void> showSuccess(
     BuildContext context, {
     required String title,
     String? description,
+    AlertSize size = AlertSize.medium,
   }) async {
     return showDialog(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: true,
       barrierColor: AppColors.black.withValues(alpha: 0.4),
       builder: (BuildContext context) {
         return Dialog(
@@ -630,6 +732,7 @@ class UiPopUp {
             title: title,
             description: description,
             onOk: () => Navigator.of(context).pop(),
+            size: size,
           ),
         );
       },
@@ -637,14 +740,17 @@ class UiPopUp {
   }
 
   /// Muestra un pop-up de error (icono rojo, título y descripción opcional).
+  /// [size]: [AlertSize.short], [AlertSize.medium] o [AlertSize.large].
+  /// Al tocar el fondo transparente se cierra el pop-up.
   Future<void> showError(
     BuildContext context, {
     required String title,
     String? description,
+    AlertSize size = AlertSize.medium,
   }) async {
     return showDialog(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: true,
       barrierColor: AppColors.black.withValues(alpha: 0.4),
       builder: (BuildContext context) {
         return Dialog(
@@ -655,6 +761,7 @@ class UiPopUp {
             title: title,
             description: description,
             onOk: () => Navigator.of(context).pop(),
+            size: size,
           ),
         );
       },
@@ -662,14 +769,17 @@ class UiPopUp {
   }
 
   /// Muestra un pop-up de información (icono azul, título y descripción opcional).
+  /// [size]: [AlertSize.short], [AlertSize.medium] o [AlertSize.large].
+  /// Al tocar el fondo transparente se cierra el pop-up.
   Future<void> showInfo(
     BuildContext context, {
     required String title,
     String? description,
+    AlertSize size = AlertSize.medium,
   }) async {
     return showDialog(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: true,
       barrierColor: AppColors.black.withValues(alpha: 0.4),
       builder: (BuildContext context) {
         return Dialog(
@@ -680,6 +790,7 @@ class UiPopUp {
             title: title,
             description: description,
             onOk: () => Navigator.of(context).pop(),
+            size: size,
           ),
         );
       },
