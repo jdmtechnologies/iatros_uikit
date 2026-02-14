@@ -4,46 +4,46 @@ class SuscriptionSettingsModel {
     final String? id;
     final int price;
     final String title;
-    final String description;
-    final double discount;
     final int rangeMonth;
-    final bool mostRecommended;
-    final DateTime? createdAt;
+    final double discount;
     final DateTime? updateAt;
+    final String description;
+    final DateTime? createdAt;
+    final bool mostRecommended;
 
     SuscriptionSettingsModel({
         this.id,
+        this.updateAt,
+        this.createdAt,
         required this.price,
         required this.title,
-        required this.description,
         required this.discount,
         required this.rangeMonth,
+        required this.description,
         this.mostRecommended = false,
-        this.createdAt,
-        this.updateAt,
     });
 
     SuscriptionSettingsModel copyWith({
         String? id,
         int? price,
         String? title,
-        String? description,
-        double? discount,
         int? rangeMonth,
-        bool? mostRecommended,
-        DateTime? createdAt,
+        double? discount,
         DateTime? updateAt,
+        String? description,
+        DateTime? createdAt,
+        bool? mostRecommended,
     }) =>
         SuscriptionSettingsModel(
             id: id ?? this.id,
             price: price ?? this.price,
             title: title ?? this.title,
-            description: description ?? this.description,
-            discount: discount ?? this.discount,
-            rangeMonth: rangeMonth ?? this.rangeMonth,
-            mostRecommended: mostRecommended ?? this.mostRecommended,
-            createdAt: createdAt ?? this.createdAt,
             updateAt: updateAt ?? this.updateAt,
+            discount: discount ?? this.discount,
+            createdAt: createdAt ?? this.createdAt,
+            rangeMonth: rangeMonth ?? this.rangeMonth,
+            description: description ?? this.description,
+            mostRecommended: mostRecommended ?? this.mostRecommended,
         );
 
     factory SuscriptionSettingsModel.fromRawJson(String str) =>

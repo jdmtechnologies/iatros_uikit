@@ -64,7 +64,7 @@ class UiGenderSelector extends StatelessWidget {
                     padding: EdgeInsets.symmetric(
                       horizontal: AppSpacing.paddingMD,
                     ),
-                    child: Text('Selecciona tu sexo'),
+                    child: Text('Selecciona tu género'),
                   ),
                   items: Gender.values.map((gender) {
                     return DropdownMenuItem<Gender>(
