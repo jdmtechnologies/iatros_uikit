@@ -19,6 +19,9 @@ export 'models/suscription_settings_model.dart';
 export 'extension/context_extension.dart';
 export 'extensions/string_extension.dart';
 
+// Enums
+export 'enum/email_type.dart';
+
 // Utils (colores, tema, estilos, helpers)
 export 'utils/ui_color.dart';
 export 'utils/app_theme.dart';
