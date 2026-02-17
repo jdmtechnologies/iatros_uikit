@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 class AnnouncementModel {
-    final int title;
     final String id;
+    final String title;
     final DateTime dateEnd;
     final String description;
 
@@ -14,8 +14,8 @@ class AnnouncementModel {
     });
 
     AnnouncementModel copyWith({
-        int? title,
         String? id,
+        String? title,
         DateTime? dateEnd,
         String? description,
     }) => 
@@ -33,8 +33,15 @@ class AnnouncementModel {
     factory AnnouncementModel.fromJson(Map<String, dynamic> json) => AnnouncementModel(
         id: json["id"],
         title: json["title"],
-        dateEnd: DateTime.parse(json["date_end"]),
         description: json["description"],
+        dateEnd: DateTime.parse(json["date_end"]),
+    );
+
+    factory AnnouncementModel.init() => AnnouncementModel(
+        id: "",
+        title: "",
+        description: "",
+        dateEnd: DateTime.now(),
     );
 
     Map<String, dynamic> toJson() => {
