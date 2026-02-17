@@ -13,7 +13,7 @@ export 'models/blood_type.dart';
 export 'models/medical_specialization.dart';
 export 'models/index.dart';
 export 'models/suscription_settings_model.dart';
-
+export 'models/announcement_model.dart';
 
 // Extensiones
 export 'extension/context_extension.dart';
