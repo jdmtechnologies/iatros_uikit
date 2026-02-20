@@ -46,6 +46,7 @@ export 'widgets/dropdown_widget.dart';
 export 'widgets/text_input_widget.dart';
 export 'widgets/password_input_widget.dart';
 export 'widgets/date_picker_input_widget.dart';
+export 'widgets/time_picker_input_widget.dart';
 export 'widgets/identification_selector_widget.dart';
 export 'widgets/gender_selector_widget.dart';
 export 'widgets/blood_type_selector_widget.dart';

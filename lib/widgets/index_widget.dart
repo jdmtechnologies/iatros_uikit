@@ -18,6 +18,7 @@ import 'package:iatros_uikit/widgets/glassmorphism_card_widget.dart';
 import 'package:iatros_uikit/widgets/text_input_widget.dart';
 import 'package:iatros_uikit/widgets/password_input_widget.dart';
 import 'package:iatros_uikit/widgets/date_picker_input_widget.dart';
+import 'package:iatros_uikit/widgets/time_picker_input_widget.dart';
 import 'package:iatros_uikit/widgets/dropdown_widget.dart';
 import 'package:iatros_uikit/widgets/identification_selector_widget.dart';
 import 'package:iatros_uikit/widgets/gender_selector_widget.dart';
@@ -310,6 +311,29 @@ class UiInputs {
         initialDate: initialDate,
         selectedDateNotifier: selectedDateNotifier,
         onDateSelected: onDateSelected,
+        isRequired: isRequired,
+        errorText: errorText,
+        type: type,
+      );
+
+  Widget timePickerInput({
+    Key? key,
+    String? label,
+    String? hintText,
+    TimeOfDay? initialTime,
+    ValueNotifier<TimeOfDay?>? selectedTimeNotifier,
+    ValueChanged<TimeOfDay>? onTimeSelected,
+    bool isRequired = false,
+    String? errorText,
+    InputType type = InputType.dark,
+  }) =>
+      UiTimePickerInput(
+        key: key,
+        label: label,
+        hintText: hintText,
+        initialTime: initialTime,
+        selectedTimeNotifier: selectedTimeNotifier,
+        onTimeSelected: onTimeSelected,
         isRequired: isRequired,
         errorText: errorText,
         type: type,
