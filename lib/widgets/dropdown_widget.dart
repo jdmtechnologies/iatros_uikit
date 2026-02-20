@@ -11,6 +11,8 @@ class UiDropdown extends StatefulWidget {
   final String? value;
   final ValueChanged<String?>? onChanged;
   final TextEditingController controller;
+  /// Se invoca al ganar focus. Útil para refrescar items (ej. cascada country->dept->city).
+  final VoidCallback? onFocus;
   final String? hint;
   final String? label;
   final String? errorText;
@@ -22,6 +24,7 @@ class UiDropdown extends StatefulWidget {
     super.key,
     required this.items,
     required this.controller,
+    this.onFocus,
     this.value,
     this.onChanged,
     this.hint,
@@ -43,10 +46,25 @@ class _UiDropdownState extends State<UiDropdown> {
   void initState() {
     super.initState();
     _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (_focusNode.hasFocus && widget.onFocus != null) {
+      final currentValue = widget.controller.text;
+      // Si el valor actual está en la lista, está intacta (ej. último en cascada)
+      final isLastOrIntact =
+          currentValue.isEmpty || widget.items.contains(currentValue);
+      if (!isLastOrIntact) {
+        // Lista desactualizada: refrescar para obtener items frescos
+        widget.onFocus!();
+      }
+    }
   }
 
   @override
   void dispose() {
+    _focusNode.removeListener(_onFocusChange);
     _focusNode.dispose();
     super.dispose();
   }
