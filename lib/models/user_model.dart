@@ -7,26 +7,28 @@ class UserModel {
   final String name;
   final String phone;
   final String email;
-  final String imageUrl;
   final Gender? gender;
   final String address;
+  final String imageUrl;
   final String lastName;
   final double? latitude;
+  final String middleName;
   final double? longitude;
   final TypeUser typeUser;
   final DateTime updateAt;
   final String countryCode;
   final DateTime createdAt;
   final BloodType? bloodType;
+  final String secondLastName;
   final String specialization;
   final String medicalLicense;
   final DateTime? dateOfBirth;
   final String identificationType;
   final String professionalCardUrl;
   final String identityDocumentUrl;
-  final String identityDocumentBackUrl;
   final String identificationNumber;
   final String professionalBiography;
+  final String identityDocumentBackUrl;
   final bool isDeleted;
   final bool isActive;
   final bool isRoot;
@@ -50,6 +52,8 @@ class UserModel {
     required this.identityDocumentBackUrl,
     required this.professionalBiography,
     required this.identificationNumber,
+    required this.secondLastName,
+    required this.middleName,
     this.isDeleted = false,
     this.isActive = true,
     this.isRoot = false,
@@ -76,6 +80,8 @@ class UserModel {
     String? medicalLicense,
     String? professionalCardUrl,
     String? identityDocumentUrl,
+    String? middleName,
+    String? secondLastName,
     String? identityDocumentBackUrl,
     String? professionalBiography,
     String? identificationType,
@@ -102,6 +108,8 @@ class UserModel {
     typeUser: typeUser ?? this.typeUser,
     lastName: lastName ?? this.lastName,
     longitude: longitude ?? this.longitude,
+    middleName: middleName ?? this.middleName,
+    secondLastName: secondLastName ?? this.secondLastName,
     bloodType: bloodType ?? this.bloodType,
     createdAt: createdAt ?? this.createdAt,
     countryCode: countryCode ?? this.countryCode,
@@ -140,6 +148,8 @@ class UserModel {
     professionalBiography: json["professional_biography"] ?? "",
     identificationNumber: json["identification_number"] ?? "",
     identityDocumentBackUrl: json["identity_document_back_url"] ?? "",
+    middleName: json["middle_name"] ?? "",
+    secondLastName: json["second_last_name"] ?? "",
     gender: json["gender"] != null ? _generateGender(json["gender"]) : null,
     bloodType: json["blood_type"] != null ? bloodTypeFromString(json["blood_type"]) : null,
     updateAt: json["update_at"] != null ? DateTime.parse(json["update_at"]): DateTime.now(),
@@ -157,6 +167,8 @@ class UserModel {
     address: "",
     imageUrl: "",
     lastName: "",
+    middleName: "",
+    secondLastName: "",
     gender: null,
     latitude: null,
     longitude: null,
@@ -202,6 +214,8 @@ class UserModel {
       "professional_biography": professionalBiography,
       "identity_document_back_url": identityDocumentBackUrl,
       "specialization": specialization.isEmpty ? null : specialization,
+      "middle_name": middleName,
+      "second_last_name": secondLastName,
     };
 
     if (id != null) data["id"] = id!;
@@ -233,6 +247,8 @@ class UserModel {
       address == other.address &&
       lastName == other.lastName &&
       typeUser == other.typeUser &&
+      middleName == other.middleName &&
+      secondLastName == other.secondLastName &&
       latitude == other.latitude &&
       longitude == other.longitude &&
       bloodType == other.bloodType &&
