@@ -25,7 +25,14 @@ class UiIdentificationSelector extends StatelessWidget {
     this.type = InputType.dark,
   });
 
-  static final List<String> _identificationTypes = ['CC', 'NIT', 'CE'];
+  static final List<String> _identificationTypes = [
+    'Registro civil',
+    'Tarjeta de identidad',
+    'Cédula de ciudadanía',
+    'Cédula de extranjería',
+    'Pasaporte',
+    'Permiso por Protección Temporal',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +62,7 @@ class UiIdentificationSelector extends StatelessWidget {
         Row(
           children: [
             Container(
-              width: 80,
+              width: 220,
               height: 45,
               decoration: BoxDecoration(
                 border: Border.all(
