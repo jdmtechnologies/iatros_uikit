@@ -42,6 +42,14 @@ class _UiDropdownState extends State<UiDropdown> {
     super.initState();
     _controller = TextEditingController(text: widget.value ?? '');
     _focusNode = FocusNode();
+    _controller.addListener(_onTextChanged);
+  }
+
+  void _onTextChanged() => setState(() {});
+
+  void _clearText() {
+    _controller.clear();
+    widget.onChanged?.call(null);
   }
 
   @override
@@ -54,6 +62,7 @@ class _UiDropdownState extends State<UiDropdown> {
 
   @override
   void dispose() {
+    _controller.removeListener(_onTextChanged);
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
@@ -130,10 +139,17 @@ class _UiDropdownState extends State<UiDropdown> {
                     horizontal: AppSpacing.paddingSM,
                     vertical: 12,
                   ),
-                  suffixIcon: const Icon(
-                    Icons.keyboard_arrow_down,
-                    color: AppColors.textSecondary,
-                  ),
+                  suffixIcon: _controller.text.isEmpty
+                      ? Icon(
+                          Icons.keyboard_arrow_down,
+                          color: AppColors.textSecondary,
+                        )
+                      : IconButton(
+                          icon: const Icon(Icons.close),
+                          color: AppColors.textSecondary,
+                          onPressed: _clearText,
+                          tooltip: 'Limpiar',
+                        ),
                 ),
               ),
             optionsViewBuilder: (context, onSelected, options) {
