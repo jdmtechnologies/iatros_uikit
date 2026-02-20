@@ -10,6 +10,7 @@ class UiDropdown extends StatelessWidget {
   final String? value;
   final ValueChanged<String?>? onChanged;
   final TextEditingController controller;
+  final FocusNode focusNode;
   final String? hint;
   final String? label;
   final String? errorText;
@@ -21,6 +22,7 @@ class UiDropdown extends StatelessWidget {
     super.key,
     required this.items,
     required this.controller,
+    required this.focusNode,
     this.value,
     this.onChanged,
     this.hint,
@@ -84,6 +86,7 @@ class UiDropdown extends StatelessWidget {
             builder: (context, setState) {
               return Autocomplete<String>(
                 textEditingController: controller,
+                focusNode: focusNode,
                 optionsBuilder: (TextEditingValue value) {
                   if (value.text.isEmpty) {
                     return items;
