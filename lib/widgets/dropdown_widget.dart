@@ -9,6 +9,7 @@ class UiDropdown extends StatefulWidget {
   final List<String> items;
   final String? value;
   final ValueChanged<String?>? onChanged;
+  final TextEditingController? controller;
   final String? hint;
   final String? label;
   final String? errorText;
@@ -21,6 +22,7 @@ class UiDropdown extends StatefulWidget {
     required this.items,
     this.value,
     this.onChanged,
+    this.controller,
     this.hint,
     this.label,
     this.errorText,
@@ -36,11 +38,14 @@ class UiDropdown extends StatefulWidget {
 class _UiDropdownState extends State<UiDropdown> {
   late TextEditingController _controller;
   late FocusNode _focusNode;
+  late bool _ownsController;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.value ?? '');
+    _ownsController = widget.controller == null;
+    _controller = widget.controller ??
+        TextEditingController(text: widget.value ?? '');
     _focusNode = FocusNode();
     _controller.addListener(_onTextChanged);
   }
@@ -55,7 +60,16 @@ class _UiDropdownState extends State<UiDropdown> {
   @override
   void didUpdateWidget(UiDropdown oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.value != widget.value) {
+    if (widget.controller != oldWidget.controller) {
+      _controller.removeListener(_onTextChanged);
+      if (_ownsController) {
+        _controller.dispose();
+      }
+      _ownsController = widget.controller == null;
+      _controller = widget.controller ??
+          TextEditingController(text: widget.value ?? '');
+      _controller.addListener(_onTextChanged);
+    } else if (oldWidget.value != widget.value) {
       _controller.text = widget.value ?? '';
     }
   }
@@ -63,7 +77,9 @@ class _UiDropdownState extends State<UiDropdown> {
   @override
   void dispose() {
     _controller.removeListener(_onTextChanged);
-    _controller.dispose();
+    if (_ownsController) {
+      _controller.dispose();
+    }
     _focusNode.dispose();
     super.dispose();
   }
