@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:iatros_uikit/iatros_ui_kit.dart';
 
 enum TypeUser { MEDICAL_STAFF, PATIENT }
@@ -32,6 +33,19 @@ class UserModel {
   final bool isDeleted;
   final bool isActive;
   final bool isRoot;
+  
+  // Nuevos campos agregados
+  final TimeOfDay? timeOfBirth;
+  final String? myCountryCode;
+  final String? countryName;
+  final String? departmentCode;
+  final String? departmentName;
+  final String? cityCode;
+  final String? cityName;
+  final String? residenceArea;
+  final String? healthAdministratorCode;
+  final String? healthAdministratorName;
+  
 
   UserModel({
     this.id,
@@ -63,6 +77,16 @@ class UserModel {
     this.dateOfBirth,
     this.gender,
     this.bloodType,
+    this.timeOfBirth,
+    this.myCountryCode,
+    this.countryName,
+    this.departmentCode,
+    this.departmentName,
+    this.cityCode,
+    this.cityName,
+    this.residenceArea,
+    this.healthAdministratorCode,
+    this.healthAdministratorName,
   });
 
   UserModel copyWith({
@@ -95,6 +119,16 @@ class UserModel {
     bool? isDeleted,
     bool? isActive,
     bool? isRoot,
+    TimeOfDay? timeOfBirth,
+    String? myCountryCode,
+    String? countryName,
+    String? departmentCode,
+    String? departmentName,
+    String? cityCode,
+    String? cityName,
+    String? residenceArea,
+    String? healthAdministratorCode,
+    String? healthAdministratorName,
   }) => UserModel(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -126,6 +160,16 @@ class UserModel {
     isDeleted: isDeleted ?? this.isDeleted,
     isActive: isActive ?? this.isActive,
     isRoot: isRoot ?? this.isRoot,
+    timeOfBirth: timeOfBirth ?? this.timeOfBirth,
+    myCountryCode: myCountryCode ?? this.myCountryCode,
+    countryName: countryName ?? this.countryName,
+    departmentCode: departmentCode ?? this.departmentCode,
+    departmentName: departmentName ?? this.departmentName,
+    cityCode: cityCode ?? this.cityCode,
+    cityName: cityName ?? this.cityName,
+    residenceArea: residenceArea ?? this.residenceArea,
+    healthAdministratorCode: healthAdministratorCode ?? this.healthAdministratorCode,
+    healthAdministratorName: healthAdministratorName ?? this.healthAdministratorName,
   );
 
   factory UserModel.fromJson(json) => UserModel(
@@ -137,8 +181,8 @@ class UserModel {
     imageUrl: json["image_url"] ?? "",
     lastName: json["last_name"] ?? "",
     latitude: json["latitude"]?.toDouble(),
-    countryCode: json["country_code"] ?? "",
     longitude: json["longitude"]?.toDouble(),
+    countryCode: json["country_code"] ?? "",
     specialization: json["specialization"] ?? "",
     medicalLicense: json["medical_license"] ?? "",
     typeUser: _generateTypeUser(json["type_user"]),
@@ -158,6 +202,16 @@ class UserModel {
     isDeleted: json["is_deleted"] == true,
     isActive: json["is_active"] != false,
     isRoot: json["is_root"] == true,
+    timeOfBirth: json["time_of_birth"] != null ? _parseTimeOfDay(json["time_of_birth"]) : null,
+    myCountryCode: json["my_country_code"],
+    countryName: json["country_name"],
+    departmentCode: json["department_code"],
+    departmentName: json["department_name"],
+    cityCode: json["city_code"],
+    cityName: json["city_name"],
+    residenceArea: json["residence_area"],
+    healthAdministratorCode: json["health_administrator_code"],
+    healthAdministratorName: json["health_administrator_name"],
   );
 
   factory UserModel.init() => UserModel(
@@ -189,6 +243,16 @@ class UserModel {
     isDeleted: false,
     isActive: true,
     isRoot: false,
+    timeOfBirth: null,
+    myCountryCode: null,
+    countryName: null,
+    departmentCode: null,
+    departmentName: null,
+    cityCode: null,
+    cityName: null,
+    residenceArea: null,
+    healthAdministratorCode: null,
+    healthAdministratorName: null,
   );
 
   Map<String, dynamic> toJson() {
@@ -234,6 +298,36 @@ class UserModel {
     if (longitude != null) {
       data["longitude"] = longitude;
     }
+    if (timeOfBirth != null) {
+      data["time_of_birth"] = _formatTimeOfDay(timeOfBirth!);
+    }
+    if (myCountryCode != null) {
+      data["my_country_code"] = myCountryCode;
+    }
+    if (countryName != null) {
+      data["country_name"] = countryName;
+    }
+    if (departmentCode != null) {
+      data["department_code"] = departmentCode;
+    }
+    if (departmentName != null) {
+      data["department_name"] = departmentName;
+    }
+    if (cityCode != null) {
+      data["city_code"] = cityCode;
+    }
+    if (cityName != null) {
+      data["city_name"] = cityName;
+    }
+    if (residenceArea != null) {
+      data["residence_area"] = residenceArea;
+    }
+    if (healthAdministratorCode != null) {
+      data["health_administrator_code"] = healthAdministratorCode;
+    }
+    if (healthAdministratorName != null) {
+      data["health_administrator_name"] = healthAdministratorName;
+    }
 
     return data;
   }
@@ -266,7 +360,17 @@ class UserModel {
       professionalBiography == other.professionalBiography &&
       isDeleted == other.isDeleted &&
       isActive == other.isActive &&
-      isRoot == other.isRoot;
+      isRoot == other.isRoot &&
+      timeOfBirth == other.timeOfBirth &&
+      myCountryCode == other.myCountryCode &&
+      countryName == other.countryName &&
+      departmentCode == other.departmentCode &&
+      departmentName == other.departmentName &&
+      cityCode == other.cityCode &&
+      cityName == other.cityName &&
+      residenceArea == other.residenceArea &&
+      healthAdministratorCode == other.healthAdministratorCode &&
+      healthAdministratorName == other.healthAdministratorName;
   }
 }
 
@@ -292,4 +396,32 @@ Gender _generateGender(String? text) {
     default:
       return Gender.other;
   }
+}
+
+/// Parsea un string en formato "HH:mm" a TimeOfDay
+/// Formato esperado: "09:30", "14:45", "23:15"
+TimeOfDay? _parseTimeOfDay(String? timeString) {
+  if (timeString == null || timeString.isEmpty) return null;
+  
+  try {
+    final parts = timeString.split(':');
+    if (parts.length != 2) return null;
+    
+    final hour = int.parse(parts[0]);
+    final minute = int.parse(parts[1]);
+    
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return null;
+    
+    return TimeOfDay(hour: hour, minute: minute);
+  } catch (e) {
+    return null;
+  }
+}
+
+/// Formatea un TimeOfDay a string en formato "HH:mm"
+/// Ejemplo: TimeOfDay(hour: 9, minute: 30) -> "09:30"
+String _formatTimeOfDay(TimeOfDay time) {
+  final hour = time.hour.toString().padLeft(2, '0');
+  final minute = time.minute.toString().padLeft(2, '0');
+  return '$hour:$minute';
 }
