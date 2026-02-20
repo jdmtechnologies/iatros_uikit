@@ -1,9 +1,8 @@
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
 class DepartmentModel {
     final String tabla;
-    final int codigo;
+    final String codigo;
     final String nombre;
     final dynamic descripcion;
     final String habilitado;
@@ -32,7 +31,7 @@ class DepartmentModel {
 
     DepartmentModel copyWith({
         String? tabla,
-        int? codigo,
+        String? codigo,
         String? nombre,
         dynamic descripcion,
         String? habilitado,
