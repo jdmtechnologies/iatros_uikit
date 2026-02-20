@@ -5,12 +5,12 @@ import 'package:iatros_uikit/utils/spacing.dart';
 import 'package:iatros_uikit/models/input_type.dart';
 
 /// Dropdown genérico con búsqueda/filtro. Accesible vía IatrosUi.widget.inputs.dropdown.
-class UiDropdown extends StatelessWidget {
+/// El FocusNode se maneja internamente: al enfocarse otro widget se cierran las opciones.
+class UiDropdown extends StatefulWidget {
   final List<String> items;
   final String? value;
   final ValueChanged<String?>? onChanged;
   final TextEditingController controller;
-  final FocusNode focusNode;
   final String? hint;
   final String? label;
   final String? errorText;
@@ -22,7 +22,6 @@ class UiDropdown extends StatelessWidget {
     super.key,
     required this.items,
     required this.controller,
-    required this.focusNode,
     this.value,
     this.onChanged,
     this.hint,
@@ -33,37 +32,56 @@ class UiDropdown extends StatelessWidget {
     this.width,
   });
 
-  void _clearText(ValueChanged<String?>? onChanged) {
-    controller.clear();
-    onChanged?.call(null);
+  @override
+  State<UiDropdown> createState() => _UiDropdownState();
+}
+
+class _UiDropdownState extends State<UiDropdown> {
+  late FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _clearText() {
+    widget.controller.clear();
+    widget.onChanged?.call(null);
   }
 
   @override
   Widget build(BuildContext context) {
     // Sincronizar value externo con el controller cuando el padre lo cambia
-    if (value != null && value != controller.text) {
+    if (widget.value != null && widget.value != widget.controller.text) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        controller.text = value!;
+        widget.controller.text = widget.value!;
       });
     }
 
-    final textColor = type == InputType.dark
+    final textColor = widget.type == InputType.dark
         ? AppColors.textPrimary
         : AppColors.white;
-    final labelColor = type == InputType.dark
+    final labelColor = widget.type == InputType.dark
         ? AppColors.black
         : AppColors.white;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (label != null) ...[
+        if (widget.label != null) ...[
           RichText(
             text: TextSpan(
-              text: label,
+              text: widget.label,
               style: AppTypography.label.copyWith(color: labelColor),
               children: [
-                if (isRequired)
+                if (widget.isRequired)
                   const TextSpan(
                     text: ' *',
                     style: TextStyle(color: AppColors.error),
@@ -74,10 +92,10 @@ class UiDropdown extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
         ],
         Container(
-          width: width ?? 250,
+          width: widget.width ?? 250,
           decoration: BoxDecoration(
             border: Border.all(
-              color: errorText != null ? AppColors.error : AppColors.gray300,
+              color: widget.errorText != null ? AppColors.error : AppColors.gray300,
             ),
             borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
             color: AppColors.surface,
@@ -85,19 +103,20 @@ class UiDropdown extends StatelessWidget {
           child: StatefulBuilder(
             builder: (context, setState) {
               return Autocomplete<String>(
-                textEditingController: controller,
-                focusNode: focusNode,
+                textEditingController: widget.controller,
+                focusNode: _focusNode,
                 optionsBuilder: (TextEditingValue value) {
                   if (value.text.isEmpty) {
-                    return items;
+                    return widget.items;
                   }
-                  return items.where((item) =>
+                  return widget.items.where((item) =>
                       item.toLowerCase().contains(value.text.toLowerCase()));
                 },
                 onSelected: (String selection) {
-                  controller.text = selection;
-                  onChanged?.call(selection);
+                  widget.controller.text = selection;
+                  widget.onChanged?.call(selection);
                   setState(() {});
+                  _focusNode.unfocus(); // Quitar focus al seleccionar
                 },
                 fieldViewBuilder: (
                   context,
@@ -111,7 +130,7 @@ class UiDropdown extends StatelessWidget {
                       style: AppTypography.bodyMedium.copyWith(color: textColor),
                       onChanged: (_) => setState(() {}),
                       decoration: InputDecoration(
-                        hintText: hint ?? 'Buscar o seleccionar...',
+                        hintText: widget.hint ?? 'Buscar o seleccionar...',
                         hintStyle: AppTypography.bodyMedium.copyWith(
                           color: AppColors.textSecondary,
                         ),
@@ -120,7 +139,7 @@ class UiDropdown extends StatelessWidget {
                           horizontal: AppSpacing.paddingSM,
                           vertical: 12,
                         ),
-                        suffixIcon: controller.text.isEmpty
+                        suffixIcon: widget.controller.text.isEmpty
                             ? Icon(
                                 Icons.keyboard_arrow_down,
                                 color: AppColors.textSecondary,
@@ -129,7 +148,7 @@ class UiDropdown extends StatelessWidget {
                                 icon: const Icon(Icons.close),
                                 color: AppColors.textSecondary,
                                 onPressed: () {
-                                  _clearText(onChanged);
+                                  _clearText();
                                   setState(() {});
                                 },
                                 tooltip: 'Limpiar',
@@ -145,7 +164,7 @@ class UiDropdown extends StatelessWidget {
                           BorderRadius.circular(AppSpacing.radiusMD),
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
-                          maxWidth: width ?? 250,
+                          maxWidth: widget.width ?? 250,
                           maxHeight: 200,
                         ),
                         child: ListView.builder(
@@ -180,10 +199,10 @@ class UiDropdown extends StatelessWidget {
             },
           ),
         ),
-        if (errorText != null) ...[
+        if (widget.errorText != null) ...[
           const SizedBox(height: AppSpacing.xs),
           Text(
-            errorText!,
+            widget.errorText!,
             style: AppTypography.caption.copyWith(color: AppColors.error),
           ),
         ],
