@@ -48,7 +48,6 @@ class _UiDropdownState extends State<UiDropdown> {
   void initState() {
     super.initState();
     widget.controller.addListener(_onControllerChanged);
-    _focusNode.addListener(_onFocusChange);
   }
 
   @override
