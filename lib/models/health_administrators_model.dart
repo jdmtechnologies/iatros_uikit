@@ -23,8 +23,13 @@ class HealthAdministratorsModel {
     String toRawJson() => json.encode(toJson());
 
     factory HealthAdministratorsModel.fromJson(Map<String, dynamic> json) => HealthAdministratorsModel(
-        codigo: json["Codigo"],
-        nombre: json["Nombre"],
+        codigo: json["Codigo"] ?? "",
+        nombre: json["Nombre"] ?? "",
+    );
+    
+    factory HealthAdministratorsModel.init() => HealthAdministratorsModel(
+        codigo: "",
+        nombre: "",
     );
 
     Map<String, dynamic> toJson() => {
