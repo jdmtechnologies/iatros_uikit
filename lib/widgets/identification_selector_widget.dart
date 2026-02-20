@@ -62,7 +62,7 @@ class UiIdentificationSelector extends StatelessWidget {
         Row(
           children: [
             Container(
-              width: 220,
+              width: 250,
               height: 45,
               decoration: BoxDecoration(
                 border: Border.all(
