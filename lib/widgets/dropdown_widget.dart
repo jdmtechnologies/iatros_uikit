@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:iatros_uikit/utils/ui_color.dart';
 import 'package:iatros_uikit/utils/text_style.dart';
@@ -6,11 +5,11 @@ import 'package:iatros_uikit/utils/spacing.dart';
 import 'package:iatros_uikit/models/input_type.dart';
 
 /// Dropdown genérico con búsqueda/filtro. Accesible vía IatrosUi.widget.inputs.dropdown.
-class UiDropdown extends StatefulWidget {
+class UiDropdown extends StatelessWidget {
   final List<String> items;
   final String? value;
   final ValueChanged<String?>? onChanged;
-  final TextEditingController? controller;
+  final TextEditingController controller;
   final String? hint;
   final String? label;
   final String? errorText;
@@ -21,9 +20,9 @@ class UiDropdown extends StatefulWidget {
   const UiDropdown({
     super.key,
     required this.items,
+    required this.controller,
     this.value,
     this.onChanged,
-    this.controller,
     this.hint,
     this.label,
     this.errorText,
@@ -32,91 +31,37 @@ class UiDropdown extends StatefulWidget {
     this.width,
   });
 
-  @override
-  State<UiDropdown> createState() => _UiDropdownState();
-}
-
-class _UiDropdownState extends State<UiDropdown> {
-  late TextEditingController _controller;
-  late FocusNode _focusNode;
-  late bool _ownsController;
-
-  @override
-  void initState() {
-    super.initState();
-    _ownsController = widget.controller == null;
-    _controller = widget.controller ??
-        TextEditingController(text: widget.value ?? '');
-    _focusNode = FocusNode();
-    _controller.addListener(_onTextChanged);
-  }
-
-  void _onTextChanged() => setState(() {});
-
-  void _clearText() {
-    _controller.clear();
-    widget.onChanged?.call(null);
-  }
-
-  @override
-  void didUpdateWidget(UiDropdown oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.controller != oldWidget.controller) {
-      _controller.removeListener(_onTextChanged);
-      if (_ownsController) {
-        _controller.dispose();
-      }
-      _ownsController = widget.controller == null;
-      _controller = widget.controller ??
-          TextEditingController(text: widget.value ?? '');
-      _controller.addListener(_onTextChanged);
-    } else {
-      final currentValue = _controller.text;
-      final itemsChanged = !listEquals(oldWidget.items, widget.items);
-      final valueChanged = oldWidget.value != widget.value;
-
-      if (valueChanged) {
-        _controller.text = widget.value ?? '';
-      } else if (itemsChanged && currentValue.isNotEmpty) {
-        // Cuando cambian los items (ej: nuevo departamento), limpiar si el valor
-        // actual ya no está en la nueva lista
-        if (!widget.items.contains(currentValue)) {
-          _controller.clear();
-          widget.onChanged?.call(null);
-        }
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.removeListener(_onTextChanged);
-    if (_ownsController) {
-      _controller.dispose();
-    }
-    _focusNode.dispose();
-    super.dispose();
+  void _clearText(ValueChanged<String?>? onChanged) {
+    controller.clear();
+    onChanged?.call(null);
   }
 
   @override
   Widget build(BuildContext context) {
-    final textColor = widget.type == InputType.dark
+    // Sincronizar value externo con el controller cuando el padre lo cambia
+    if (value != null && value != controller.text) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.text = value!;
+      });
+    }
+
+    final textColor = type == InputType.dark
         ? AppColors.textPrimary
         : AppColors.white;
-    final labelColor = widget.type == InputType.dark
+    final labelColor = type == InputType.dark
         ? AppColors.black
         : AppColors.white;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (widget.label != null) ...[
+        if (label != null) ...[
           RichText(
             text: TextSpan(
-              text: widget.label,
+              text: label,
               style: AppTypography.label.copyWith(color: labelColor),
               children: [
-                if (widget.isRequired)
+                if (isRequired)
                   const TextSpan(
                     text: ' *',
                     style: TextStyle(color: AppColors.error),
@@ -127,106 +72,115 @@ class _UiDropdownState extends State<UiDropdown> {
           const SizedBox(height: AppSpacing.sm),
         ],
         Container(
-          width: widget.width ?? 250,
+          width: width ?? 250,
           decoration: BoxDecoration(
             border: Border.all(
-              color: widget.errorText != null ? AppColors.error : AppColors.gray300,
+              color: errorText != null ? AppColors.error : AppColors.gray300,
             ),
             borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
             color: AppColors.surface,
           ),
-          child: Autocomplete<String>(
-            textEditingController: _controller,
-            focusNode: _focusNode,
-            optionsBuilder: (TextEditingValue value) {
-              if (value.text.isEmpty) {
-                return widget.items;
-              }
-              return widget.items.where((item) =>
-                  item.toLowerCase().contains(value.text.toLowerCase()));
-            },
-            onSelected: (String selection) {
-              _controller.text = selection;
-              widget.onChanged?.call(selection);
-            },
-            fieldViewBuilder: (
-              context,
-              textEditingController,
-              focusNode,
-              onFieldSubmitted,
-            ) =>
-              TextField(
-                controller: textEditingController,
-                focusNode: focusNode,
-                style: AppTypography.bodyMedium.copyWith(color: textColor),
-                decoration: InputDecoration(
-                  hintText: widget.hint ?? 'Buscar o seleccionar...',
-                  hintStyle: AppTypography.bodyMedium.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.paddingSM,
-                    vertical: 12,
-                  ),
-                  suffixIcon: _controller.text.isEmpty
-                      ? Icon(
-                          Icons.keyboard_arrow_down,
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return Autocomplete<String>(
+                textEditingController: controller,
+                optionsBuilder: (TextEditingValue value) {
+                  if (value.text.isEmpty) {
+                    return items;
+                  }
+                  return items.where((item) =>
+                      item.toLowerCase().contains(value.text.toLowerCase()));
+                },
+                onSelected: (String selection) {
+                  controller.text = selection;
+                  onChanged?.call(selection);
+                  setState(() {});
+                },
+                fieldViewBuilder: (
+                  context,
+                  textEditingController,
+                  focusNode,
+                  onFieldSubmitted,
+                ) =>
+                    TextField(
+                      controller: textEditingController,
+                      focusNode: focusNode,
+                      style: AppTypography.bodyMedium.copyWith(color: textColor),
+                      onChanged: (_) => setState(() {}),
+                      decoration: InputDecoration(
+                        hintText: hint ?? 'Buscar o seleccionar...',
+                        hintStyle: AppTypography.bodyMedium.copyWith(
                           color: AppColors.textSecondary,
-                        )
-                      : IconButton(
-                          icon: const Icon(Icons.close),
-                          color: AppColors.textSecondary,
-                          onPressed: _clearText,
-                          tooltip: 'Limpiar',
                         ),
-                ),
-              ),
-            optionsViewBuilder: (context, onSelected, options) {
-              return Align(
-                alignment: Alignment.topLeft,
-                child: Material(
-                  elevation: 4,
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: widget.width ?? 250,
-                      maxHeight: 200,
-                    ),
-                    child: ListView.builder(
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      itemCount: options.length,
-                      itemBuilder: (context, index) {
-                        final option = options.elementAt(index);
-                        return InkWell(
-                          onTap: () => onSelected(option),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.paddingSM,
-                              vertical: 12,
-                            ),
-                            child: Text(
-                              option,
-                              style: AppTypography.bodyMedium.copyWith(
-                                color: AppColors.textPrimary,
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.paddingSM,
+                          vertical: 12,
+                        ),
+                        suffixIcon: controller.text.isEmpty
+                            ? Icon(
+                                Icons.keyboard_arrow_down,
+                                color: AppColors.textSecondary,
+                              )
+                            : IconButton(
+                                icon: const Icon(Icons.close),
+                                color: AppColors.textSecondary,
+                                onPressed: () {
+                                  _clearText(onChanged);
+                                  setState(() {});
+                                },
+                                tooltip: 'Limpiar',
                               ),
-                            ),
-                          ),
-                        );
-                      },
+                      ),
                     ),
-                  ),
-                ),
+                optionsViewBuilder: (context, onSelected, options) {
+                  return Align(
+                    alignment: Alignment.topLeft,
+                    child: Material(
+                      elevation: 4,
+                      borderRadius:
+                          BorderRadius.circular(AppSpacing.radiusMD),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: width ?? 250,
+                          maxHeight: 200,
+                        ),
+                        child: ListView.builder(
+                          padding: EdgeInsets.zero,
+                          shrinkWrap: true,
+                          itemCount: options.length,
+                          itemBuilder: (context, index) {
+                            final option = options.elementAt(index);
+                            return InkWell(
+                              onTap: () => onSelected(option),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.paddingSM,
+                                  vertical: 12,
+                                ),
+                                child: Text(
+                                  option,
+                                  style: AppTypography.bodyMedium.copyWith(
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                displayStringForOption: (option) => option,
               );
             },
-            displayStringForOption: (option) => option,
           ),
         ),
-        if (widget.errorText != null) ...[
+        if (errorText != null) ...[
           const SizedBox(height: AppSpacing.xs),
           Text(
-            widget.errorText!,
+            errorText!,
             style: AppTypography.caption.copyWith(color: AppColors.error),
           ),
         ],

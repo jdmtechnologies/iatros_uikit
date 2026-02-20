@@ -187,9 +187,9 @@ class UiInputs {
   Widget dropdown({
     Key? key,
     required List<String> items,
+    required TextEditingController controller,
     String? value,
     ValueChanged<String?>? onChanged,
-    TextEditingController? controller,
     String? hint,
     String? label,
     String? errorText,
