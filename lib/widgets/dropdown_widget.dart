@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:iatros_uikit/utils/ui_color.dart';
 import 'package:iatros_uikit/utils/text_style.dart';
@@ -69,8 +70,21 @@ class _UiDropdownState extends State<UiDropdown> {
       _controller = widget.controller ??
           TextEditingController(text: widget.value ?? '');
       _controller.addListener(_onTextChanged);
-    } else if (oldWidget.value != widget.value) {
-      _controller.text = widget.value ?? '';
+    } else {
+      final currentValue = _controller.text;
+      final itemsChanged = !listEquals(oldWidget.items, widget.items);
+      final valueChanged = oldWidget.value != widget.value;
+
+      if (valueChanged) {
+        _controller.text = widget.value ?? '';
+      } else if (itemsChanged && currentValue.isNotEmpty) {
+        // Cuando cambian los items (ej: nuevo departamento), limpiar si el valor
+        // actual ya no está en la nueva lista
+        if (!widget.items.contains(currentValue)) {
+          _controller.clear();
+          widget.onChanged?.call(null);
+        }
+      }
     }
   }
 
