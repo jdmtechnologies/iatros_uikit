@@ -14,6 +14,9 @@ export 'models/medical_specialization.dart';
 export 'models/index.dart';
 export 'models/suscription_settings_model.dart';
 export 'models/announcement_model.dart';
+export 'models/country_model.dart';
+export 'models/department_model.dart';
+export 'models/city_model.dart';
 
 // Extensiones
 export 'extension/context_extension.dart';
