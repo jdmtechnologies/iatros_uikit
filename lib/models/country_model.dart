@@ -2,7 +2,7 @@ import 'dart:convert';
 
 class CountryModel {
     final String tabla;
-    final String codigo;
+    final int codigo;
     final String nombre;
     final dynamic descripcion;
     final String habilitado;
@@ -31,7 +31,7 @@ class CountryModel {
 
     CountryModel copyWith({
         String? tabla,
-        String? codigo,
+        int? codigo,
         String? nombre,
         dynamic descripcion,
         String? habilitado,
