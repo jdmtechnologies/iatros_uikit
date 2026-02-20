@@ -1,13 +1,14 @@
 import 'dart:convert';
 
 class DepartmentModel {
+    final int country;
     final String tabla;
     final String codigo;
     final String nombre;
-    final dynamic descripcion;
     final String habilitado;
     final dynamic aplicacion;
     final bool isStandardGel;
+    final dynamic descripcion;
     final bool isStandardMsps;
     final dynamic valorRegistro;
     final dynamic usuarioResponsable;
@@ -18,6 +19,7 @@ class DepartmentModel {
         required this.tabla,
         required this.codigo,
         required this.nombre,
+        required this.country,
         required this.descripcion,
         required this.habilitado,
         required this.aplicacion,
@@ -30,6 +32,7 @@ class DepartmentModel {
     });
 
     DepartmentModel copyWith({
+        int? country,
         String? tabla,
         String? codigo,
         String? nombre,
@@ -44,6 +47,7 @@ class DepartmentModel {
         bool? isPublicPrivate,
     }) => 
         DepartmentModel(
+            country: country ?? this.country,
             tabla: tabla ?? this.tabla,
             codigo: codigo ?? this.codigo,
             nombre: nombre ?? this.nombre,
@@ -66,6 +70,7 @@ class DepartmentModel {
         tabla: json["Tabla"],
         codigo: json["Codigo"],
         nombre: json["Nombre"],
+        country: json["Country"],
         descripcion: json["Descripcion"],
         habilitado: json["Habilitado"],
         aplicacion: json["Aplicacion"],
@@ -81,6 +86,7 @@ class DepartmentModel {
         "Tabla": tabla,
         "Codigo": codigo,
         "Nombre": nombre,
+        "Country": country,
         "Descripcion": descripcion,
         "Habilitado": habilitado,
         "Aplicacion": aplicacion,
