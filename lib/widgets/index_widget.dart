@@ -18,6 +18,7 @@ import 'package:iatros_uikit/widgets/glassmorphism_card_widget.dart';
 import 'package:iatros_uikit/widgets/text_input_widget.dart';
 import 'package:iatros_uikit/widgets/password_input_widget.dart';
 import 'package:iatros_uikit/widgets/date_picker_input_widget.dart';
+import 'package:iatros_uikit/widgets/dropdown_widget.dart';
 import 'package:iatros_uikit/widgets/identification_selector_widget.dart';
 import 'package:iatros_uikit/widgets/gender_selector_widget.dart';
 import 'package:iatros_uikit/widgets/blood_type_selector_widget.dart';
@@ -183,6 +184,31 @@ class UiCards {
 }
 
 class UiInputs {
+  Widget dropdown({
+    Key? key,
+    required List<String> items,
+    String? value,
+    ValueChanged<String?>? onChanged,
+    String? hint,
+    String? label,
+    String? errorText,
+    bool isRequired = false,
+    InputType type = InputType.dark,
+    double? width,
+  }) =>
+      UiDropdown(
+        key: key,
+        items: items,
+        value: value,
+        onChanged: onChanged,
+        hint: hint,
+        label: label,
+        errorText: errorText,
+        isRequired: isRequired,
+        type: type,
+        width: width,
+      );
+
   Widget textInput({
     Key? key,
     String? hint,

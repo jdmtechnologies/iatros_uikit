@@ -39,6 +39,7 @@ export 'widgets/icon_button_widget.dart';
 export 'widgets/image_button_widget.dart';
 export 'widgets/base_card_widget.dart';
 export 'widgets/glassmorphism_card_widget.dart';
+export 'widgets/dropdown_widget.dart';
 export 'widgets/text_input_widget.dart';
 export 'widgets/password_input_widget.dart';
 export 'widgets/date_picker_input_widget.dart';
@@ -71,6 +72,7 @@ export 'widgets/index_widget.dart';
 /// IatrosUi.widget.backgrounds.medicalBackground
 /// IatrosUi.widget.buttons.primaryButton
 /// IatrosUi.widget.cards.baseCard
+/// IatrosUi.widget.inputs.dropdown
 /// IatrosUi.widget.inputs.textInput
 /// IatrosUi.widget.logo.iatrosLogo
 /// IatrosUi.widget.popUp.loadingOverlay
