@@ -9,12 +9,9 @@ class UserModel {
   final String phone;
   final String email;
   final Gender? gender;
-  final String address;
   final String imageUrl;
   final String lastName;
-  final double? latitude;
   final String middleName;
-  final double? longitude;
   final TypeUser typeUser;
   final DateTime updateAt;
   final String countryCode;
@@ -71,9 +68,6 @@ class UserModel {
     this.isDeleted = false,
     this.isActive = true,
     this.isRoot = false,
-    this.address = "",
-    this.latitude,
-    this.longitude,
     this.dateOfBirth,
     this.gender,
     this.bloodType,
@@ -110,9 +104,6 @@ class UserModel {
     String? professionalBiography,
     String? identificationType,
     String? identificationNumber,
-    String? address,
-    double? latitude,
-    double? longitude,
     DateTime? dateOfBirth,
     Gender? gender,
     BloodType? bloodType,
@@ -136,12 +127,9 @@ class UserModel {
     email: email ?? this.email,
     gender: gender ?? this.gender,
     imageUrl: imageUrl ?? this.imageUrl,
-    address: address ?? this.address,
-    latitude: latitude ?? this.latitude,
     updateAt: updateAt ?? this.updateAt,
     typeUser: typeUser ?? this.typeUser,
     lastName: lastName ?? this.lastName,
-    longitude: longitude ?? this.longitude,
     middleName: middleName ?? this.middleName,
     secondLastName: secondLastName ?? this.secondLastName,
     bloodType: bloodType ?? this.bloodType,
@@ -177,11 +165,8 @@ class UserModel {
     name: json["name"] ?? "",
     phone: json["phone"] ?? "",
     email: json["email"] ?? "",
-    address: json["address"] ?? "",
     imageUrl: json["image_url"] ?? "",
     lastName: json["last_name"] ?? "",
-    latitude: json["latitude"]?.toDouble(),
-    longitude: json["longitude"]?.toDouble(),
     countryCode: json["country_code"] ?? "",
     specialization: json["specialization"] ?? "",
     medicalLicense: json["medical_license"] ?? "",
@@ -218,14 +203,11 @@ class UserModel {
     name: "",
     email: "",
     phone: "",
-    address: "",
     imageUrl: "",
     lastName: "",
     middleName: "",
     secondLastName: "",
     gender: null,
-    latitude: null,
-    longitude: null,
     bloodType: null,
     countryCode: "",
     dateOfBirth: null,
@@ -261,7 +243,6 @@ class UserModel {
       "email": email,
       "phone": phone,
       "is_root": isRoot,
-      "address": address,
       "image_url": imageUrl,
       "last_name": lastName,
       "is_active": isActive,
@@ -291,12 +272,6 @@ class UserModel {
     }
     if (bloodType != null) {
       data["blood_type"] = bloodType!.value;
-    }
-    if (latitude != null) {
-      data["latitude"] = latitude;
-    }
-    if (longitude != null) {
-      data["longitude"] = longitude;
     }
     if (timeOfBirth != null) {
       data["time_of_birth"] = _formatTimeOfDay(timeOfBirth!);
@@ -338,13 +313,10 @@ class UserModel {
       phone == other.phone &&
       email == other.email &&
       gender == other.gender &&
-      address == other.address &&
       lastName == other.lastName &&
       typeUser == other.typeUser &&
       middleName == other.middleName &&
       secondLastName == other.secondLastName &&
-      latitude == other.latitude &&
-      longitude == other.longitude &&
       bloodType == other.bloodType &&
       countryCode == other.countryCode &&
       specialization == other.specialization &&

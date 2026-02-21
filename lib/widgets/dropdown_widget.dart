@@ -164,7 +164,6 @@ class _UiDropdownState extends State<UiDropdown> {
                   : ListView.builder(
                       padding: EdgeInsets.zero,
                       shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: items.length,
                       itemBuilder: (context, index) {
                         final option = items[index];
