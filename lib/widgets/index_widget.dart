@@ -348,9 +348,11 @@ class UiInputs {
     String? errorText,
     bool isRequired = false,
     InputType type = InputType.dark,
+    bool useColumnLayout = false,
   }) =>
       UiIdentificationSelector(
         key: key,
+        useColumnLayout: useColumnLayout,
         selectedTypeNotifier: selectedTypeNotifier,
         numberController: numberController,
         onTypeChanged: onTypeChanged,
