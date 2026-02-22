@@ -19,13 +19,10 @@ class UserModel {
   final BloodType? bloodType;
   final String secondLastName;
   final String specialization;
-  final String medicalLicense;
   final DateTime? dateOfBirth;
   final String identificationType;
-  final String professionalCardUrl;
   final String identityDocumentUrl;
   final String identificationNumber;
-  final String professionalBiography;
   final String identityDocumentBackUrl;
   final bool isDeleted;
   final bool isActive;
@@ -55,13 +52,10 @@ class UserModel {
     required this.updateAt,
     required this.createdAt,
     required this.countryCode,
-    required this.medicalLicense,
     required this.specialization,
     required this.identificationType,
-    required this.professionalCardUrl,
     required this.identityDocumentUrl,
     required this.identityDocumentBackUrl,
-    required this.professionalBiography,
     required this.identificationNumber,
     required this.secondLastName,
     required this.middleName,
@@ -95,13 +89,10 @@ class UserModel {
     String? countryCode,
     DateTime? createdAt,
     String? specialization,
-    String? medicalLicense,
-    String? professionalCardUrl,
     String? identityDocumentUrl,
     String? middleName,
     String? secondLastName,
     String? identityDocumentBackUrl,
-    String? professionalBiography,
     String? identificationType,
     String? identificationNumber,
     DateTime? dateOfBirth,
@@ -136,15 +127,12 @@ class UserModel {
     createdAt: createdAt ?? this.createdAt,
     countryCode: countryCode ?? this.countryCode,
     dateOfBirth: dateOfBirth ?? this.dateOfBirth,
-    medicalLicense: medicalLicense ?? this.medicalLicense,
     specialization: specialization ?? this.specialization,
     identificationType: identificationType ?? this.identificationType,
-    professionalCardUrl: professionalCardUrl ?? this.professionalCardUrl,
     identityDocumentUrl: identityDocumentUrl ?? this.identityDocumentUrl,
     identityDocumentBackUrl:
         identityDocumentBackUrl ?? this.identityDocumentBackUrl,
     identificationNumber: identificationNumber ?? this.identificationNumber,
-    professionalBiography: professionalBiography ?? this.professionalBiography,
     isDeleted: isDeleted ?? this.isDeleted,
     isActive: isActive ?? this.isActive,
     isRoot: isRoot ?? this.isRoot,
@@ -169,12 +157,9 @@ class UserModel {
     lastName: json["last_name"] ?? "",
     countryCode: json["country_code"] ?? "",
     specialization: json["specialization"] ?? "",
-    medicalLicense: json["medical_license"] ?? "",
     typeUser: _generateTypeUser(json["type_user"]),
     identificationType: json["identification_type"] ?? "",
-    professionalCardUrl: json["professional_card_url"] ?? "",
     identityDocumentUrl: json["identity_document_url"] ?? "",
-    professionalBiography: json["professional_biography"] ?? "",
     identificationNumber: json["identification_number"] ?? "",
     identityDocumentBackUrl: json["identity_document_back_url"] ?? "",
     middleName: json["middle_name"] ?? "",
@@ -212,14 +197,11 @@ class UserModel {
     countryCode: "",
     dateOfBirth: null,
     specialization: "",
-    medicalLicense: "",
     identificationType: "",
-    professionalCardUrl: "",
     identityDocumentUrl: "",
     updateAt: DateTime.now(),
     identificationNumber: "",
     createdAt: DateTime.now(),
-    professionalBiography: "",
     typeUser: TypeUser.PATIENT,
     identityDocumentBackUrl: "",
     isDeleted: false,
@@ -249,14 +231,11 @@ class UserModel {
       "is_deleted": isDeleted,
       "type_user": typeUser.name,
       "country_code": countryCode,
-      "medical_license": medicalLicense,
       "update_at": updateAt.toIso8601String(),
       "created_at": createdAt.toIso8601String(),
       "identification_type": identificationType,
-      "professional_card_url": professionalCardUrl,
       "identity_document_url": identityDocumentUrl,
       "identification_number": identificationNumber,
-      "professional_biography": professionalBiography,
       "identity_document_back_url": identityDocumentBackUrl,
       "specialization": specialization.isEmpty ? null : specialization,
       "middle_name": middleName,
@@ -320,16 +299,13 @@ class UserModel {
       bloodType == other.bloodType &&
       countryCode == other.countryCode &&
       specialization == other.specialization &&
-      medicalLicense == other.medicalLicense && 
       (dateOfBirth == null && other.dateOfBirth == null ||
         dateOfBirth != null && other.dateOfBirth != null &&
         dateOfBirth!.isAtSameMomentAs(other.dateOfBirth!)) &&
       identificationType == other.identificationType &&
-      professionalCardUrl == other.professionalCardUrl && 
       identityDocumentUrl == other.identityDocumentUrl &&
       identityDocumentBackUrl == other.identityDocumentBackUrl &&
       identificationNumber == other.identificationNumber &&
-      professionalBiography == other.professionalBiography &&
       isDeleted == other.isDeleted &&
       isActive == other.isActive &&
       isRoot == other.isRoot &&
