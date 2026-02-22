@@ -17,14 +17,14 @@ class UiIdentificationSelector extends StatelessWidget {
 
   const UiIdentificationSelector({
     super.key,
-    this.selectedTypeNotifier,
-    this.numberController,
+    this.errorText,
     this.onTypeChanged,
     this.onNumberChanged,
-    this.errorText,
+    this.numberController,
     this.isRequired = false,
-    this.useColumnLayout = false,
+    this.selectedTypeNotifier,
     this.type = InputType.dark,
+    this.useColumnLayout = false,
   });
 
   static final List<String> _identificationTypes = [
