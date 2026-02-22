@@ -12,6 +12,7 @@ class UiIdentificationSelector extends StatelessWidget {
   final ValueChanged<String>? onNumberChanged;
   final String? errorText;
   final bool isRequired;
+  final bool useColumnLayout;
   final InputType type;
 
   const UiIdentificationSelector({
@@ -22,6 +23,7 @@ class UiIdentificationSelector extends StatelessWidget {
     this.onNumberChanged,
     this.errorText,
     this.isRequired = false,
+    this.useColumnLayout = false,
     this.type = InputType.dark,
   });
 
@@ -37,6 +39,94 @@ class UiIdentificationSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final typeNotifier = selectedTypeNotifier ?? ValueNotifier<String?>(null);
+    final typeSelector = Container(
+      width: useColumnLayout ? double.infinity : 250,
+      height: 45,
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: errorText != null ? AppColors.error : AppColors.gray300,
+        ),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+        color: AppColors.surface,
+      ),
+      child: ValueListenableBuilder<String?>(
+        valueListenable: typeNotifier,
+        builder: (context, selectedType, child) {
+          return DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: selectedType,
+              hint: const Text('Tipo'),
+              items: _identificationTypes.map((type) {
+                return DropdownMenuItem<String>(
+                  value: type,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.paddingSM,
+                    ),
+                    child: Text(type),
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                typeNotifier.value = value;
+                onTypeChanged?.call(value);
+              },
+              style: AppTypography.bodyMedium,
+              icon: const Icon(Icons.keyboard_arrow_down),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.paddingSM,
+              ),
+              isExpanded: true,
+            ),
+          );
+        },
+      ),
+    );
+    final numberField = TextFormField(
+      controller: numberController,
+      style: AppTypography.bodyMedium,
+      maxLength: 12,
+      decoration: InputDecoration(
+        counter: const SizedBox.shrink(),
+        hintText: 'Número de identificación',
+        filled: true,
+        fillColor: AppColors.surface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+          borderSide: const BorderSide(color: AppColors.gray300),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+          borderSide: const BorderSide(color: AppColors.gray300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+          borderSide: const BorderSide(
+            color: AppColors.primary,
+            width: 2,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+          borderSide: const BorderSide(color: AppColors.error),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+          borderSide: const BorderSide(
+            color: AppColors.error,
+            width: 2,
+          ),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.paddingMD,
+          vertical: AppSpacing.paddingMD,
+        ),
+      ),
+      keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      showCursor: true,
+      onChanged: onNumberChanged,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,102 +149,18 @@ class UiIdentificationSelector extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
-        Row(
-          children: [
-            Container(
-              width: 250,
-              height: 45,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color:
-                      errorText != null ? AppColors.error : AppColors.gray300,
-                ),
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
-                color: AppColors.surface,
-              ),
-              child: ValueListenableBuilder<String?>(
-                valueListenable: typeNotifier,
-                builder: (context, selectedType, child) {
-                  return DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: selectedType,
-                      hint: const Text('Tipo'),
-                      items: _identificationTypes.map((type) {
-                        return DropdownMenuItem<String>(
-                          value: type,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.paddingSM,
-                            ),
-                            child: Text(type),
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        typeNotifier.value = value;
-                        onTypeChanged?.call(value);
-                      },
-                      style: AppTypography.bodyMedium,
-                      icon: const Icon(Icons.keyboard_arrow_down),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.paddingSM,
-                      ),
-                      isExpanded: true,
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: TextFormField(
-                controller: numberController,
-                style: AppTypography.bodyMedium,
-                maxLength: 12,
-                decoration: InputDecoration(
-                  counter: const SizedBox.shrink(),
-                  hintText: 'Número de identificación',
-                  filled: true,
-                  fillColor: AppColors.surface,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
-                    borderSide: const BorderSide(color: AppColors.gray300),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
-                    borderSide: const BorderSide(color: AppColors.gray300),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
-                    borderSide: const BorderSide(
-                      color: AppColors.primary,
-                      width: 2,
-                    ),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
-                    borderSide: const BorderSide(color: AppColors.error),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
-                    borderSide: const BorderSide(
-                      color: AppColors.error,
-                      width: 2,
-                    ),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.paddingMD,
-                    vertical: AppSpacing.paddingMD,
-                  ),
-                ),
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                showCursor: true,
-                onChanged: onNumberChanged,
-              ),
-            ),
-          ],
-        ),
+        if (useColumnLayout) ...[
+          typeSelector,
+          const SizedBox(height: AppSpacing.sm),
+          numberField,
+        ] else
+          Row(
+            children: [
+              typeSelector,
+              const SizedBox(width: AppSpacing.md),
+              Expanded(child: numberField),
+            ],
+          ),
         if (errorText != null) ...[
           const SizedBox(height: AppSpacing.xs),
           Text(
