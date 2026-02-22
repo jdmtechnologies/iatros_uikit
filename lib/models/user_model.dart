@@ -39,7 +39,7 @@ class UserModel {
   final String? residenceArea;
   final String? healthAdministratorCode;
   final String? healthAdministratorName;
-  final String? signatureDocument;
+  final String signatureDocumentUrl;
   
 
   UserModel({
@@ -76,7 +76,7 @@ class UserModel {
     this.residenceArea,
     this.healthAdministratorCode,
     this.healthAdministratorName,
-    this.signatureDocument,
+    required this.signatureDocumentUrl,
   });
 
   UserModel copyWith({
@@ -113,7 +113,7 @@ class UserModel {
     String? residenceArea,
     String? healthAdministratorCode,
     String? healthAdministratorName,
-    String? signatureDocument,
+    String? signatureDocumentUrl,
   }) => UserModel(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -149,7 +149,7 @@ class UserModel {
     residenceArea: residenceArea ?? this.residenceArea,
     healthAdministratorCode: healthAdministratorCode ?? this.healthAdministratorCode,
     healthAdministratorName: healthAdministratorName ?? this.healthAdministratorName,
-    signatureDocument: signatureDocument ?? this.signatureDocument,
+    signatureDocumentUrl: signatureDocumentUrl ?? this.signatureDocumentUrl,
   );
 
   factory UserModel.fromJson(json) => UserModel(
@@ -186,7 +186,7 @@ class UserModel {
     residenceArea: json["residence_area"],
     healthAdministratorCode: json["health_administrator_code"],
     healthAdministratorName: json["health_administrator_name"],
-    signatureDocument: json["signature_document"],
+    signatureDocumentUrl: json["signature_document_url"] ?? "",
   );
 
   factory UserModel.init() => UserModel(
@@ -222,7 +222,7 @@ class UserModel {
     residenceArea: null,
     healthAdministratorCode: null,
     healthAdministratorName: null,
-    signatureDocument: null,
+    signatureDocumentUrl: "",
   );
 
   Map<String, dynamic> toJson() {
@@ -237,6 +237,7 @@ class UserModel {
       "is_deleted": isDeleted,
       "type_user": typeUser.name,
       "country_code": countryCode,
+      "signature_document_url": signatureDocumentUrl,
       "update_at": updateAt.toIso8601String(),
       "created_at": createdAt.toIso8601String(),
       "identification_type": identificationType,
@@ -288,8 +289,8 @@ class UserModel {
     if (healthAdministratorName != null) {
       data["health_administrator_name"] = healthAdministratorName;
     }
-    if (signatureDocument != null) {
-      data["signature_document"] = signatureDocument;
+    if (signatureDocumentUrl.isNotEmpty) {
+      data["signature_document_url"] = signatureDocumentUrl;
     }
 
     return data;
@@ -328,7 +329,7 @@ class UserModel {
       residenceArea == other.residenceArea &&
       healthAdministratorCode == other.healthAdministratorCode &&
       healthAdministratorName == other.healthAdministratorName &&
-      signatureDocument == other.signatureDocument;
+      signatureDocumentUrl == other.signatureDocumentUrl;
   }
 }
 
