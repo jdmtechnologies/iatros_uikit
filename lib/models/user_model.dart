@@ -39,6 +39,7 @@ class UserModel {
   final String? residenceArea;
   final String? healthAdministratorCode;
   final String? healthAdministratorName;
+  final String? signatureDocument;
   
 
   UserModel({
@@ -75,6 +76,7 @@ class UserModel {
     this.residenceArea,
     this.healthAdministratorCode,
     this.healthAdministratorName,
+    this.signatureDocument,
   });
 
   UserModel copyWith({
@@ -111,6 +113,7 @@ class UserModel {
     String? residenceArea,
     String? healthAdministratorCode,
     String? healthAdministratorName,
+    String? signatureDocument,
   }) => UserModel(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -146,6 +149,7 @@ class UserModel {
     residenceArea: residenceArea ?? this.residenceArea,
     healthAdministratorCode: healthAdministratorCode ?? this.healthAdministratorCode,
     healthAdministratorName: healthAdministratorName ?? this.healthAdministratorName,
+    signatureDocument: signatureDocument ?? this.signatureDocument,
   );
 
   factory UserModel.fromJson(json) => UserModel(
@@ -182,6 +186,7 @@ class UserModel {
     residenceArea: json["residence_area"],
     healthAdministratorCode: json["health_administrator_code"],
     healthAdministratorName: json["health_administrator_name"],
+    signatureDocument: json["signature_document"],
   );
 
   factory UserModel.init() => UserModel(
@@ -217,6 +222,7 @@ class UserModel {
     residenceArea: null,
     healthAdministratorCode: null,
     healthAdministratorName: null,
+    signatureDocument: null,
   );
 
   Map<String, dynamic> toJson() {
@@ -282,6 +288,9 @@ class UserModel {
     if (healthAdministratorName != null) {
       data["health_administrator_name"] = healthAdministratorName;
     }
+    if (signatureDocument != null) {
+      data["signature_document"] = signatureDocument;
+    }
 
     return data;
   }
@@ -318,7 +327,8 @@ class UserModel {
       cityName == other.cityName &&
       residenceArea == other.residenceArea &&
       healthAdministratorCode == other.healthAdministratorCode &&
-      healthAdministratorName == other.healthAdministratorName;
+      healthAdministratorName == other.healthAdministratorName &&
+      signatureDocument == other.signatureDocument;
   }
 }
 
