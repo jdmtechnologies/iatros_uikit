@@ -151,7 +151,7 @@ class UiIdentificationSelector extends StatelessWidget {
         const SizedBox(height: AppSpacing.sm),
         if (useColumnLayout) ...[
           typeSelector,
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: AppSpacing.lg),
           numberField,
         ] else
           Row(
