@@ -119,7 +119,7 @@ class _UserSearchInputState extends ConsumerState<UserSearchInput> {
   }
 
   void _selectUser(UserModel user) {
-    _controller.text = user.medicalLicense;
+    _controller.text = user.identificationNumber;
     setState(() {
       _showResults = false;
     });
@@ -242,10 +242,10 @@ class _UserSearchResultItem extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  if (user.medicalLicense.isNotEmpty) ...[
+                  if (user.identificationNumber.isNotEmpty) ...[
                     UIHelpers.verticalSpaceXS,
                     Text(
-                      'Documento: ${user.medicalLicense}',
+                      'Documento: ${user.identificationNumber}',
                       style: AppTypography.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
