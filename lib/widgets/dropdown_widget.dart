@@ -201,12 +201,9 @@ class _UiDropdownState extends State<UiDropdown> {
       });
     }
 
-    final textColor = widget.type == InputType.dark
-        ? AppColors.textPrimary
-        : AppColors.white;
-    final labelColor = widget.type == InputType.dark
-        ? AppColors.black
-        : AppColors.white;
+    final textColor = AppColors.textPrimary;
+    final labelColor =
+        widget.type == InputType.dark ? AppColors.black : AppColors.white;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
