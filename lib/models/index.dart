@@ -1,6 +1,7 @@
 import 'package:iatros_uikit/models/input_type.dart';
 import 'package:iatros_uikit/models/gender_type.dart';
 import 'package:iatros_uikit/models/blood_type.dart';
+import 'package:iatros_uikit/models/biological_sex_type.dart';
 
 /// Agrupa todos los modelos y tipos del paquete.
 class Models {
@@ -14,4 +15,5 @@ class Models {
   /// Enums y tipos expuestos para uso externo.
   Type get genderType => Gender;
   Type get bloodType => BloodType;
+  Type get biologicalSexType => BiologicalSexType;
 }

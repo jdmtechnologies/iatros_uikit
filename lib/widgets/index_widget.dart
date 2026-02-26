@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iatros_uikit/components/inputs/address_autocomplete_input.dart';
+import 'package:iatros_uikit/components/inputs/biological_sex_selector.dart';
 import 'package:iatros_uikit/components/inputs/resizable_input.dart';
 import 'package:iatros_uikit/components/inputs/specialization_selector.dart';
+import 'package:iatros_uikit/models/biological_sex_type.dart';
 import 'package:iatros_uikit/models/blood_type.dart';
 import 'package:iatros_uikit/models/gender_type.dart';
 import 'package:iatros_uikit/models/input_type.dart';
@@ -373,6 +375,23 @@ class UiInputs {
       UiGenderSelector(
         key: key,
         selectedGenderNotifier: selectedGenderNotifier,
+        onChanged: onChanged,
+        errorText: errorText,
+        isRequired: isRequired,
+        type: type,
+      );
+
+  Widget biologicalSexSelector({
+    Key? key,
+    ValueNotifier<BiologicalSexType?>? selectedBiologicalSexNotifier,
+    ValueChanged<BiologicalSexType?>? onChanged,
+    String? errorText,
+    bool isRequired = false,
+    InputType type = InputType.dark,
+  }) =>
+      BiologicalSexSelector(
+        key: key,
+        selectedBiologicalSexNotifier: selectedBiologicalSexNotifier,
         onChanged: onChanged,
         errorText: errorText,
         isRequired: isRequired,

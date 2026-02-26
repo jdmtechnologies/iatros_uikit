@@ -9,6 +9,7 @@ import 'package:iatros_uikit/widgets/index_widget.dart';
 // Models y tipos (para uso externo)
 export 'models/input_type.dart';
 export 'models/gender_type.dart';
+export 'models/biological_sex_type.dart';
 export 'models/blood_type.dart';
 export 'models/medical_specialization.dart';
 export 'models/index.dart';
