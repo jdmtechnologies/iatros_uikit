@@ -23,6 +23,7 @@ class UserModel {
   final String identificationType;
   final String identityDocumentUrl;
   final String identificationNumber;
+  final BiologicalSexType? biologicalSex;
   final String identityDocumentBackUrl;
   final bool isDeleted;
   final bool isActive;
@@ -65,6 +66,7 @@ class UserModel {
     this.isRoot = false,
     this.dateOfBirth,
     this.gender,
+    this.biologicalSex,
     this.bloodType,
     this.timeOfBirth,
     this.myCountryCode,
@@ -99,6 +101,7 @@ class UserModel {
     String? identificationNumber,
     DateTime? dateOfBirth,
     Gender? gender,
+    BiologicalSexType? biologicalSex,
     BloodType? bloodType,
     bool? isDeleted,
     bool? isActive,
@@ -120,6 +123,7 @@ class UserModel {
     phone: phone ?? this.phone,
     email: email ?? this.email,
     gender: gender ?? this.gender,
+    biologicalSex: biologicalSex ?? this.biologicalSex,
     imageUrl: imageUrl ?? this.imageUrl,
     updateAt: updateAt ?? this.updateAt,
     typeUser: typeUser ?? this.typeUser,
@@ -169,6 +173,9 @@ class UserModel {
     middleName: json["middle_name"] ?? "",
     secondLastName: json["second_last_name"] ?? "",
     gender: json["gender"] != null ? _generateGender(json["gender"]) : null,
+    biologicalSex: json["biological_sex"] != null
+        ? _generateBiologicalSexType(json["biological_sex"])
+        : null,
     bloodType: json["blood_type"] != null ? bloodTypeFromString(json["blood_type"]) : null,
     updateAt: json["update_at"] != null ? DateTime.parse(json["update_at"]): DateTime.now(),
     dateOfBirth: json["date_of_birth"] != null ? DateTime.parse(json["date_of_birth"]) : null,
@@ -198,6 +205,7 @@ class UserModel {
     middleName: "",
     secondLastName: "",
     gender: null,
+    biologicalSex: null,
     bloodType: null,
     countryCode: "",
     dateOfBirth: null,
@@ -256,6 +264,9 @@ class UserModel {
     if (gender != null) {
       data["gender"] = gender!.name;
     }
+    if (biologicalSex != null) {
+      data["biological_sex"] = biologicalSex!.name;
+    }
     if (bloodType != null) {
       data["blood_type"] = bloodType!.value;
     }
@@ -302,6 +313,7 @@ class UserModel {
       phone == other.phone &&
       email == other.email &&
       gender == other.gender &&
+      biologicalSex == other.biologicalSex &&
       lastName == other.lastName &&
       typeUser == other.typeUser &&
       middleName == other.middleName &&
@@ -354,6 +366,26 @@ Gender _generateGender(String? text) {
       return Gender.other;
     default:
       return Gender.other;
+  }
+}
+
+BiologicalSexType _generateBiologicalSexType(String? text) {
+  switch (text?.toLowerCase()) {
+    case 'male':
+    case 'hombre':
+      return BiologicalSexType.male;
+    case 'female':
+    case 'mujer':
+      return BiologicalSexType.female;
+    case 'intersex':
+    case 'indeterminate':
+    case 'indeterminate_or_intersex':
+    case 'indeterminateorintersex':
+    case 'indeterminado':
+    case 'indeterminado o intersexual':
+      return BiologicalSexType.indeterminateOrIntersex;
+    default:
+      return BiologicalSexType.indeterminateOrIntersex;
   }
 }
 
