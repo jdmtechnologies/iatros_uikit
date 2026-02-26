@@ -125,7 +125,8 @@ class _UiDropdownState extends State<UiDropdown> {
   Widget _buildOverlay() {
     final items = _getFilteredItems();
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
-    final size = box?.size ?? Size(widget.width ?? 250, 48);
+    final availableWidth = MediaQuery.sizeOf(context).width;
+    final size = box?.size ?? Size(widget.width ?? availableWidth, 48);
     final position = box != null ? box.localToGlobal(Offset.zero) : Offset.zero;
 
     return Stack(
@@ -142,13 +143,13 @@ class _UiDropdownState extends State<UiDropdown> {
         Positioned(
           left: position.dx,
           top: position.dy + size.height + 4,
-          width: widget.width ?? 250,
+          width: size.width,
           child: Material(
             elevation: 4,
             borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                maxWidth: widget.width ?? 250,
+                maxWidth: size.width,
                 maxHeight: 200,
               ),
               child: items.isEmpty
@@ -226,7 +227,7 @@ class _UiDropdownState extends State<UiDropdown> {
         ],
         Container(
           key: _fieldKey,
-          width: widget.width ?? 250,
+          width: widget.width ?? double.infinity,
           decoration: BoxDecoration(
             border: Border.all(
               color: widget.errorText != null
