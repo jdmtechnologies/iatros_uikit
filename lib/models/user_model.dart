@@ -32,6 +32,7 @@ class UserModel {
   // Nuevos campos agregados
   final TimeOfDay? timeOfBirth;
   final String? myCountryCode;
+  final String? countryOfNationality;
   final String? countryName;
   final String? departmentCode;
   final String? departmentName;
@@ -70,6 +71,7 @@ class UserModel {
     this.bloodType,
     this.timeOfBirth,
     this.myCountryCode,
+    this.countryOfNationality,
     this.countryName,
     this.departmentCode,
     this.departmentName,
@@ -108,6 +110,7 @@ class UserModel {
     bool? isRoot,
     TimeOfDay? timeOfBirth,
     String? myCountryCode,
+    String? countryOfNationality,
     String? countryName,
     String? departmentCode,
     String? departmentName,
@@ -145,6 +148,7 @@ class UserModel {
     isRoot: isRoot ?? this.isRoot,
     timeOfBirth: timeOfBirth ?? this.timeOfBirth,
     myCountryCode: myCountryCode ?? this.myCountryCode,
+    countryOfNationality: countryOfNationality ?? this.countryOfNationality,
     countryName: countryName ?? this.countryName,
     departmentCode: departmentCode ?? this.departmentCode,
     departmentName: departmentName ?? this.departmentName,
@@ -185,6 +189,7 @@ class UserModel {
     isRoot: json["is_root"] == true,
     timeOfBirth: json["time_of_birth"] != null ? _parseTimeOfDay(json["time_of_birth"]) : null,
     myCountryCode: json["my_country_code"],
+    countryOfNationality: json["country_of_nationality"],
     countryName: json["country_name"],
     departmentCode: json["department_code"],
     departmentName: json["department_name"],
@@ -222,6 +227,7 @@ class UserModel {
     isRoot: false,
     timeOfBirth: null,
     myCountryCode: null,
+    countryOfNationality: null,
     countryName: null,
     departmentCode: null,
     departmentName: null,
@@ -275,6 +281,9 @@ class UserModel {
     }
     if (myCountryCode != null) {
       data["my_country_code"] = myCountryCode;
+    }
+    if (countryOfNationality != null) {
+      data["country_of_nationality"] = countryOfNationality;
     }
     if (countryName != null) {
       data["country_name"] = countryName;
@@ -333,6 +342,7 @@ class UserModel {
       isRoot == other.isRoot &&
       timeOfBirth == other.timeOfBirth &&
       myCountryCode == other.myCountryCode &&
+      countryOfNationality == other.countryOfNationality &&
       countryName == other.countryName &&
       departmentCode == other.departmentCode &&
       departmentName == other.departmentName &&
