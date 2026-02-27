@@ -349,6 +349,7 @@ class UiInputs {
     ValueChanged<String>? onNumberChanged,
     String? errorText,
     bool isRequired = false,
+    bool readOnly = false,
     InputType type = InputType.dark,
     bool useColumnLayout = false,
   }) =>
@@ -361,6 +362,7 @@ class UiInputs {
         onNumberChanged: onNumberChanged,
         errorText: errorText,
         isRequired: isRequired,
+        readOnly: readOnly,
         type: type,
       );
 

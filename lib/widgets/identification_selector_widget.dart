@@ -12,6 +12,7 @@ class UiIdentificationSelector extends StatelessWidget {
   final ValueChanged<String>? onNumberChanged;
   final String? errorText;
   final bool isRequired;
+  final bool readOnly;
   final bool useColumnLayout;
   final InputType type;
 
@@ -22,6 +23,7 @@ class UiIdentificationSelector extends StatelessWidget {
     this.onNumberChanged,
     this.numberController,
     this.isRequired = false,
+    this.readOnly = false,
     this.selectedTypeNotifier,
     this.type = InputType.dark,
     this.useColumnLayout = false,
@@ -67,10 +69,12 @@ class UiIdentificationSelector extends StatelessWidget {
                   ),
                 );
               }).toList(),
-              onChanged: (value) {
-                typeNotifier.value = value;
-                onTypeChanged?.call(value);
-              },
+              onChanged: readOnly
+                  ? null
+                  : (value) {
+                      typeNotifier.value = value;
+                      onTypeChanged?.call(value);
+                    },
               style: AppTypography.bodyMedium,
               icon: const Icon(Icons.keyboard_arrow_down),
               padding: const EdgeInsets.symmetric(
@@ -85,6 +89,7 @@ class UiIdentificationSelector extends StatelessWidget {
     final numberField = TextFormField(
       controller: numberController,
       style: AppTypography.bodyMedium,
+      readOnly: readOnly,
       maxLength: 12,
       decoration: InputDecoration(
         counter: const SizedBox.shrink(),
@@ -124,8 +129,8 @@ class UiIdentificationSelector extends StatelessWidget {
       ),
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      showCursor: true,
-      onChanged: onNumberChanged,
+      showCursor: !readOnly,
+      onChanged: readOnly ? null : onNumberChanged,
     );
 
     return Column(

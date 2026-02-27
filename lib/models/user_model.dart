@@ -270,7 +270,6 @@ class UserModel {
       "second_last_name": secondLastName,
     };
 
-    if (id != null) data["id"] = id!;
     if (dateOfBirth != null) {
       data["date_of_birth"] = dateOfBirth!.toIso8601String();
     }
