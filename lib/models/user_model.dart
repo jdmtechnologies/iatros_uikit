@@ -321,6 +321,9 @@ class UserModel {
     if (signatureDocumentUrl.isNotEmpty) {
       data["signature_document_url"] = signatureDocumentUrl;
     }
+    if (id != null && id!.isNotEmpty) {
+      data["id"] = id;
+    }
 
     return data;
   }
