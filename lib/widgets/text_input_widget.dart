@@ -5,11 +5,20 @@ import 'package:iatros_uikit/utils/ui_color.dart';
 import 'package:iatros_uikit/utils/text_style.dart';
 import 'package:iatros_uikit/models/input_type.dart';
 
+/// Oculta el texto mostrando solo los últimos [visibleDigits] caracteres.
 String _maskTextWithLastDigits(String text, {int visibleDigits = 3}) {
   if (text.isEmpty) return '';
   if (text.length <= visibleDigits) return text;
   final lastChars = text.substring(text.length - visibleDigits);
   return '•' * (text.length - visibleDigits) + lastChars;
+}
+
+/// Oculta el texto mostrando solo los primeros [visibleDigits] caracteres.
+String _maskTextWithFirstDigits(String text, {int visibleDigits = 3}) {
+  if (text.isEmpty) return '';
+  if (text.length <= visibleDigits) return text;
+  final firstChars = text.substring(0, visibleDigits);
+  return firstChars + '•' * (text.length - visibleDigits);
 }
 
 class UiTextInput extends StatefulWidget {
@@ -26,6 +35,8 @@ class UiTextInput extends StatefulWidget {
   final Widget? suffixIcon;
   final VoidCallback? onTap;
   final bool semiObscureText;
+  final bool semiObscureTextStart;
+  final bool semiObscureTextEnd;
   final TextInputType? keyboardType;
   final ValueChanged<String>? onChanged;
   final Iterable<String>? autofillHints;
@@ -53,6 +64,8 @@ class UiTextInput extends StatefulWidget {
     this.isRequired = false,
     this.obscureText = false,
     this.semiObscureText = false,
+    this.semiObscureTextStart = false,
+    this.semiObscureTextEnd = false,
     this.type = InputType.dark,
   });
 
@@ -64,12 +77,22 @@ class _UiTextInputState extends State<UiTextInput> {
   late TextEditingController _displayController;
   bool _isDisplayControllerAttached = false;
 
+  bool get _useSemiObscure =>
+      widget.semiObscureText ||
+      widget.semiObscureTextStart ||
+      widget.semiObscureTextEnd;
+
+  bool get _showStart => widget.semiObscureTextStart;
+
+  String _maskText(String text) =>
+      _showStart ? _maskTextWithFirstDigits(text) : _maskTextWithLastDigits(text);
+
   @override
   void initState() {
     super.initState();
-    if (widget.semiObscureText && widget.controller != null) {
+    if (_useSemiObscure && widget.controller != null) {
       _displayController = TextEditingController(
-        text: _maskTextWithLastDigits(widget.controller!.text),
+        text: _maskText(widget.controller!.text),
       );
       _isDisplayControllerAttached = true;
       widget.controller!.addListener(_syncDisplayController);
@@ -78,9 +101,9 @@ class _UiTextInputState extends State<UiTextInput> {
 
   void _syncDisplayController() {
     if (_isDisplayControllerAttached &&
-        widget.semiObscureText &&
+        _useSemiObscure &&
         widget.controller != null) {
-      _displayController.text = _maskTextWithLastDigits(widget.controller!.text);
+      _displayController.text = _maskText(widget.controller!.text);
       _displayController.selection = TextSelection.collapsed(
         offset: _displayController.text.length,
       );
@@ -99,10 +122,10 @@ class _UiTextInputState extends State<UiTextInput> {
   @override
   void didUpdateWidget(covariant UiTextInput oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.semiObscureText && widget.controller != null) {
+    if (_useSemiObscure && widget.controller != null) {
       if (!_isDisplayControllerAttached) {
         _displayController = TextEditingController(
-          text: _maskTextWithLastDigits(widget.controller!.text),
+          text: _maskText(widget.controller!.text),
         );
         _isDisplayControllerAttached = true;
         widget.controller!.addListener(_syncDisplayController);
@@ -124,7 +147,7 @@ class _UiTextInputState extends State<UiTextInput> {
             ? const <String>[AutofillHints.email]
             : null);
 
-    final useSemiObscure = widget.semiObscureText;
+    final useSemiObscure = _useSemiObscure;
     final effectiveReadOnly = widget.isReadOnly || useSemiObscure;
     final effectiveController = useSemiObscure && _isDisplayControllerAttached
         ? _displayController

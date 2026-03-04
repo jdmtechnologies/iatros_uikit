@@ -230,6 +230,8 @@ class UiInputs {
     bool isReadOnly = false,
     bool obscureText = false,
     bool semiObscureText = false,
+    bool semiObscureTextStart = false,
+    bool semiObscureTextEnd = false,
     TextInputType? keyboardType,
     ValueChanged<String>? onChanged,
     Iterable<String>? autofillHints,
@@ -258,6 +260,8 @@ class UiInputs {
         keyboardType: keyboardType,
         autofillHints: autofillHints,
         semiObscureText: semiObscureText,
+        semiObscureTextStart: semiObscureTextStart,
+        semiObscureTextEnd: semiObscureTextEnd,
         inputFormatters: inputFormatters,
       );
 
