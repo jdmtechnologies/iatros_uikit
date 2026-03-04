@@ -11,6 +11,7 @@ class UiPasswordInput extends StatefulWidget {
   final TextEditingController? controller;
   final ValueChanged<String>? onChanged;
   final String? Function(String?)? validator;
+  final Iterable<String>? autofillHints;
 
   const UiPasswordInput({
     super.key,
@@ -20,6 +21,7 @@ class UiPasswordInput extends StatefulWidget {
     this.onChanged,
     this.validator,
     this.controller,
+    this.autofillHints,
     this.isRequired = false,
     this.type = InputType.light,
   });
@@ -44,6 +46,7 @@ class _UiPasswordInputState extends State<UiPasswordInput> {
       controller: widget.controller,
       isRequired: widget.isRequired,
       keyboardType: TextInputType.visiblePassword,
+      autofillHints: widget.autofillHints,
       suffixIcon: IconButton(
         icon: Icon(
           _obscureText ? Icons.visibility_off : Icons.visibility,

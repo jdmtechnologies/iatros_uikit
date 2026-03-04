@@ -23,6 +23,7 @@ class UiTextInput extends StatelessWidget {
   final TextEditingController? controller;
   final String? Function(String?)? validator;
   final List<TextInputFormatter>? inputFormatters;
+  final Iterable<String>? autofillHints;
 
   const UiTextInput({
     super.key,
@@ -39,6 +40,7 @@ class UiTextInput extends StatelessWidget {
     this.keyboardType,
     this.maxLines = 1,
     this.inputFormatters,
+    this.autofillHints,
     this.isReadOnly = false,
     this.isRequired = false,
     this.obscureText = false,
@@ -47,6 +49,12 @@ class UiTextInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveAutofillHints =
+        autofillHints ??
+        (keyboardType == TextInputType.emailAddress
+            ? const <String>[AutofillHints.email]
+            : null);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -81,6 +89,7 @@ class UiTextInput extends StatelessWidget {
           obscureText: obscureText,
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
+          autofillHints: effectiveAutofillHints,
           style: AppTypography.bodyMedium,
           decoration: InputDecoration(
             hintText: hint,

@@ -235,6 +235,7 @@ class UiInputs {
     TextEditingController? controller,
     String? Function(String?)? validator,
     List<TextInputFormatter>? inputFormatters,
+    Iterable<String>? autofillHints,
   }) =>
       UiTextInput(
         key: key,
@@ -255,6 +256,7 @@ class UiInputs {
         controller: controller,
         validator: validator,
         inputFormatters: inputFormatters,
+        autofillHints: autofillHints,
       );
 
   Widget passwordInput({
@@ -267,6 +269,7 @@ class UiInputs {
     TextEditingController? controller,
     ValueChanged<String>? onChanged,
     String? Function(String?)? validator,
+    Iterable<String>? autofillHints,
   }) =>
       UiPasswordInput(
         key: key,
@@ -278,6 +281,7 @@ class UiInputs {
         controller: controller,
         onChanged: onChanged,
         validator: validator,
+        autofillHints: autofillHints,
       );
 
   Widget resizableInput({
