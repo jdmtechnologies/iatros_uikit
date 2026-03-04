@@ -6,7 +6,7 @@ import 'package:iatros_uikit/utils/text_style.dart';
 import 'package:iatros_uikit/models/input_type.dart';
 
 /// Oculta el texto mostrando solo los últimos [visibleDigits] caracteres.
-String _maskTextWithLastDigits(String text, {int visibleDigits = 3}) {
+String _maskTextWithLastDigits(String text, {int visibleDigits = 4}) {
   if (text.isEmpty) return '';
   if (text.length <= visibleDigits) return text;
   final lastChars = text.substring(text.length - visibleDigits);
@@ -14,7 +14,7 @@ String _maskTextWithLastDigits(String text, {int visibleDigits = 3}) {
 }
 
 /// Oculta el texto mostrando solo los primeros [visibleDigits] caracteres.
-String _maskTextWithFirstDigits(String text, {int visibleDigits = 3}) {
+String _maskTextWithFirstDigits(String text, {int visibleDigits = 4}) {
   if (text.isEmpty) return '';
   if (text.length <= visibleDigits) return text;
   final firstChars = text.substring(0, visibleDigits);
