@@ -5,7 +5,14 @@ import 'package:iatros_uikit/utils/text_style.dart';
 import 'package:iatros_uikit/utils/spacing.dart';
 import 'package:iatros_uikit/models/input_type.dart';
 
-class UiTextInput extends StatelessWidget {
+String _maskTextWithLastDigits(String text, {int visibleDigits = 3}) {
+  if (text.isEmpty) return '';
+  if (text.length <= visibleDigits) return text;
+  final lastChars = text.substring(text.length - visibleDigits);
+  return '•' * (text.length - visibleDigits) + lastChars;
+}
+
+class UiTextInput extends StatefulWidget {
   final String? hint;
   final String? label;
   final int? maxLines;
@@ -18,12 +25,13 @@ class UiTextInput extends StatelessWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final VoidCallback? onTap;
+  final bool semiObscureText;
   final TextInputType? keyboardType;
   final ValueChanged<String>? onChanged;
+  final Iterable<String>? autofillHints;
   final TextEditingController? controller;
   final String? Function(String?)? validator;
   final List<TextInputFormatter>? inputFormatters;
-  final Iterable<String>? autofillHints;
 
   const UiTextInput({
     super.key,
@@ -44,31 +52,98 @@ class UiTextInput extends StatelessWidget {
     this.isReadOnly = false,
     this.isRequired = false,
     this.obscureText = false,
+    this.semiObscureText = false,
     this.type = InputType.dark,
   });
 
   @override
+  State<UiTextInput> createState() => _UiTextInputState();
+}
+
+class _UiTextInputState extends State<UiTextInput> {
+  late TextEditingController _displayController;
+  bool _isDisplayControllerAttached = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.semiObscureText && widget.controller != null) {
+      _displayController = TextEditingController(
+        text: _maskTextWithLastDigits(widget.controller!.text),
+      );
+      _isDisplayControllerAttached = true;
+      widget.controller!.addListener(_syncDisplayController);
+    }
+  }
+
+  void _syncDisplayController() {
+    if (_isDisplayControllerAttached &&
+        widget.semiObscureText &&
+        widget.controller != null) {
+      _displayController.text = _maskTextWithLastDigits(widget.controller!.text);
+      _displayController.selection = TextSelection.collapsed(
+        offset: _displayController.text.length,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_isDisplayControllerAttached && widget.controller != null) {
+      widget.controller!.removeListener(_syncDisplayController);
+      _displayController.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant UiTextInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.semiObscureText && widget.controller != null) {
+      if (!_isDisplayControllerAttached) {
+        _displayController = TextEditingController(
+          text: _maskTextWithLastDigits(widget.controller!.text),
+        );
+        _isDisplayControllerAttached = true;
+        widget.controller!.addListener(_syncDisplayController);
+      } else {
+        _syncDisplayController();
+      }
+    } else if (_isDisplayControllerAttached) {
+      widget.controller?.removeListener(_syncDisplayController);
+      _displayController.dispose();
+      _isDisplayControllerAttached = false;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final effectiveAutofillHints =
-        autofillHints ??
-        (keyboardType == TextInputType.emailAddress
+        widget.autofillHints ??
+        (widget.keyboardType == TextInputType.emailAddress
             ? const <String>[AutofillHints.email]
             : null);
+
+    final useSemiObscure = widget.semiObscureText;
+    final effectiveReadOnly = widget.isReadOnly || useSemiObscure;
+    final effectiveController = useSemiObscure && _isDisplayControllerAttached
+        ? _displayController
+        : widget.controller;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (label != null) ...[
+        if (widget.label != null) ...[
           RichText(
             text: TextSpan(
-              text: label,
+              text: widget.label,
               style: AppTypography.label.copyWith(
-                color: type == InputType.dark
+                color: widget.type == InputType.dark
                     ? AppColors.black
                     : AppColors.white,
               ),
               children: [
-                if (isRequired)
+                if (widget.isRequired)
                   const TextSpan(
                     text: ' *',
                     style: TextStyle(color: AppColors.error),
@@ -79,25 +154,25 @@ class UiTextInput extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
         ],
         TextFormField(
-          onTap: onTap,
-          maxLines: maxLines,
-          onChanged: onChanged,
-          validator: validator,
-          maxLength: maxLength,
-          readOnly: isReadOnly,
-          controller: controller,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          inputFormatters: inputFormatters,
+          onTap: widget.onTap,
+          maxLines: widget.maxLines,
+          onChanged: useSemiObscure ? null : widget.onChanged,
+          validator: widget.validator,
+          maxLength: widget.maxLength,
+          readOnly: effectiveReadOnly,
+          controller: effectiveController,
+          obscureText: useSemiObscure ? false : widget.obscureText,
+          keyboardType: widget.keyboardType,
+          inputFormatters: useSemiObscure ? null : widget.inputFormatters,
           autofillHints: effectiveAutofillHints,
           style: AppTypography.bodyMedium,
           decoration: InputDecoration(
-            hintText: hint,
-            errorText: errorText,
-            prefixIcon: prefixIcon,
-            suffixIcon: suffixIcon,
+            hintText: widget.hint,
+            errorText: widget.errorText,
+            prefixIcon: widget.prefixIcon,
+            suffixIcon: widget.suffixIcon,
             filled: true,
-            fillColor: isReadOnly ? AppColors.gray50 : AppColors.surface,
+            fillColor: effectiveReadOnly ? AppColors.gray50 : AppColors.surface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
               borderSide: const BorderSide(color: AppColors.gray300),
