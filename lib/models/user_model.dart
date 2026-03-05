@@ -428,22 +428,37 @@ BiologicalSexType _generateBiologicalSexType(String? text) {
   }
 }
 
-/// Parsea un string en formato "HH:mm" a TimeOfDay
-/// Formato esperado: "09:30", "14:45", "23:15"
-TimeOfDay? _parseTimeOfDay(String? timeString) {
-  if (timeString == null || timeString.isEmpty) return null;
+/// Parsea un string a TimeOfDay.
+/// Acepta: "HH:mm", "HH:mm:ss", "HH:mm:ss.SSS", "THH:mm" (ISO), o strings con espacios.
+TimeOfDay? _parseTimeOfDay(dynamic timeString) {
+  if (timeString == null) return null;
+  final str = timeString is String ? timeString : timeString.toString();
+  if (str.isEmpty) return null;
+
+  final trimmed = str.trim();
+  if (trimmed.isEmpty) return null;
 
   try {
-    final parts = timeString.split(':');
-    if (parts.length != 2) return null;
+    // Extraer solo la parte de hora si viene en formato ISO (ej: "1970-01-01T09:30:00")
+    String timePart = trimmed;
+    if (trimmed.contains('T')) {
+      final tIndex = trimmed.indexOf('T');
+      timePart = trimmed.substring(tIndex + 1);
+    }
+    // Quitar segundos/milisegundos si existen (ej: "09:30:00" o "09:30:00.000")
+    timePart = timePart.split('.')[0];
 
-    final hour = int.parse(parts[0]);
-    final minute = int.parse(parts[1]);
+    final parts = timePart.split(':');
+    if (parts.length < 2) return null;
 
+    final hour = int.tryParse(parts[0].trim());
+    final minute = int.tryParse(parts[1].trim());
+
+    if (hour == null || minute == null) return null;
     if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return null;
 
     return TimeOfDay(hour: hour, minute: minute);
-  } catch (e) {
+  } catch (_) {
     return null;
   }
 }
