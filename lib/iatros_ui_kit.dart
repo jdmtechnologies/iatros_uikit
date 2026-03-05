@@ -19,6 +19,8 @@ export 'models/country_model.dart';
 export 'models/department_model.dart';
 export 'models/city_model.dart';
 export 'models/health_administrators_model.dart';
+export 'models/user_model.dart';
+export 'models/user_record_model.dart';
 
 // Extensiones
 export 'extension/context_extension.dart';
