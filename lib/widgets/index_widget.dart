@@ -516,6 +516,7 @@ class UiInputs {
     bool isMultiselect = true,
     String? errorText,
     Future<void> Function(String)? onSearch,
+    Column? children,
   }) =>
       UiMultiSelectDropdown<T>(
         key: key,
@@ -526,6 +527,7 @@ class UiInputs {
         displayText: displayText,
         onChanged: onChanged,
         isRequired: isRequired,
+        children: children,
         isMultiselect: isMultiselect,
         errorText: errorText,
         onSearch: onSearch,
