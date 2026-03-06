@@ -15,9 +15,7 @@ class UiMultiSelectDropdown<T> extends StatefulWidget {
   final String Function(T) displayText;
   final ValueChanged<List<T>> onChanged;
   final Future<void> Function(String)? onSearch;
-  /// Column que se muestra bajo el texto de cada ítem seleccionado.
-  /// Si no es vacío, ocupa todo el ancho del ítem.
-  final Column? children;
+  final Widget Function(T)? children;
 
   const UiMultiSelectDropdown({
     super.key,
@@ -133,8 +131,7 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
           UIHelpers.verticalSpaceSM,
           Column(
             children: widget.selectedItems.map((item) {
-              final hasChildren = widget.children != null &&
-                  widget.children!.children.isNotEmpty;
+              final hasChildren = widget.children != null;
 
               return Container(
                 width: double.infinity,
@@ -179,7 +176,7 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
                       const SizedBox(height: AppSpacing.sm),
                       SizedBox(
                         width: double.infinity,
-                        child: widget.children!,
+                        child: widget.children!(item),
                       ),
                     ],
                   ],

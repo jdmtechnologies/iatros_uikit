@@ -532,7 +532,7 @@ class UiInputs {
     bool isMultiselect = true,
     String? errorText,
     Future<void> Function(String)? onSearch,
-    Column? children,
+    Widget Function(T)? children,
   }) =>
       UiMultiSelectDropdown<T>(
         key: key,
