@@ -28,6 +28,7 @@ import 'package:iatros_uikit/widgets/blood_type_selector_widget.dart';
 import 'package:iatros_uikit/widgets/image_picker_input_widget.dart';
 import 'package:iatros_uikit/widgets/file_picker_input_widget.dart';
 import 'package:iatros_uikit/widgets/multi_select_dropdown_widget.dart';
+import 'package:iatros_uikit/widgets/checkbox_input_widget.dart';
 import 'package:iatros_uikit/widgets/iatros_logo_widget.dart';
 import 'package:iatros_uikit/widgets/medical_background_widget.dart';
 import 'package:iatros_uikit/widgets/simple_medical_background_widget.dart';
@@ -502,6 +503,21 @@ class UiInputs {
         searchAddressWeb: searchAddressWeb,
         onAddressSelected: onAddressSelected,
         onPlaceDetailsSelected: onPlaceDetailsSelected,
+      );
+
+  Widget checkboxInput({
+    Key? key,
+    required String label,
+    required bool value,
+    ValueChanged<bool?>? onChanged,
+    bool tristate = false,
+  }) =>
+      UiCheckboxInput(
+        key: key,
+        label: label,
+        value: value,
+        onChanged: onChanged,
+        tristate: tristate,
       );
 
   Widget multiSelectDropdown<T>({

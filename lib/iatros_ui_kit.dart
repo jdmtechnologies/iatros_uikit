@@ -57,6 +57,7 @@ export 'widgets/blood_type_selector_widget.dart';
 export 'widgets/image_picker_input_widget.dart';
 export 'widgets/file_picker_input_widget.dart';
 export 'widgets/multi_select_dropdown_widget.dart';
+export 'widgets/checkbox_input_widget.dart';
 export 'widgets/iatros_logo_widget.dart';
 export 'widgets/medical_background_widget.dart';
 export 'widgets/simple_medical_background_widget.dart';
