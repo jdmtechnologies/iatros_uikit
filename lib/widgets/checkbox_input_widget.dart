@@ -30,7 +30,7 @@ class UiCheckboxInput extends StatelessWidget {
           horizontal: AppSpacing.xs,
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Checkbox(
               value: value,
@@ -42,14 +42,11 @@ class UiCheckboxInput extends StatelessWidget {
             ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: Text(
-                  label,
-                  style: AppTypography.bodyMedium.copyWith(
-                    color: value ? AppColors.primary : AppColors.textPrimary,
-                    fontWeight: value ? FontWeight.w600 : FontWeight.normal,
-                  ),
+              child: Text(
+                label,
+                style: AppTypography.bodyMedium.copyWith(
+                  color: value ? AppColors.primary : AppColors.textPrimary,
+                  fontWeight: value ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
             ),
