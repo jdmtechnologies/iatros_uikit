@@ -15,6 +15,9 @@ class UiMultiSelectDropdown<T> extends StatefulWidget {
   final String Function(T) displayText;
   final ValueChanged<List<T>> onChanged;
   final Future<void> Function(String)? onSearch;
+  /// Column que se muestra bajo el texto de cada ítem seleccionado.
+  /// Si no es vacío, ocupa todo el ancho del ítem.
+  final Column? children;
 
   const UiMultiSelectDropdown({
     super.key,
@@ -22,6 +25,7 @@ class UiMultiSelectDropdown<T> extends StatefulWidget {
     this.label,
     this.onSearch,
     this.errorText,
+    this.children,
     required this.options,
     this.isRequired = false,
     required this.onChanged,
@@ -129,6 +133,9 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
           UIHelpers.verticalSpaceSM,
           Column(
             children: widget.selectedItems.map((item) {
+              final hasChildren = widget.children != null &&
+                  widget.children!.children.isNotEmpty;
+
               return Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(AppSpacing.paddingMD),
@@ -138,30 +145,43 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
                   borderRadius:
                       BorderRadius.circular(AppSpacing.radiusMD),
                 ),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Checkbox(
-                      value: true,
-                      onChanged: (value) {
-                        if (value == false) {
-                          final newSelected =
-                              List<T>.from(widget.selectedItems)
-                                ..remove(item);
-                          widget.onChanged(newSelected);
-                        }
-                      },
-                      activeColor: AppColors.primary,
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: Text(
-                        widget.displayText(item),
-                        style: AppTypography.bodyMedium.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primary,
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: true,
+                          onChanged: (value) {
+                            if (value == false) {
+                              final newSelected =
+                                  List<T>.from(widget.selectedItems)
+                                    ..remove(item);
+                              widget.onChanged(newSelected);
+                            }
+                          },
+                          activeColor: AppColors.primary,
                         ),
-                      ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Text(
+                            widget.displayText(item),
+                            style: AppTypography.bodyMedium.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
+                    if (hasChildren) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      SizedBox(
+                        width: double.infinity,
+                        child: widget.children!,
+                      ),
+                    ],
                   ],
                 ),
               );
