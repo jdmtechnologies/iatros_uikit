@@ -1,7 +1,5 @@
 import 'package:iatros_uikit/models/user_model.dart';
 
-/// Modelo que representa un registro de actualización de usuario.
-/// Contiene el id del usuario que realizó la actualización y el estado anterior del usuario.
 class UserRecordModel {
   final String userUpdater;
   final UserModel oldUser;

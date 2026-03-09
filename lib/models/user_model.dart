@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:iatros_uikit/iatros_ui_kit.dart';
-import 'package:iatros_uikit/models/user_record_model.dart';
 
 enum TypeUser { MEDICAL_STAFF, PATIENT }
 
@@ -44,7 +43,6 @@ class UserModel {
   final String? countryOfNationalityCode;
   final String? healthAdministratorCode;
   final String? healthAdministratorName;
-  final List<UserRecordModel> record;
 
   UserModel({
     this.id,
@@ -84,7 +82,6 @@ class UserModel {
     required this.identificationNumber,
     required this.signatureDocumentUrl,
     required this.identityDocumentBackUrl,
-    this.record = const [],
   });
 
   UserModel copyWith({
@@ -125,7 +122,6 @@ class UserModel {
     String? identityDocumentBackUrl,
     String? countryOfNationalityCode,
     BiologicalSexType? biologicalSex,
-    List<UserRecordModel>? record,
   }) =>
       UserModel(
         id: id ?? this.id,
@@ -165,7 +161,6 @@ class UserModel {
         healthAdministratorName: healthAdministratorName ?? this.healthAdministratorName,
         healthAdministratorCode: healthAdministratorCode ?? this.healthAdministratorCode,
         countryOfNationalityCode: countryOfNationalityCode ?? this.countryOfNationalityCode,
-        record: record ?? this.record,
       );
 
   factory UserModel.fromJson(json) => UserModel(
@@ -206,7 +201,6 @@ class UserModel {
         timeOfBirth: json["time_of_birth"] != null ? _parseTimeOfDay(json["time_of_birth"]) : null,
         createdAt: json["created_at"] != null ? DateTime.parse(json["created_at"]) : DateTime.now(),
         biologicalSex: json["biological_sex"] != null ? _generateBiologicalSexType(json["biological_sex"]) : null,
-        record: _parseRecordList(json["record"]),
       );
 
   factory UserModel.init() => UserModel(
@@ -246,7 +240,6 @@ class UserModel {
         countryOfNationalityCode: null,
         healthAdministratorCode: null,
         healthAdministratorName: null,
-        record: [],
       );
 
   Map<String, dynamic> toJson() {
@@ -327,9 +320,6 @@ class UserModel {
     if (id != null && id!.isNotEmpty) {
       data["id"] = id;
     }
-    if (record.isNotEmpty) {
-      data["record"] = record.map((e) => e.toJson()).toList();
-    }
 
     return data;
   }
@@ -373,15 +363,6 @@ class UserModel {
         healthAdministratorName == other.healthAdministratorName &&
         signatureDocumentUrl == other.signatureDocumentUrl;
   }
-}
-
-List<UserRecordModel> _parseRecordList(dynamic json) {
-  if (json == null || json is! List) return [];
-  return json
-      .map<UserRecordModel>((e) => UserRecordModel.fromJson(
-            e is Map ? Map<String, dynamic>.from(e) : <String, dynamic>{},
-          ))
-      .toList();
 }
 
 TypeUser _generateTypeUser(String? text) {

@@ -3,8 +3,7 @@ import 'package:iatros_uikit/utils/ui_color.dart';
 import 'package:iatros_uikit/utils/text_style.dart';
 import 'package:iatros_uikit/utils/spacing.dart';
 
-/// Checkbox con label a su lado.
-/// Widget de input simple: checkbox y texto descriptivo horizontalmente alineados.
+
 class UiCheckboxInput extends StatelessWidget {
   final String label;
   final bool value;
