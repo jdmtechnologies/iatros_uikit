@@ -43,6 +43,10 @@ class UserModel {
   final String? countryOfNationalityCode;
   final String? healthAdministratorCode;
   final String? healthAdministratorName;
+  final GenderIdentity? genderIdentity;
+  final DisabilityCategory? disabilityCategory;
+  final EthnicityType? ethnicity;
+  final String? ethnicCommunity;
 
   UserModel({
     this.id,
@@ -82,6 +86,10 @@ class UserModel {
     required this.identificationNumber,
     required this.signatureDocumentUrl,
     required this.identityDocumentBackUrl,
+    this.genderIdentity,
+    this.disabilityCategory,
+    this.ethnicity,
+    this.ethnicCommunity,
   });
 
   UserModel copyWith({
@@ -122,6 +130,10 @@ class UserModel {
     String? identityDocumentBackUrl,
     String? countryOfNationalityCode,
     BiologicalSexType? biologicalSex,
+    GenderIdentity? genderIdentity,
+    DisabilityCategory? disabilityCategory,
+    EthnicityType? ethnicity,
+    String? ethnicCommunity,
   }) =>
       UserModel(
         id: id ?? this.id,
@@ -161,6 +173,10 @@ class UserModel {
         healthAdministratorName: healthAdministratorName ?? this.healthAdministratorName,
         healthAdministratorCode: healthAdministratorCode ?? this.healthAdministratorCode,
         countryOfNationalityCode: countryOfNationalityCode ?? this.countryOfNationalityCode,
+        genderIdentity: genderIdentity ?? this.genderIdentity,
+        disabilityCategory: disabilityCategory ?? this.disabilityCategory,
+        ethnicity: ethnicity ?? this.ethnicity,
+        ethnicCommunity: ethnicCommunity ?? this.ethnicCommunity,
       );
 
   factory UserModel.fromJson(json) => UserModel(
@@ -201,6 +217,10 @@ class UserModel {
         timeOfBirth: json["time_of_birth"] != null ? _parseTimeOfDay(json["time_of_birth"]) : null,
         createdAt: json["created_at"] != null ? DateTime.parse(json["created_at"]) : DateTime.now(),
         biologicalSex: json["biological_sex"] != null ? _generateBiologicalSexType(json["biological_sex"]) : null,
+        genderIdentity: json["gender_identity"] != null ? _generateGenderIdentity(json["gender_identity"]) : null,
+        disabilityCategory: json["disability_category"] != null ? _generateDisabilityCategory(json["disability_category"]) : null,
+        ethnicity: json["ethnicity"] != null ? _generateEthnicityType(json["ethnicity"]) : null,
+        ethnicCommunity: json["ethnic_community"],
       );
 
   factory UserModel.init() => UserModel(
@@ -240,6 +260,10 @@ class UserModel {
         countryOfNationalityCode: null,
         healthAdministratorCode: null,
         healthAdministratorName: null,
+        genderIdentity: null,
+        disabilityCategory: null,
+        ethnicity: null,
+        ethnicCommunity: null,
       );
 
   Map<String, dynamic> toJson() {
@@ -314,6 +338,18 @@ class UserModel {
     if (healthAdministratorName != null) {
       data["health_administrator_name"] = healthAdministratorName;
     }
+    if (genderIdentity != null) {
+      data["gender_identity"] = genderIdentity!.name;
+    }
+    if (disabilityCategory != null) {
+      data["disability_category"] = disabilityCategory!.name;
+    }
+    if (ethnicity != null) {
+      data["ethnicity"] = ethnicity!.name;
+    }
+    if (ethnicCommunity != null && ethnicCommunity!.isNotEmpty) {
+      data["ethnic_community"] = ethnicCommunity;
+    }
     if (signatureDocumentUrl.isNotEmpty) {
       data["signature_document_url"] = signatureDocumentUrl;
     }
@@ -361,7 +397,11 @@ class UserModel {
         residenceArea == other.residenceArea &&
         healthAdministratorCode == other.healthAdministratorCode &&
         healthAdministratorName == other.healthAdministratorName &&
-        signatureDocumentUrl == other.signatureDocumentUrl;
+        signatureDocumentUrl == other.signatureDocumentUrl &&
+        genderIdentity == other.genderIdentity &&
+        disabilityCategory == other.disabilityCategory &&
+        ethnicity == other.ethnicity &&
+        ethnicCommunity == other.ethnicCommunity;
   }
 }
 
@@ -386,6 +426,36 @@ Gender _generateGender(String? text) {
       return Gender.other;
     default:
       return Gender.other;
+  }
+}
+
+GenderIdentity? _generateGenderIdentity(String? text) {
+  if (text == null) return null;
+  final upper = text.toUpperCase().replaceAll('-', '_').replaceAll(' ', '_');
+  try {
+    return GenderIdentity.values.firstWhere((e) => e.name == upper);
+  } catch (_) {
+    return null;
+  }
+}
+
+DisabilityCategory? _generateDisabilityCategory(String? text) {
+  if (text == null) return null;
+  final upper = text.toUpperCase().replaceAll('-', '_').replaceAll(' ', '_');
+  try {
+    return DisabilityCategory.values.firstWhere((e) => e.name == upper);
+  } catch (_) {
+    return null;
+  }
+}
+
+EthnicityType? _generateEthnicityType(String? text) {
+  if (text == null) return null;
+  final upper = text.toUpperCase().replaceAll('-', '_').replaceAll(' ', '_');
+  try {
+    return EthnicityType.values.firstWhere((e) => e.name == upper);
+  } catch (_) {
+    return null;
   }
 }
 
