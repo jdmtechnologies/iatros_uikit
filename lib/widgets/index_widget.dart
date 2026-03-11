@@ -156,11 +156,11 @@ class UiButtons {
         speedDialChildren: speedDialChildren,
       );
 
-  SpeedDialChild customSpeedDial(
-    IconData icon,
-    String label,
-    VoidCallback onPressed,
-  ) {
+  SpeedDialChild customSpeedDial({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
     return customSpeedDialChild(
       icon,
       label,
