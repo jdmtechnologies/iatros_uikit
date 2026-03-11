@@ -1,43 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:iatros_uikit/components/inputs/address_autocomplete_input.dart';
-import 'package:iatros_uikit/components/inputs/biological_sex_selector.dart';
-import 'package:iatros_uikit/components/inputs/resizable_input.dart';
-import 'package:iatros_uikit/components/inputs/specialization_selector.dart';
-import 'package:iatros_uikit/models/biological_sex_type.dart';
-import 'package:iatros_uikit/models/blood_type.dart';
-import 'package:iatros_uikit/models/gender_type.dart';
-import 'package:iatros_uikit/models/input_type.dart';
-import 'package:iatros_uikit/models/address_location_model.dart';
-import 'package:iatros_uikit/models/medical_specialization.dart';
-import 'package:iatros_uikit/models/place_details.dart';
-import 'package:iatros_uikit/widgets/primary_button_widget.dart';
-import 'package:iatros_uikit/widgets/secondary_button_widget.dart';
-import 'package:iatros_uikit/widgets/icon_button_widget.dart';
-import 'package:iatros_uikit/widgets/image_button_widget.dart';
-import 'package:iatros_uikit/widgets/base_card_widget.dart';
-import 'package:iatros_uikit/widgets/glassmorphism_card_widget.dart';
-import 'package:iatros_uikit/widgets/text_input_widget.dart';
-import 'package:iatros_uikit/widgets/password_input_widget.dart';
-import 'package:iatros_uikit/widgets/date_picker_input_widget.dart';
-import 'package:iatros_uikit/widgets/time_picker_input_widget.dart';
-import 'package:iatros_uikit/widgets/dropdown_widget.dart';
-import 'package:iatros_uikit/widgets/identification_selector_widget.dart';
-import 'package:iatros_uikit/widgets/gender_selector_widget.dart';
-import 'package:iatros_uikit/widgets/blood_type_selector_widget.dart';
-import 'package:iatros_uikit/widgets/image_picker_input_widget.dart';
-import 'package:iatros_uikit/widgets/file_picker_input_widget.dart';
-import 'package:iatros_uikit/widgets/multi_select_dropdown_widget.dart';
-import 'package:iatros_uikit/widgets/checkbox_input_widget.dart';
-import 'package:iatros_uikit/widgets/iatros_logo_widget.dart';
-import 'package:iatros_uikit/widgets/medical_background_widget.dart';
-import 'package:iatros_uikit/widgets/simple_medical_background_widget.dart';
-import 'package:iatros_uikit/widgets/background_example_widget.dart';
-import 'package:iatros_uikit/utils/loading_overlay.dart';
+import 'package:iatros_uikit/utils/spacing.dart';
 import 'package:iatros_uikit/utils/ui_color.dart';
 import 'package:iatros_uikit/utils/text_style.dart';
-import 'package:iatros_uikit/utils/spacing.dart';
+import 'package:iatros_uikit/models/input_type.dart';
+import 'package:iatros_uikit/models/blood_type.dart';
+import 'package:iatros_uikit/models/gender_type.dart';
+import 'package:iatros_uikit/models/place_details.dart';
+import 'package:iatros_uikit/utils/loading_overlay.dart';
+import 'package:iatros_uikit/widgets/dropdown_widget.dart';
+import 'package:iatros_uikit/widgets/base_card_widget.dart';
+import 'package:iatros_uikit/widgets/text_input_widget.dart';
+import 'package:iatros_uikit/widgets/iatros_logo_widget.dart';
+import 'package:iatros_uikit/widgets/icon_button_widget.dart';
+import 'package:iatros_uikit/models/biological_sex_type.dart';
 import 'package:iatros_uikit/extension/context_extension.dart';
+import 'package:iatros_uikit/widgets/image_button_widget.dart';
+import 'package:iatros_uikit/widgets/custom_floating_button.dart';
+import 'package:iatros_uikit/widgets/custom_speed_dial_hild.dart';
+import 'package:iatros_uikit/widgets/checkbox_input_widget.dart';
+import 'package:iatros_uikit/widgets/password_input_widget.dart';
+import 'package:iatros_uikit/models/address_location_model.dart';
+import 'package:iatros_uikit/models/medical_specialization.dart';
+import 'package:iatros_uikit/widgets/primary_button_widget.dart';
+import 'package:iatros_uikit/widgets/gender_selector_widget.dart';
+import 'package:iatros_uikit/widgets/secondary_button_widget.dart';
+import 'package:iatros_uikit/widgets/file_picker_input_widget.dart';
+import 'package:iatros_uikit/widgets/date_picker_input_widget.dart';
+import 'package:iatros_uikit/widgets/time_picker_input_widget.dart';
+import 'package:iatros_uikit/widgets/background_example_widget.dart';
+import 'package:iatros_uikit/widgets/image_picker_input_widget.dart';
+import 'package:iatros_uikit/widgets/glassmorphism_card_widget.dart';
+import 'package:iatros_uikit/components/inputs/resizable_input.dart';
+import 'package:iatros_uikit/widgets/medical_background_widget.dart';
+import 'package:iatros_uikit/widgets/blood_type_selector_widget.dart';
+import 'package:iatros_uikit/widgets/multi_select_dropdown_widget.dart';
+import 'package:iatros_uikit/widgets/identification_selector_widget.dart';
+import 'package:iatros_uikit/widgets/simple_medical_background_widget.dart';
+import 'package:iatros_uikit/components/inputs/specialization_selector.dart';
+import 'package:iatros_uikit/components/inputs/biological_sex_selector.dart';
+import 'package:iatros_uikit/components/inputs/address_autocomplete_input.dart';
+import 'package:simple_speed_dial/simple_speed_dial.dart';
 
 class UiBackgrounds {
   Widget medicalBackground({
@@ -141,6 +144,29 @@ class UiButtons {
         image: image ?? '',
         icon: icon,
       );
+
+  Widget customFloatingButton({
+    Key? key,
+    required IconData icon,
+    required List<SpeedDialChild> speedDialChildren,
+  }) =>
+      CustomFloatingButton(
+        key: key,
+        icon: icon,
+        speedDialChildren: speedDialChildren,
+      );
+
+  SpeedDialChild customSpeedDial(
+    IconData icon,
+    String label,
+    VoidCallback onPressed,
+  ) {
+    return customSpeedDialChild(
+      icon,
+      label,
+      onPressed,
+    );
+  }
 }
 
 class UiCards {
@@ -486,7 +512,8 @@ class UiInputs {
     required ValueChanged<String> onAddressSelected,
     required Future<PlaceDetails?> Function(String) getPlaceDetails,
     ValueChanged<PlaceDetails>? onPlaceDetailsSelected,
-    required Future<List<AddressLocationModel>> Function(String) searchAddressWeb,
+    required Future<List<AddressLocationModel>> Function(String)
+        searchAddressWeb,
     bool isRequired = false,
     InputType type = InputType.dark,
   }) =>
@@ -784,14 +811,17 @@ class _FeedbackPopUpContent extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           if (description != null && description!.isNotEmpty) ...[
-            SizedBox(height: size == AlertSize.short ? AppSpacing.xs : AppSpacing.sm),
+            SizedBox(
+                height:
+                    size == AlertSize.short ? AppSpacing.xs : AppSpacing.sm),
             Text(
               description!,
               style: _descriptionStyle,
               textAlign: TextAlign.center,
             ),
           ],
-          SizedBox(height: size == AlertSize.short ? AppSpacing.md : AppSpacing.xl),
+          SizedBox(
+              height: size == AlertSize.short ? AppSpacing.md : AppSpacing.xl),
           UiPrimaryButton(
             label: 'OK',
             width: double.infinity,
