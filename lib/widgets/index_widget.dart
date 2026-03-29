@@ -319,14 +319,16 @@ class UiInputs {
 
   Widget resizableInput({
     Key? key,
-    required TextEditingController controller,
+    String? label,
     String? hintText,
     bool isRequired = false,
+    required TextEditingController controller,
   }) =>
       ResizableInput(
         key: key,
-        controller: controller,
+        label: label,
         hintText: hintText,
+        controller: controller,
         isRequired: isRequired,
       );
 

@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:iatros_uikit/iatros_ui_kit.dart';
 class ResizableInput extends StatefulWidget {
   final TextEditingController controller;
-  final String? hintText;
+  final String? label;
   final bool isRequired;
+  final String? hintText;
 
   const ResizableInput({
     super.key,
-    required this.controller,
+    this.label,
     this.hintText,
     this.isRequired = false,
+    required this.controller,
   });
 
   @override
@@ -29,10 +31,10 @@ class _ResizableInputState extends State<ResizableInput> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (widget.hintText != null) ...[
+              if (widget.label != null) ...[
                 RichText(
                   text: TextSpan(
-                    text: widget.hintText,
+                    text: widget.label,
                     style: AppTypography.label,
                     children: [
                       if (widget.isRequired)
