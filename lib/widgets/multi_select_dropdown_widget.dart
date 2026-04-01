@@ -16,6 +16,11 @@ class UiMultiSelectDropdown<T> extends StatefulWidget {
   final ValueChanged<List<T>> onChanged;
   final Future<void> Function(String)? onSearch;
   final Widget Function(T)? children;
+  /// Si no es null, se muestra un botón para agregar un elemento manualmente
+  /// (p. ej. cuando la lista está vacía o no coincide con lo buscado).
+  final VoidCallback? onAddElement;
+  /// Controller del campo de búsqueda; si es null, el widget crea uno interno.
+  final TextEditingController? searchController;
 
   const UiMultiSelectDropdown({
     super.key,
@@ -24,6 +29,8 @@ class UiMultiSelectDropdown<T> extends StatefulWidget {
     this.onSearch,
     this.errorText,
     this.children,
+    this.onAddElement,
+    this.searchController,
     required this.options,
     this.isRequired = false,
     required this.onChanged,
@@ -38,12 +45,51 @@ class UiMultiSelectDropdown<T> extends StatefulWidget {
 }
 
 class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
-  final TextEditingController _searchController = TextEditingController();
+  TextEditingController? _ownedController;
   String _searchText = '';
+
+  TextEditingController get _effectiveController =>
+      widget.searchController ?? _ownedController!;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.searchController == null) {
+      _ownedController = TextEditingController();
+    }
+    _effectiveController.addListener(_onSearchChanged);
+    _searchText = _effectiveController.text;
+  }
+
+  void _onSearchChanged() {
+    setState(() => _searchText = _effectiveController.text);
+  }
+
+  @override
+  void didUpdateWidget(covariant UiMultiSelectDropdown<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.searchController != widget.searchController) {
+      final oldCtrl = oldWidget.searchController ?? _ownedController;
+      oldCtrl?.removeListener(_onSearchChanged);
+
+      if (oldWidget.searchController == null && widget.searchController != null) {
+        _ownedController?.dispose();
+        _ownedController = null;
+      } else if (oldWidget.searchController != null &&
+          widget.searchController == null) {
+        _ownedController = TextEditingController();
+      }
+
+      _effectiveController.addListener(_onSearchChanged);
+      _searchText = _effectiveController.text;
+      setState(() {});
+    }
+  }
 
   @override
   void dispose() {
-    _searchController.dispose();
+    _effectiveController.removeListener(_onSearchChanged);
+    _ownedController?.dispose();
     super.dispose();
   }
 
@@ -83,7 +129,7 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
           shadowColor: Colors.black12,
           borderRadius: BorderRadius.circular(32),
           child: TextField(
-            controller: _searchController,
+            controller: _effectiveController,
             textInputAction: TextInputAction.search,
             decoration: InputDecoration(
               hintText: widget.hint,
@@ -99,7 +145,7 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
                       tooltip: 'Limpiar',
                       icon: const Icon(Icons.close, color: Colors.grey),
                       onPressed: () {
-                        _searchController.clear();
+                        _effectiveController.clear();
                         setState(() => _searchText = '');
                         widget.onSearch?.call('');
                       },
@@ -122,11 +168,21 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
               ),
             ),
             onChanged: (value) {
-              setState(() => _searchText = value);
               widget.onSearch?.call(value);
             },
           ),
         ),
+        if (widget.onAddElement != null) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: widget.onAddElement,
+              icon: const Icon(Icons.add, size: 20),
+              label: const Text('Agregar elemento'),
+            ),
+          ),
+        ],
         if (widget.selectedItems.isNotEmpty) ...[
           UIHelpers.verticalSpaceSM,
           Column(

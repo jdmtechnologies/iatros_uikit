@@ -562,6 +562,8 @@ class UiInputs {
     String? errorText,
     Future<void> Function(String)? onSearch,
     Widget Function(T)? children,
+    VoidCallback? onAddElement,
+    TextEditingController? searchController,
   }) =>
       UiMultiSelectDropdown<T>(
         key: key,
@@ -576,6 +578,8 @@ class UiInputs {
         isMultiselect: isMultiselect,
         errorText: errorText,
         onSearch: onSearch,
+        onAddElement: onAddElement,
+        searchController: searchController,
       );
 
   Widget specializationSelector({
