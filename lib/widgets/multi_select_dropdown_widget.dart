@@ -19,6 +19,8 @@ class UiMultiSelectDropdown<T> extends StatefulWidget {
   /// Si no es null, se muestra un botón para agregar un elemento manualmente
   /// (p. ej. cuando la lista está vacía o no coincide con lo buscado).
   final VoidCallback? onAddElement;
+  /// Texto del botón de agregar; si es null se usa «Agregar elemento».
+  final String? labelButton;
   /// Controller del campo de búsqueda; si es null, el widget crea uno interno.
   final TextEditingController? searchController;
 
@@ -30,6 +32,7 @@ class UiMultiSelectDropdown<T> extends StatefulWidget {
     this.errorText,
     this.children,
     this.onAddElement,
+    this.labelButton,
     this.searchController,
     required this.options,
     this.isRequired = false,
@@ -179,7 +182,7 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
             child: TextButton.icon(
               onPressed: widget.onAddElement,
               icon: const Icon(Icons.add, size: 20),
-              label: const Text('Agregar elemento'),
+              label: Text(widget.labelButton ?? 'Agregar elemento'),
             ),
           ),
         ],

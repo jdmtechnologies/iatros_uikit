@@ -563,6 +563,7 @@ class UiInputs {
     Future<void> Function(String)? onSearch,
     Widget Function(T)? children,
     VoidCallback? onAddElement,
+    String? labelButton,
     TextEditingController? searchController,
   }) =>
       UiMultiSelectDropdown<T>(
@@ -579,6 +580,7 @@ class UiInputs {
         errorText: errorText,
         onSearch: onSearch,
         onAddElement: onAddElement,
+        labelButton: labelButton,
         searchController: searchController,
       );
 
