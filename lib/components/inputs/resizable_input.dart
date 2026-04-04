@@ -6,20 +6,52 @@ class ResizableInput extends StatefulWidget {
   final bool isRequired;
   final String? hintText;
 
+  /// Altura mínima al redimensionar (píxeles lógicos).
+  final double minHeight;
+
+  /// Altura máxima al redimensionar (píxeles lógicos).
+  final double maxHeight;
+
   const ResizableInput({
     super.key,
     this.label,
     this.hintText,
     this.isRequired = false,
     required this.controller,
-  });
+    this.minHeight = 110.0,
+    this.maxHeight = 500.0,
+  }) : assert(minHeight > 0),
+       assert(maxHeight >= minHeight);
 
   @override
   State<ResizableInput> createState() => _ResizableInputState();
 }
 
 class _ResizableInputState extends State<ResizableInput> {
-  double _height = 150.0; // altura inicial
+  static const double _defaultInitialHeight = 150.0;
+
+  late double _height;
+
+  @override
+  void initState() {
+    super.initState();
+    _height = _defaultInitialHeight.clamp(
+      widget.minHeight,
+      widget.maxHeight,
+    );
+  }
+
+  @override
+  void didUpdateWidget(ResizableInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.minHeight != widget.minHeight ||
+        oldWidget.maxHeight != widget.maxHeight) {
+      final clamped = _height.clamp(widget.minHeight, widget.maxHeight);
+      if (clamped != _height) {
+        setState(() => _height = clamped);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,9 +118,7 @@ class _ResizableInputState extends State<ResizableInput> {
               onVerticalDragUpdate: (details) {
                 setState(() {
                   _height += details.delta.dy;
-
-                  // 🔒 Altura mínima segura + altura máxima
-                  _height = _height.clamp(110.0, 500.0);
+                  _height = _height.clamp(widget.minHeight, widget.maxHeight);
                 });
               },
               child: Container(
