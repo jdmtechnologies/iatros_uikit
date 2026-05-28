@@ -25,6 +25,7 @@ export 'models/gender_identity_type.dart';
 export 'models/medical_specialization.dart';
 export 'models/suscription_settings_model.dart';
 export 'models/health_administrators_model.dart';
+export 'models/company_response_model.dart';
 
 // Extensiones
 export 'extension/context_extension.dart';
@@ -33,6 +34,7 @@ export 'extensions/string_extension.dart';
 // Enums
 export 'enum/email_type.dart';
 export 'enum/company_validation_status.dart';
+export 'enum/company_response_status.dart';
 
 // Utils (colores, tema, estilos, helpers)
 export 'utils/spacing.dart';
