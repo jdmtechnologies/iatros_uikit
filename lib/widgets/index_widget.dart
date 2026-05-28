@@ -651,11 +651,212 @@ class UiLogo {
 
 enum _FeedbackPopUpType { success, error, info }
 
+class _ConfirmationPopUpContent extends StatelessWidget {
+  const _ConfirmationPopUpContent({
+    required this.title,
+    this.description,
+    required this.onConfirm,
+    required this.onCancel,
+    this.confirmLabel = 'Aceptar',
+    this.cancelLabel = 'Cancelar',
+    this.size = AlertSize.medium,
+  });
+
+  final String title;
+  final String? description;
+  final VoidCallback onConfirm;
+  final VoidCallback onCancel;
+  final String confirmLabel;
+  final String cancelLabel;
+  final AlertSize size;
+
+  double get _iconSize {
+    switch (size) {
+      case AlertSize.short:
+        return 40;
+      case AlertSize.medium:
+        return 56;
+      case AlertSize.large:
+        return 72;
+      case AlertSize.xlarge:
+        return 80;
+    }
+  }
+
+  double get _maxWidthFactor {
+    switch (size) {
+      case AlertSize.short:
+        return 0.65;
+      case AlertSize.medium:
+        return 0.85;
+      case AlertSize.large:
+        return 0.92;
+      case AlertSize.xlarge:
+        return 0.98;
+    }
+  }
+
+  EdgeInsets get _padding {
+    switch (size) {
+      case AlertSize.short:
+        return const EdgeInsets.symmetric(
+          horizontal: AppSpacing.paddingMD,
+          vertical: AppSpacing.paddingMD,
+        );
+      case AlertSize.medium:
+        return const EdgeInsets.symmetric(
+          horizontal: AppSpacing.paddingXL,
+          vertical: AppSpacing.paddingLG,
+        );
+      case AlertSize.large:
+        return const EdgeInsets.symmetric(
+          horizontal: AppSpacing.paddingXL * 1.25,
+          vertical: AppSpacing.paddingXL,
+        );
+      case AlertSize.xlarge:
+        return const EdgeInsets.symmetric(
+          horizontal: AppSpacing.paddingXL * 1.5,
+          vertical: AppSpacing.paddingXL * 1.25,
+        );
+    }
+  }
+
+  double get _spacingAfterIcon {
+    switch (size) {
+      case AlertSize.short:
+        return AppSpacing.sm;
+      case AlertSize.medium:
+        return AppSpacing.lg;
+      case AlertSize.large:
+        return AppSpacing.xl;
+      case AlertSize.xlarge:
+        return AppSpacing.xl;
+    }
+  }
+
+  TextStyle get _titleStyle {
+    switch (size) {
+      case AlertSize.short:
+        return AppTypography.bodyLarge.copyWith(
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.w600,
+        );
+      case AlertSize.medium:
+        return AppTypography.h4.copyWith(color: AppColors.textPrimary);
+      case AlertSize.large:
+        return AppTypography.h3.copyWith(color: AppColors.textPrimary);
+      case AlertSize.xlarge:
+        return AppTypography.h2.copyWith(color: AppColors.textPrimary);
+    }
+  }
+
+  TextStyle get _descriptionStyle {
+    switch (size) {
+      case AlertSize.short:
+        return AppTypography.bodySmall.copyWith(
+          color: AppColors.textSecondary,
+        );
+      case AlertSize.medium:
+        return AppTypography.bodyMedium.copyWith(
+          color: AppColors.textSecondary,
+        );
+      case AlertSize.large:
+        return AppTypography.bodyLarge.copyWith(
+          color: AppColors.textSecondary,
+        );
+      case AlertSize.xlarge:
+        return AppTypography.bodyLarge.copyWith(
+          color: AppColors.textSecondary,
+        );
+    }
+  }
+
+  double get _radius {
+    switch (size) {
+      case AlertSize.short:
+        return AppSpacing.radiusSM;
+      case AlertSize.medium:
+        return AppSpacing.radiusMD;
+      case AlertSize.large:
+        return AppSpacing.radiusLG;
+      case AlertSize.xlarge:
+        return AppSpacing.radiusLG;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: context.sizeWidth(_maxWidthFactor),
+      ),
+      padding: _padding,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(_radius),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.black.withValues(alpha: 0.1),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.help_outline,
+            size: _iconSize,
+            color: AppColors.primary,
+          ),
+          SizedBox(height: _spacingAfterIcon),
+          Text(
+            title,
+            style: _titleStyle,
+            textAlign: TextAlign.center,
+          ),
+          if (description != null && description!.isNotEmpty) ...[
+            SizedBox(
+                height:
+                    size == AlertSize.short ? AppSpacing.xs : AppSpacing.sm),
+            Text(
+              description!,
+              style: _descriptionStyle,
+              textAlign: TextAlign.center,
+            ),
+          ],
+          SizedBox(
+              height: size == AlertSize.short ? AppSpacing.md : AppSpacing.xl),
+          Row(
+            children: [
+              Expanded(
+                child: UiSecondaryButton(
+                  label: cancelLabel,
+                  onPressed: onCancel,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: UiPrimaryButton(
+                  label: confirmLabel,
+                  onPressed: onConfirm,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Tamaño visual del pop-up de alerta: [short], [medium], [large].
 enum AlertSize {
   short,
   medium,
   large,
+  xlarge,
 }
 
 class _FeedbackPopUpContent extends StatelessWidget {
@@ -703,6 +904,8 @@ class _FeedbackPopUpContent extends StatelessWidget {
         return 56;
       case AlertSize.large:
         return 72;
+      case AlertSize.xlarge:
+        return 80;
     }
   }
 
@@ -714,6 +917,8 @@ class _FeedbackPopUpContent extends StatelessWidget {
         return 0.85;
       case AlertSize.large:
         return 0.92;
+      case AlertSize.xlarge:
+        return 0.98;
     }
   }
 
@@ -734,6 +939,11 @@ class _FeedbackPopUpContent extends StatelessWidget {
           horizontal: AppSpacing.paddingXL * 1.25,
           vertical: AppSpacing.paddingXL,
         );
+      case AlertSize.xlarge:
+        return const EdgeInsets.symmetric(
+          horizontal: AppSpacing.paddingXL * 1.5,
+          vertical: AppSpacing.paddingXL * 1.25,
+        );
     }
   }
 
@@ -744,6 +954,8 @@ class _FeedbackPopUpContent extends StatelessWidget {
       case AlertSize.medium:
         return AppSpacing.lg;
       case AlertSize.large:
+        return AppSpacing.xl;
+      case AlertSize.xlarge:
         return AppSpacing.xl;
     }
   }
@@ -759,6 +971,8 @@ class _FeedbackPopUpContent extends StatelessWidget {
         return AppTypography.h4.copyWith(color: AppColors.textPrimary);
       case AlertSize.large:
         return AppTypography.h3.copyWith(color: AppColors.textPrimary);
+      case AlertSize.xlarge:
+        return AppTypography.h2.copyWith(color: AppColors.textPrimary);
     }
   }
 
@@ -776,6 +990,10 @@ class _FeedbackPopUpContent extends StatelessWidget {
         return AppTypography.bodyLarge.copyWith(
           color: AppColors.textSecondary,
         );
+      case AlertSize.xlarge:
+        return AppTypography.bodyLarge.copyWith(
+          color: AppColors.textSecondary,
+        );
     }
   }
 
@@ -786,6 +1004,8 @@ class _FeedbackPopUpContent extends StatelessWidget {
       case AlertSize.medium:
         return AppSpacing.radiusMD;
       case AlertSize.large:
+        return AppSpacing.radiusLG;
+      case AlertSize.xlarge:
         return AppSpacing.radiusLG;
     }
   }
@@ -937,6 +1157,40 @@ class UiPopUp {
             title: title,
             description: description,
             onOk: () => Navigator.of(context).pop(),
+            size: size,
+          ),
+        );
+      },
+    );
+  }
+
+  /// Muestra un pop-up de confirmación con botones Cancelar y Aceptar.
+  /// [onConfirm] se invoca cuando el usuario toca Aceptar.
+  /// El pop-up se cierra automáticamente antes de llamar a [onConfirm].
+  Future<void> showConfirmation(
+    BuildContext context, {
+    required String title,
+    String? description,
+    required VoidCallback onConfirm,
+    String confirmLabel = 'Aceptar',
+    String cancelLabel = 'Cancelar',
+    AlertSize size = AlertSize.medium,
+  }) async {
+    return showDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: AppColors.black.withValues(alpha: 0.4),
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: _ConfirmationPopUpContent(
+            title: title,
+            description: description,
+            onConfirm: onConfirm,
+            onCancel: () => Navigator.of(context).pop(),
+            confirmLabel: confirmLabel,
+            cancelLabel: cancelLabel,
             size: size,
           ),
         );

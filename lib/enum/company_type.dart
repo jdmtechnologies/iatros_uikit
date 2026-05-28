@@ -5,7 +5,7 @@ enum CompanyType {
   final String value;
   final String label;
 
-  const CompanyType(this.value, this.label);
+  const CompanyType(this.value, this.label); 
 
   static CompanyType fromString(String value) {
     return CompanyType.values.firstWhere(
