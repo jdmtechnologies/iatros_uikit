@@ -323,8 +323,7 @@ class UiInputs {
     String? hintText,
     bool isRequired = false,
     required TextEditingController controller,
-    double minHeight = 110.0,
-    double maxHeight = 500.0,
+    int minLines = 5,
   }) =>
       ResizableInput(
         key: key,
@@ -332,8 +331,7 @@ class UiInputs {
         hintText: hintText,
         controller: controller,
         isRequired: isRequired,
-        minHeight: minHeight,
-        maxHeight: maxHeight,
+        minLines: minLines,
       );
 
   Widget datePickerInput({
