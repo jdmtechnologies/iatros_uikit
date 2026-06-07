@@ -1,10 +1,7 @@
+import 'package:iatros_uikit/models/blood_type.dart';
 import 'package:iatros_uikit/models/input_type.dart';
 import 'package:iatros_uikit/models/gender_type.dart';
-import 'package:iatros_uikit/models/blood_type.dart';
 import 'package:iatros_uikit/models/biological_sex_type.dart';
-import 'package:iatros_uikit/models/gender_identity_type.dart';
-import 'package:iatros_uikit/models/disability_category.dart';
-import 'package:iatros_uikit/models/ethnicity_type.dart';
 
 /// Agrupa todos los modelos y tipos del paquete.
 class Models {
