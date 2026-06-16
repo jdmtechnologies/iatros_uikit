@@ -13,12 +13,14 @@ class CompanyModel {
   final CompanyType companyType;
   final String? companyImageUrl;
   final String? address;
+  final String? serviceProviderCode;
   final CompanyValidationStatus isValidated;
 
   CompanyModel({
     this.id,
     this.nitUrl,
     this.address,
+    this.serviceProviderCode,
     this.userOwnerId,
     this.companyImageUrl,
     required this.nit,
@@ -42,6 +44,7 @@ class CompanyModel {
     CompanyType? companyType,
     String? companyImageUrl,
     String? address,
+    String? serviceProviderCode,
     CompanyValidationStatus? isValidated,
   }) =>
       CompanyModel(
@@ -56,6 +59,7 @@ class CompanyModel {
         companyType: companyType ?? this.companyType,
         companyImageUrl: companyImageUrl ?? this.companyImageUrl,
         address: address ?? this.address,
+        serviceProviderCode: serviceProviderCode ?? this.serviceProviderCode,
         isValidated: isValidated ?? this.isValidated,
       );
 
@@ -67,6 +71,7 @@ class CompanyModel {
         userOwnerId: json['user_owner_id']?.toString(),
         companyImageUrl: json['company_image']?.toString(),
         address: json['address']?.toString(),
+        serviceProviderCode: json['service_provider_code']?.toString(),
         nit: json['nit'] != null && json['nit'] != '' ? json['nit'].toString() : '',
         createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'].toString()) : DateTime.now(),
         companyType: json['company_type'] != null ? CompanyType.fromString(json['company_type'].toString()) : CompanyType.personal,
@@ -96,6 +101,7 @@ class CompanyModel {
     if (userOwnerId != null) data['user_owner_id'] = userOwnerId;
     if (companyImageUrl != null) data['company_image'] = companyImageUrl;
     if (address != null) data['address'] = address;
+    if (serviceProviderCode != null) data['service_provider_code'] = serviceProviderCode;
     return data;
   }
 }

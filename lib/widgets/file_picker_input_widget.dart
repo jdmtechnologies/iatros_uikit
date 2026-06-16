@@ -38,7 +38,7 @@ class _UiFilePickerInputState extends State<UiFilePickerInput> {
 
   Future<void> _pickFile() async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      FilePickerResult? result = await FilePicker.pickFiles(
         type: widget.allowedExtensions != null
             ? FileType.custom
             : FileType.any,

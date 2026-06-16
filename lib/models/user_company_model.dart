@@ -4,7 +4,7 @@ import 'package:iatros_uikit/models/user_model.dart';
 
 enum Status { ENABLED, DISABLED, DELETED }
 
-enum RolUser { OWNER, SECRETARIAT, DOCTOR }
+enum RolUser { OWNER, SECRETARIAT, DOCTOR, PHARMACY_MANAGER }
 
 extension StatusExtension on Status {
   String get toName {
@@ -28,6 +28,8 @@ extension RolUserExtension on RolUser {
         return 'Secretariado';
       case RolUser.DOCTOR:
         return 'Doctor';
+      case RolUser.PHARMACY_MANAGER:
+        return 'Gestor de farmacia';
     }
   }
 }
@@ -41,6 +43,7 @@ class UserCompanyModel {
   final String companyId;
   final DateTime createdAt;
   final CompanyModel? company;
+  final bool isDeleted;
 
   UserCompanyModel({
     this.id,
@@ -51,6 +54,7 @@ class UserCompanyModel {
     required this.rolUser,
     required this.companyId,
     required this.createdAt,
+    this.isDeleted = false,
   });
 
   UserCompanyModel copyWith({
@@ -62,6 +66,7 @@ class UserCompanyModel {
     String? companyId,
     DateTime? createdAt,
     CompanyModel? company,
+    bool? isDeleted,
   }) => UserCompanyModel(
     id: id ?? this.id,
     user: user ?? this.user,
@@ -71,6 +76,7 @@ class UserCompanyModel {
     company: company ?? this.company,
     companyId: companyId ?? this.companyId,
     createdAt: createdAt ?? this.createdAt,
+    isDeleted: isDeleted ?? this.isDeleted,
   );
 
   factory UserCompanyModel.init() => UserCompanyModel(
@@ -93,6 +99,7 @@ class UserCompanyModel {
         createdAt: json["created_at"] != null
             ? DateTime.parse(json["created_at"])
             : DateTime.now(),
+        isDeleted: json["is_deleted"] ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -101,6 +108,7 @@ class UserCompanyModel {
     "company_id": companyId,
     "rol_user": rolUser.name,
     "created_at": createdAt.toIso8601String(),
+    "is_deleted": isDeleted,
   };
 }
 
@@ -115,5 +123,6 @@ RolUser generateRolUser(String? item) {
   if (item == RolUser.OWNER.name) return RolUser.OWNER;
   if (item == RolUser.DOCTOR.name) return RolUser.DOCTOR;
   if (item == RolUser.SECRETARIAT.name) return RolUser.SECRETARIAT;
+  if (item == RolUser.PHARMACY_MANAGER.name) return RolUser.PHARMACY_MANAGER;
   return RolUser.DOCTOR;
 }
