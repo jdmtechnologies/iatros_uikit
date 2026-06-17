@@ -15,6 +15,7 @@ class UiIdentificationSelector extends StatelessWidget {
   final bool readOnly;
   final bool useColumnLayout;
   final InputType type;
+  final List<String> identificationList;
 
   const UiIdentificationSelector({
     super.key,
@@ -27,16 +28,8 @@ class UiIdentificationSelector extends StatelessWidget {
     this.selectedTypeNotifier,
     this.type = InputType.dark,
     this.useColumnLayout = false,
+    required this.identificationList,
   });
-
-  static final List<String> _identificationTypes = [
-    'Registro civil',
-    'Tarjeta de identidad',
-    'Cédula de ciudadanía',
-    'Cédula de extranjería',
-    'Pasaporte',
-    'Permiso por Protección Temporal',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +51,7 @@ class UiIdentificationSelector extends StatelessWidget {
             child: DropdownButton<String>(
               value: selectedType,
               hint: const Text('Tipo'),
-              items: _identificationTypes.map((type) {
+              items: identificationList.map((type) {
                 return DropdownMenuItem<String>(
                   value: type,
                   child: Padding(

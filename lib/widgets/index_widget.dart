@@ -393,6 +393,7 @@ class UiInputs {
     bool readOnly = false,
     InputType type = InputType.dark,
     bool useColumnLayout = false,
+    required List<String> identificationList,
   }) =>
       UiIdentificationSelector(
         key: key,
@@ -405,6 +406,7 @@ class UiInputs {
         isRequired: isRequired,
         readOnly: readOnly,
         type: type,
+        identificationList: identificationList,
       );
 
   Widget genderSelector({
