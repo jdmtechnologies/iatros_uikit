@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:iatros_uikit/enum/subscription_type.dart';
 
 class SuscriptionSettingsModel {
     final String? id;
@@ -10,6 +11,7 @@ class SuscriptionSettingsModel {
     final String description;
     final DateTime? createdAt;
     final bool mostRecommended;
+    final SubscriptionType? subscriptionType;
 
     SuscriptionSettingsModel({
         this.id,
@@ -21,6 +23,7 @@ class SuscriptionSettingsModel {
         required this.rangeMonth,
         required this.description,
         this.mostRecommended = false,
+        this.subscriptionType,
     });
 
     SuscriptionSettingsModel copyWith({
@@ -33,6 +36,7 @@ class SuscriptionSettingsModel {
         String? description,
         DateTime? createdAt,
         bool? mostRecommended,
+        SubscriptionType? subscriptionType,
     }) =>
         SuscriptionSettingsModel(
             id: id ?? this.id,
@@ -44,6 +48,7 @@ class SuscriptionSettingsModel {
             rangeMonth: rangeMonth ?? this.rangeMonth,
             description: description ?? this.description,
             mostRecommended: mostRecommended ?? this.mostRecommended,
+            subscriptionType: subscriptionType ?? this.subscriptionType,
         );
 
     factory SuscriptionSettingsModel.fromRawJson(String str) =>
@@ -66,6 +71,15 @@ class SuscriptionSettingsModel {
       return null;
     }
 
+    static SubscriptionType? _parseSubscriptionType(dynamic value) {
+      if (value == null) return null;
+      final str = value.toString();
+      for (final type in SubscriptionType.values) {
+        if (type.name == str) return type;
+      }
+      return null;
+    }
+
     factory SuscriptionSettingsModel.fromJson(Map<String, dynamic> json) =>
         SuscriptionSettingsModel(
           id: _parseId(json["id"]),
@@ -78,6 +92,7 @@ class SuscriptionSettingsModel {
               json["most_recommended"] == 1,
           createdAt: _parseDateTime(json["created_at"]),
           updateAt: _parseDateTime(json["update_at"]),
+          subscriptionType: _parseSubscriptionType(json["subscription_type"]),
         );
 
     Map<String, dynamic> toJson() {
@@ -88,6 +103,7 @@ class SuscriptionSettingsModel {
         "range_month": rangeMonth,
         "description": description,
         "most_recommended": mostRecommended,
+        if (subscriptionType != null) "subscription_type": subscriptionType!.name,
       };
       if (id != null && id!.isNotEmpty) map["id"] = id;
       if (updateAt != null) map["update_at"] = updateAt!.toIso8601String();
