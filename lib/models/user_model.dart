@@ -47,6 +47,8 @@ class UserModel {
   final DisabilityCategory? disabilityCategory;
   final EthnicityType? ethnicity;
   final String? ethnicCommunity;
+  final String userType;
+  final String healthAdministratorsId;
 
   UserModel({
     this.id,
@@ -90,6 +92,8 @@ class UserModel {
     this.disabilityCategory,
     this.ethnicity,
     this.ethnicCommunity,
+    this.userType = "",
+    this.healthAdministratorsId = "",
   });
 
   UserModel copyWith({
@@ -134,6 +138,8 @@ class UserModel {
     DisabilityCategory? disabilityCategory,
     EthnicityType? ethnicity,
     String? ethnicCommunity,
+    String? userType,
+    String? healthAdministratorsId,
   }) =>
       UserModel(
         id: id ?? this.id,
@@ -177,6 +183,8 @@ class UserModel {
         disabilityCategory: disabilityCategory ?? this.disabilityCategory,
         ethnicity: ethnicity ?? this.ethnicity,
         ethnicCommunity: ethnicCommunity ?? this.ethnicCommunity,
+        userType: userType ?? this.userType,
+        healthAdministratorsId: healthAdministratorsId ?? this.healthAdministratorsId,
       );
 
   factory UserModel.fromJson(json) => UserModel(
@@ -221,6 +229,8 @@ class UserModel {
         disabilityCategory: json["disability_category"] != null ? _generateDisabilityCategory(json["disability_category"]) : null,
         ethnicity: json["ethnicity"] != null ? _generateEthnicityType(json["ethnicity"]) : null,
         ethnicCommunity: json["ethnic_community"],
+        userType: json["user_type"] ?? "",
+        healthAdministratorsId: json["health_administrators_id"] ?? "",
       );
 
   factory UserModel.init() => UserModel(
@@ -264,6 +274,8 @@ class UserModel {
         disabilityCategory: null,
         ethnicity: null,
         ethnicCommunity: null,
+        userType: "",
+        healthAdministratorsId: "",
       );
 
   Map<String, dynamic> toJson() {
@@ -349,6 +361,12 @@ class UserModel {
     }
     if (ethnicCommunity != null && ethnicCommunity!.isNotEmpty) {
       data["ethnic_community"] = ethnicCommunity;
+    }
+    if (userType.isNotEmpty) {
+      data["user_type"] = userType;
+    }
+    if (healthAdministratorsId.isNotEmpty) {
+      data["health_administrators_id"] = healthAdministratorsId;
     }
     if (signatureDocumentUrl.isNotEmpty) {
       data["signature_document_url"] = signatureDocumentUrl;
