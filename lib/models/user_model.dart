@@ -49,6 +49,7 @@ class UserModel {
   final String? ethnicCommunity;
   final String userType;
   final String healthAdministratorsId;
+  final String residenceAreaCode;
 
   UserModel({
     this.id,
@@ -94,6 +95,7 @@ class UserModel {
     this.ethnicCommunity,
     this.userType = "",
     this.healthAdministratorsId = "",
+    this.residenceAreaCode = "",
   });
 
   UserModel copyWith({
@@ -140,6 +142,7 @@ class UserModel {
     String? ethnicCommunity,
     String? userType,
     String? healthAdministratorsId,
+    String? residenceAreaCode,
   }) =>
       UserModel(
         id: id ?? this.id,
@@ -185,6 +188,7 @@ class UserModel {
         ethnicCommunity: ethnicCommunity ?? this.ethnicCommunity,
         userType: userType ?? this.userType,
         healthAdministratorsId: healthAdministratorsId ?? this.healthAdministratorsId,
+        residenceAreaCode: residenceAreaCode ?? this.residenceAreaCode,
       );
 
   factory UserModel.fromJson(json) => UserModel(
@@ -231,6 +235,7 @@ class UserModel {
         ethnicCommunity: json["ethnic_community"],
         userType: json["user_type"] ?? "",
         healthAdministratorsId: json["health_administrators_id"] ?? "",
+        residenceAreaCode: json["residence_area_code"] ?? "",
       );
 
   factory UserModel.init() => UserModel(
@@ -276,6 +281,7 @@ class UserModel {
         ethnicCommunity: null,
         userType: "",
         healthAdministratorsId: "",
+        residenceAreaCode: "",
       );
 
   Map<String, dynamic> toJson() {
@@ -367,6 +373,9 @@ class UserModel {
     }
     if (healthAdministratorsId.isNotEmpty) {
       data["health_administrators_id"] = healthAdministratorsId;
+    }
+    if (residenceAreaCode.isNotEmpty) {
+      data["residence_area_code"] = residenceAreaCode;
     }
     if (signatureDocumentUrl.isNotEmpty) {
       data["signature_document_url"] = signatureDocumentUrl;
