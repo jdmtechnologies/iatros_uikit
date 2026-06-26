@@ -42,6 +42,8 @@ class UserModel {
   final String? countryOfNationality;
   final String? countryOfNationalityCode;
   final String healthAdministratorId;
+  final String healthAdministratorName;
+  final String healthAdministratorCode;
   final GenderIdentity? genderIdentity;
   final DisabilityCategory? disabilityCategory;
   final EthnicityType? ethnicity;
@@ -78,6 +80,8 @@ class UserModel {
     this.countryOfNationality,
     required this.countryCode,
     this.healthAdministratorId = "",
+    this.healthAdministratorName = "",
+    this.healthAdministratorCode = "",
     required this.secondLastName,
     required this.specialization,
     this.countryOfNationalityCode,
@@ -128,6 +132,8 @@ class UserModel {
     String? countryOfNationality,
     String? identificationNumber,
     String? healthAdministratorId,
+    String? healthAdministratorName,
+    String? healthAdministratorCode,
     String? identityDocumentBackUrl,
     String? countryOfNationalityCode,
     BiologicalSexType? biologicalSex,
@@ -176,6 +182,10 @@ class UserModel {
             identityDocumentBackUrl ?? this.identityDocumentBackUrl,
         healthAdministratorId:
             healthAdministratorId ?? this.healthAdministratorId,
+        healthAdministratorName:
+            healthAdministratorName ?? this.healthAdministratorName,
+        healthAdministratorCode:
+            healthAdministratorCode ?? this.healthAdministratorCode,
         countryOfNationalityCode:
             countryOfNationalityCode ?? this.countryOfNationalityCode,
         genderIdentity: genderIdentity ?? this.genderIdentity,
@@ -213,6 +223,8 @@ class UserModel {
         identityDocumentUrl: json["identity_document_url"] ?? "",
         identificationNumber: json["identification_number"] ?? "",
         healthAdministratorId: json["health_administrator_id"] ?? "",
+        healthAdministratorName: (json["health_administrators"] as Map<String, dynamic>?)?["Nombre"] as String? ?? "",
+        healthAdministratorCode: (json["health_administrators"] as Map<String, dynamic>?)?["Codigo"] as String? ?? "",
         signatureDocumentUrl: json["signature_document_url"] ?? "",
         countryOfNationalityCode: json["country_of_nationality_code"],
         identityDocumentBackUrl: json["identity_document_back_url"] ?? "",
@@ -285,6 +297,8 @@ class UserModel {
         identityDocumentBackUrl: "",
         countryOfNationalityCode: null,
         healthAdministratorId: "",
+        healthAdministratorName: "",
+        healthAdministratorCode: "",
         genderIdentity: null,
         disabilityCategory: null,
         ethnicity: null,
