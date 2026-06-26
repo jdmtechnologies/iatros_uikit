@@ -172,9 +172,12 @@ class UserModel {
         identificationNumber: identificationNumber ?? this.identificationNumber,
         signatureDocumentUrl: signatureDocumentUrl ?? this.signatureDocumentUrl,
         countryOfNationality: countryOfNationality ?? this.countryOfNationality,
-        identityDocumentBackUrl:identityDocumentBackUrl ?? this.identityDocumentBackUrl,
-        healthAdministratorId: healthAdministratorId ?? this.healthAdministratorId,
-        countryOfNationalityCode: countryOfNationalityCode ?? this.countryOfNationalityCode,
+        identityDocumentBackUrl:
+            identityDocumentBackUrl ?? this.identityDocumentBackUrl,
+        healthAdministratorId:
+            healthAdministratorId ?? this.healthAdministratorId,
+        countryOfNationalityCode:
+            countryOfNationalityCode ?? this.countryOfNationalityCode,
         genderIdentity: genderIdentity ?? this.genderIdentity,
         disabilityCategory: disabilityCategory ?? this.disabilityCategory,
         ethnicity: ethnicity ?? this.ethnicity,
@@ -214,15 +217,33 @@ class UserModel {
         countryOfNationalityCode: json["country_of_nationality_code"],
         identityDocumentBackUrl: json["identity_document_back_url"] ?? "",
         gender: json["gender"] != null ? _generateGender(json["gender"]) : null,
-        bloodType: json["blood_type"] != null ? bloodTypeFromString(json["blood_type"]) : null,
-        updateAt: json["update_at"] != null ? DateTime.parse(json["update_at"]) : DateTime.now(),
-        dateOfBirth: json["date_of_birth"] != null ? DateTime.parse(json["date_of_birth"]) : null,
-        timeOfBirth: json["time_of_birth"] != null ? _parseTimeOfDay(json["time_of_birth"]) : null,
-        createdAt: json["created_at"] != null ? DateTime.parse(json["created_at"]) : DateTime.now(),
-        biologicalSex: json["biological_sex"] != null ? _generateBiologicalSexType(json["biological_sex"]) : null,
-        genderIdentity: json["gender_identity"] != null ? _generateGenderIdentity(json["gender_identity"]) : null,
-        disabilityCategory: json["disability_category"] != null ? _generateDisabilityCategory(json["disability_category"]) : null,
-        ethnicity: json["ethnicity"] != null ? _generateEthnicityType(json["ethnicity"]) : null,
+        bloodType: json["blood_type"] != null
+            ? bloodTypeFromString(json["blood_type"])
+            : null,
+        updateAt: json["update_at"] != null
+            ? DateTime.parse(json["update_at"])
+            : DateTime.now(),
+        dateOfBirth: json["date_of_birth"] != null
+            ? DateTime.parse(json["date_of_birth"])
+            : null,
+        timeOfBirth: json["time_of_birth"] != null
+            ? _parseTimeOfDay(json["time_of_birth"])
+            : null,
+        createdAt: json["created_at"] != null
+            ? DateTime.parse(json["created_at"])
+            : DateTime.now(),
+        biologicalSex: json["biological_sex"] != null
+            ? _generateBiologicalSexType(json["biological_sex"])
+            : null,
+        genderIdentity: json["gender_identity"] != null
+            ? _generateGenderIdentity(json["gender_identity"])
+            : null,
+        disabilityCategory: json["disability_category"] != null
+            ? _generateDisabilityCategory(json["disability_category"])
+            : null,
+        ethnicity: json["ethnicity"] != null
+            ? _generateEthnicityType(json["ethnicity"])
+            : null,
         ethnicCommunity: json["ethnic_community"],
         userType: json["user_type"] ?? "",
         residenceAreaCode: json["residence_area_code"] ?? "",
@@ -355,9 +376,6 @@ class UserModel {
     }
     if (userType.isNotEmpty) {
       data["user_type"] = userType;
-    }
-    if (healthAdministratorsId.isNotEmpty) {
-      data["health_administrators_id"] = healthAdministratorsId;
     }
     if (residenceAreaCode.isNotEmpty) {
       data["residence_area_code"] = residenceAreaCode;
