@@ -6,6 +6,7 @@ class ResizableInput extends StatelessWidget {
   final String? label;
   final bool isRequired;
   final String? hintText;
+  final String? errorText;
 
   /// Número mínimo de líneas visibles.
   final int minLines;
@@ -15,6 +16,7 @@ class ResizableInput extends StatelessWidget {
     this.label,
     this.hintText,
     this.isRequired = false,
+    this.errorText,
     required this.controller,
     this.minLines = 5,
   }) : assert(minLines > 0);
@@ -49,9 +51,16 @@ class ResizableInput extends StatelessWidget {
             hintText: hintText,
             filled: true,
             fillColor: Colors.white,
+            errorText: errorText,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
             ),
+            enabledBorder: errorText != null
+                ? OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Colors.red),
+                  )
+                : null,
             contentPadding: const EdgeInsets.all(16),
           ),
           style: const TextStyle(fontSize: 16),

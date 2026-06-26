@@ -41,14 +41,12 @@ class UserModel {
   final String signatureDocumentUrl;
   final String? countryOfNationality;
   final String? countryOfNationalityCode;
-  final String? healthAdministratorCode;
-  final String? healthAdministratorName;
+  final String healthAdministratorId;
   final GenderIdentity? genderIdentity;
   final DisabilityCategory? disabilityCategory;
   final EthnicityType? ethnicity;
   final String? ethnicCommunity;
   final String userType;
-  final String healthAdministratorsId;
   final String residenceAreaCode;
 
   UserModel({
@@ -79,8 +77,7 @@ class UserModel {
     required this.middleName,
     this.countryOfNationality,
     required this.countryCode,
-    this.healthAdministratorCode,
-    this.healthAdministratorName,
+    this.healthAdministratorId = "",
     required this.secondLastName,
     required this.specialization,
     this.countryOfNationalityCode,
@@ -94,7 +91,6 @@ class UserModel {
     this.ethnicity,
     this.ethnicCommunity,
     this.userType = "",
-    this.healthAdministratorsId = "",
     this.residenceAreaCode = "",
   });
 
@@ -131,8 +127,7 @@ class UserModel {
     String? signatureDocumentUrl,
     String? countryOfNationality,
     String? identificationNumber,
-    String? healthAdministratorCode,
-    String? healthAdministratorName,
+    String? healthAdministratorId,
     String? identityDocumentBackUrl,
     String? countryOfNationalityCode,
     BiologicalSexType? biologicalSex,
@@ -141,7 +136,6 @@ class UserModel {
     EthnicityType? ethnicity,
     String? ethnicCommunity,
     String? userType,
-    String? healthAdministratorsId,
     String? residenceAreaCode,
   }) =>
       UserModel(
@@ -179,15 +173,13 @@ class UserModel {
         signatureDocumentUrl: signatureDocumentUrl ?? this.signatureDocumentUrl,
         countryOfNationality: countryOfNationality ?? this.countryOfNationality,
         identityDocumentBackUrl:identityDocumentBackUrl ?? this.identityDocumentBackUrl,
-        healthAdministratorName: healthAdministratorName ?? this.healthAdministratorName,
-        healthAdministratorCode: healthAdministratorCode ?? this.healthAdministratorCode,
+        healthAdministratorId: healthAdministratorId ?? this.healthAdministratorId,
         countryOfNationalityCode: countryOfNationalityCode ?? this.countryOfNationalityCode,
         genderIdentity: genderIdentity ?? this.genderIdentity,
         disabilityCategory: disabilityCategory ?? this.disabilityCategory,
         ethnicity: ethnicity ?? this.ethnicity,
         ethnicCommunity: ethnicCommunity ?? this.ethnicCommunity,
         userType: userType ?? this.userType,
-        healthAdministratorsId: healthAdministratorsId ?? this.healthAdministratorsId,
         residenceAreaCode: residenceAreaCode ?? this.residenceAreaCode,
       );
 
@@ -217,8 +209,7 @@ class UserModel {
         identificationType: json["identification_type"] ?? "",
         identityDocumentUrl: json["identity_document_url"] ?? "",
         identificationNumber: json["identification_number"] ?? "",
-        healthAdministratorCode: json["health_administrator_code"],
-        healthAdministratorName: json["health_administrator_name"],
+        healthAdministratorId: json["health_administrator_id"] ?? "",
         signatureDocumentUrl: json["signature_document_url"] ?? "",
         countryOfNationalityCode: json["country_of_nationality_code"],
         identityDocumentBackUrl: json["identity_document_back_url"] ?? "",
@@ -234,7 +225,6 @@ class UserModel {
         ethnicity: json["ethnicity"] != null ? _generateEthnicityType(json["ethnicity"]) : null,
         ethnicCommunity: json["ethnic_community"],
         userType: json["user_type"] ?? "",
-        healthAdministratorsId: json["health_administrators_id"] ?? "",
         residenceAreaCode: json["residence_area_code"] ?? "",
       );
 
@@ -273,14 +263,12 @@ class UserModel {
         countryOfNationality: null,
         identityDocumentBackUrl: "",
         countryOfNationalityCode: null,
-        healthAdministratorCode: null,
-        healthAdministratorName: null,
+        healthAdministratorId: "",
         genderIdentity: null,
         disabilityCategory: null,
         ethnicity: null,
         ethnicCommunity: null,
         userType: "",
-        healthAdministratorsId: "",
         residenceAreaCode: "",
       );
 
@@ -350,11 +338,8 @@ class UserModel {
     if (residenceArea != null) {
       data["residence_area"] = residenceArea;
     }
-    if (healthAdministratorCode != null) {
-      data["health_administrator_code"] = healthAdministratorCode;
-    }
-    if (healthAdministratorName != null) {
-      data["health_administrator_name"] = healthAdministratorName;
+    if (healthAdministratorId.isNotEmpty) {
+      data["health_administrator_id"] = healthAdministratorId;
     }
     if (genderIdentity != null) {
       data["gender_identity"] = genderIdentity!.name;
@@ -422,8 +407,7 @@ class UserModel {
         cityCode == other.cityCode &&
         cityName == other.cityName &&
         residenceArea == other.residenceArea &&
-        healthAdministratorCode == other.healthAdministratorCode &&
-        healthAdministratorName == other.healthAdministratorName &&
+        healthAdministratorId == other.healthAdministratorId &&
         signatureDocumentUrl == other.signatureDocumentUrl &&
         genderIdentity == other.genderIdentity &&
         disabilityCategory == other.disabilityCategory &&
