@@ -15,6 +15,7 @@ class CompanyModel {
   final String? address;
   final String? serviceProviderCode;
   final CompanyValidationStatus isValidated;
+  final bool isSystemProtected;
 
   CompanyModel({
     this.id,
@@ -30,6 +31,7 @@ class CompanyModel {
     required this.companyName,
     required this.companyType,
     this.isValidated = CompanyValidationStatus.itIsNotValidated,
+    this.isSystemProtected = false,
   });
 
   CompanyModel copyWith({
@@ -46,6 +48,7 @@ class CompanyModel {
     String? address,
     String? serviceProviderCode,
     CompanyValidationStatus? isValidated,
+    bool? isSystemProtected,
   }) =>
       CompanyModel(
         id: id ?? this.id,
@@ -61,6 +64,7 @@ class CompanyModel {
         address: address ?? this.address,
         serviceProviderCode: serviceProviderCode ?? this.serviceProviderCode,
         isValidated: isValidated ?? this.isValidated,
+        isSystemProtected: isSystemProtected ?? this.isSystemProtected,
       );
 
   factory CompanyModel.fromJson(Map<String, dynamic> json) => CompanyModel(
@@ -77,6 +81,7 @@ class CompanyModel {
         companyType: json['company_type'] != null ? CompanyType.fromString(json['company_type'].toString()) : CompanyType.personal,
         companyName: json['company_name'] != null && json['company_name'] != '' ? json['company_name'].toString() : '',
         isValidated: json['is_validated'] != null ? CompanyValidationStatus.fromString(json['is_validated'].toString()) : CompanyValidationStatus.itIsNotValidated,
+        isSystemProtected: json['is_system_protected'] == true,
       );
 
   factory CompanyModel.init() => CompanyModel(
@@ -95,6 +100,7 @@ class CompanyModel {
       'company_type': companyType.value,
       'created_at': createdAt.toIso8601String(),
       'is_validated': isValidated.value,
+      'is_system_protected': isSystemProtected,
     };
     if (id != null) data['id'] = id!;
     if (nitUrl != null) data['nit_url'] = nitUrl;
