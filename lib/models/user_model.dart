@@ -50,6 +50,8 @@ class UserModel {
   final String? ethnicCommunity;
   final String userType;
   final String residenceAreaCode;
+  final String secondPhone;
+  final String neighborhoodOrRuralSettlement;
 
   UserModel({
     this.id,
@@ -96,6 +98,8 @@ class UserModel {
     this.ethnicCommunity,
     this.userType = "",
     this.residenceAreaCode = "",
+    this.secondPhone = "",
+    this.neighborhoodOrRuralSettlement = "",
   });
 
   UserModel copyWith({
@@ -143,6 +147,8 @@ class UserModel {
     String? ethnicCommunity,
     String? userType,
     String? residenceAreaCode,
+    String? secondPhone,
+    String? neighborhoodOrRuralSettlement,
   }) =>
       UserModel(
         id: id ?? this.id,
@@ -194,6 +200,8 @@ class UserModel {
         ethnicCommunity: ethnicCommunity ?? this.ethnicCommunity,
         userType: userType ?? this.userType,
         residenceAreaCode: residenceAreaCode ?? this.residenceAreaCode,
+        secondPhone: secondPhone ?? this.secondPhone,
+        neighborhoodOrRuralSettlement: neighborhoodOrRuralSettlement ?? this.neighborhoodOrRuralSettlement,
       );
 
   factory UserModel.fromJson(json) => UserModel(
@@ -259,6 +267,8 @@ class UserModel {
         ethnicCommunity: json["ethnic_community"],
         userType: json["user_type"] ?? "",
         residenceAreaCode: json["residence_area_code"] ?? "",
+        secondPhone: json["second_phone"] ?? "",
+        neighborhoodOrRuralSettlement: json["neighborhood_or_rural_settlement"] ?? "",
       );
 
   factory UserModel.init() => UserModel(
@@ -305,6 +315,8 @@ class UserModel {
         ethnicCommunity: null,
         userType: "",
         residenceAreaCode: "",
+        secondPhone: "",
+        neighborhoodOrRuralSettlement: "",
       );
 
   Map<String, dynamic> toJson() {
@@ -393,6 +405,12 @@ class UserModel {
     }
     if (residenceAreaCode.isNotEmpty) {
       data["residence_area_code"] = residenceAreaCode;
+    }
+    if (secondPhone.isNotEmpty) {
+      data["second_phone"] = secondPhone;
+    }
+    if (neighborhoodOrRuralSettlement.isNotEmpty) {
+      data["neighborhood_or_rural_settlement"] = neighborhoodOrRuralSettlement;
     }
     if (signatureDocumentUrl.isNotEmpty) {
       data["signature_document_url"] = signatureDocumentUrl;

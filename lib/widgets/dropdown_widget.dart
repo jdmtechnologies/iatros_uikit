@@ -114,11 +114,29 @@ class _UiDropdownState extends State<UiDropdown> {
     setState(() {});
   }
 
+  static const Map<String, String> _diacriticsMap = {
+    'á': 'a', 'à': 'a', 'ä': 'a', 'â': 'a', 'ã': 'a',
+    'é': 'e', 'è': 'e', 'ë': 'e', 'ê': 'e',
+    'í': 'i', 'ì': 'i', 'ï': 'i', 'î': 'i',
+    'ó': 'o', 'ò': 'o', 'ö': 'o', 'ô': 'o', 'õ': 'o',
+    'ú': 'u', 'ù': 'u', 'ü': 'u', 'û': 'u',
+    'ñ': 'n',
+  };
+
+  String _normalize(String input) {
+    final buffer = StringBuffer();
+    for (final rune in input.toLowerCase().runes) {
+      final char = String.fromCharCode(rune);
+      buffer.write(_diacriticsMap[char] ?? char);
+    }
+    return buffer.toString();
+  }
+
   List<String> _getFilteredItems() {
-    final query = widget.controller.text.toLowerCase().trim();
+    final query = _normalize(widget.controller.text.trim());
     if (query.isEmpty) return widget.items;
     return widget.items
-        .where((item) => item.toLowerCase().contains(query))
+        .where((item) => _normalize(item).contains(query))
         .toList();
   }
 
