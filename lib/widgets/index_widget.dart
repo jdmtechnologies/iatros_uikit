@@ -571,6 +571,7 @@ class UiInputs {
     VoidCallback? onAddElement,
     String? labelButton,
     TextEditingController? searchController,
+    bool reverseSelectedOrder = false,
   }) =>
       UiMultiSelectDropdown<T>(
         key: key,
@@ -588,6 +589,7 @@ class UiInputs {
         onAddElement: onAddElement,
         labelButton: labelButton,
         searchController: searchController,
+        reverseSelectedOrder: reverseSelectedOrder,
       );
 
   Widget specializationSelector({
@@ -867,6 +869,7 @@ class _FeedbackPopUpContent extends StatelessWidget {
     required this.title,
     this.description,
     required this.onOk,
+    this.okLabel = 'OK',
     this.size = AlertSize.medium,
   });
 
@@ -874,6 +877,7 @@ class _FeedbackPopUpContent extends StatelessWidget {
   final String title;
   final String? description;
   final VoidCallback onOk;
+  final String okLabel;
   final AlertSize size;
 
   Color get _iconColor {
@@ -1057,7 +1061,7 @@ class _FeedbackPopUpContent extends StatelessWidget {
           SizedBox(
               height: size == AlertSize.short ? AppSpacing.md : AppSpacing.xl),
           UiPrimaryButton(
-            label: 'OK',
+            label: okLabel,
             width: double.infinity,
             onPressed: onOk,
           ),
@@ -1144,6 +1148,8 @@ class UiPopUp {
     BuildContext context, {
     required String title,
     String? description,
+    String okLabel = 'OK',
+    VoidCallback? onOkPressed,
     AlertSize size = AlertSize.medium,
   }) async {
     return showDialog(
@@ -1158,7 +1164,11 @@ class UiPopUp {
             type: _FeedbackPopUpType.info,
             title: title,
             description: description,
-            onOk: () => Navigator.of(context).pop(),
+            onOk: () {
+              Navigator.of(context).pop();
+              onOkPressed?.call();
+            },
+            okLabel: okLabel,
             size: size,
           ),
         );

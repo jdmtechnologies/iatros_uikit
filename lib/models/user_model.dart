@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iatros_uikit/iatros_ui_kit.dart';
 
-enum TypeUser { MEDICAL_STAFF, PATIENT }
+enum TypeUser { MEDICAL_STAFF, PATIENT, ADMIN_STAFF }
 
 class UserModel {
   final String? id;
@@ -472,9 +472,11 @@ TypeUser _generateTypeUser(String? text) {
   }
   if (text == TypeUser.PATIENT.name) {
     return TypeUser.PATIENT;
-  } else {
-    return TypeUser.MEDICAL_STAFF;
   }
+  if (text == TypeUser.ADMIN_STAFF.name) {
+    return TypeUser.ADMIN_STAFF;
+  }
+  return TypeUser.MEDICAL_STAFF;
 }
 
 Gender _generateGender(String? text) {

@@ -16,13 +16,10 @@ class UiMultiSelectDropdown<T> extends StatefulWidget {
   final ValueChanged<List<T>> onChanged;
   final Future<void> Function(String)? onSearch;
   final Widget Function(T)? children;
-  /// Si no es null, se muestra un botón para agregar un elemento manualmente
-  /// (p. ej. cuando la lista está vacía o no coincide con lo buscado).
   final VoidCallback? onAddElement;
-  /// Texto del botón de agregar; si es null se usa «Agregar elemento».
   final String? labelButton;
-  /// Controller del campo de búsqueda; si es null, el widget crea uno interno.
   final TextEditingController? searchController;
+  final bool reverseSelectedOrder;
 
   const UiMultiSelectDropdown({
     super.key,
@@ -40,6 +37,7 @@ class UiMultiSelectDropdown<T> extends StatefulWidget {
     this.isMultiselect = true,
     required this.displayText,
     required this.selectedItems,
+    this.reverseSelectedOrder = false,
   });
 
   @override
@@ -98,12 +96,16 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
 
   @override
   Widget build(BuildContext context) {
+    final searchWords = _searchText
+        .toLowerCase()
+        .split(RegExp(r'\s+'))
+        .where((word) => word.isNotEmpty)
+        .toList();
+
     final filteredOptions = widget.options.where((option) {
-      return !widget.selectedItems.contains(option) &&
-          widget
-              .displayText(option)
-              .toLowerCase()
-              .contains(_searchText.toLowerCase());
+      if (widget.selectedItems.contains(option)) return false;
+      final text = widget.displayText(option).toLowerCase();
+      return searchWords.every(text.contains);
     }).toList();
 
     const showDropdown = true;
@@ -189,12 +191,19 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
         if (widget.selectedItems.isNotEmpty) ...[
           UIHelpers.verticalSpaceSM,
           Column(
-            children: widget.selectedItems.map((item) {
+            children: (widget.reverseSelectedOrder
+                    ? widget.selectedItems.reversed
+                    : widget.selectedItems)
+                .map((item) {
               final hasChildren = widget.children != null;
 
               return Container(
+                key: ObjectKey(item),
                 width: double.infinity,
-                padding: const EdgeInsets.all(AppSpacing.paddingMD),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.paddingMD,
+                  vertical: AppSpacing.paddingXS,
+                ),
                 margin: const EdgeInsets.only(bottom: AppSpacing.xs),
                 decoration: BoxDecoration(
                   color: AppColors.primary.withOpacity(0.1),
@@ -218,6 +227,8 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
                             }
                           },
                           activeColor: AppColors.primary,
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: VisualDensity.compact,
                         ),
                         const SizedBox(width: AppSpacing.sm),
                         Expanded(
@@ -232,7 +243,7 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
                       ],
                     ),
                     if (hasChildren) ...[
-                      const SizedBox(height: AppSpacing.sm),
+                      const SizedBox(height: AppSpacing.xs),
                       SizedBox(
                         width: double.infinity,
                         child: widget.children!(item),
