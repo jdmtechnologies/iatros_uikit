@@ -188,73 +188,6 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
             ),
           ),
         ],
-        if (widget.selectedItems.isNotEmpty) ...[
-          UIHelpers.verticalSpaceSM,
-          Column(
-            children: (widget.reverseSelectedOrder
-                    ? widget.selectedItems.reversed
-                    : widget.selectedItems)
-                .map((item) {
-              final hasChildren = widget.children != null;
-
-              return Container(
-                key: ObjectKey(item),
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.paddingMD,
-                  vertical: AppSpacing.paddingXS,
-                ),
-                margin: const EdgeInsets.only(bottom: AppSpacing.xs),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius:
-                      BorderRadius.circular(AppSpacing.radiusMD),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: true,
-                          onChanged: (value) {
-                            if (value == false) {
-                              final newSelected =
-                                  List<T>.from(widget.selectedItems)
-                                    ..remove(item);
-                              widget.onChanged(newSelected);
-                            }
-                          },
-                          activeColor: AppColors.primary,
-                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          visualDensity: VisualDensity.compact,
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: Text(
-                            widget.displayText(item),
-                            style: AppTypography.bodyMedium.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (hasChildren) ...[
-                      const SizedBox(height: AppSpacing.xs),
-                      SizedBox(
-                        width: double.infinity,
-                        child: widget.children!(item),
-                      ),
-                    ],
-                  ],
-                ),
-              );
-            }).toList(),
-          ),
-        ],
         if (showDropdown) ...[
           UIHelpers.verticalSpaceSM,
           Container(
@@ -343,6 +276,73 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
                 );
               },
             ),
+          ),
+        ],
+        if (widget.selectedItems.isNotEmpty) ...[
+          UIHelpers.verticalSpaceSM,
+          Column(
+            children: (widget.reverseSelectedOrder
+                    ? widget.selectedItems.reversed
+                    : widget.selectedItems)
+                .map((item) {
+              final hasChildren = widget.children != null;
+
+              return Container(
+                key: ObjectKey(item),
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.paddingMD,
+                  vertical: AppSpacing.paddingXS,
+                ),
+                margin: const EdgeInsets.only(bottom: AppSpacing.xs),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius:
+                      BorderRadius.circular(AppSpacing.radiusMD),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: true,
+                          onChanged: (value) {
+                            if (value == false) {
+                              final newSelected =
+                                  List<T>.from(widget.selectedItems)
+                                    ..remove(item);
+                              widget.onChanged(newSelected);
+                            }
+                          },
+                          activeColor: AppColors.primary,
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Text(
+                            widget.displayText(item),
+                            style: AppTypography.bodyMedium.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (hasChildren) ...[
+                      const SizedBox(height: AppSpacing.xs),
+                      SizedBox(
+                        width: double.infinity,
+                        child: widget.children!(item),
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            }).toList(),
           ),
         ],
         if (widget.errorText != null) ...[
