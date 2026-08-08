@@ -18,6 +18,7 @@ class UiDropdown extends StatefulWidget {
   final bool isRequired;
   final InputType type;
   final double? width;
+  final FocusNode? focusNode;
 
   const UiDropdown({
     super.key,
@@ -32,6 +33,7 @@ class UiDropdown extends StatefulWidget {
     this.isRequired = false,
     this.type = InputType.dark,
     this.width,
+    this.focusNode,
   });
 
   @override
@@ -39,7 +41,8 @@ class UiDropdown extends StatefulWidget {
 }
 
 class _UiDropdownState extends State<UiDropdown> {
-  final FocusNode _focusNode = FocusNode();
+  FocusNode? _internalFocusNode;
+  FocusNode get _focusNode => widget.focusNode ?? (_internalFocusNode ??= FocusNode());
   final GlobalKey _fieldKey = GlobalKey();
   OverlayEntry? _overlayEntry;
   bool _isOverlayOpen = false;
@@ -54,7 +57,7 @@ class _UiDropdownState extends State<UiDropdown> {
   void dispose() {
     widget.controller.removeListener(_onControllerChanged);
     _focusNode.removeListener(_onFocusChange);
-    _focusNode.dispose();
+    _internalFocusNode?.dispose();
     _hideOverlay();
     super.dispose();
   }

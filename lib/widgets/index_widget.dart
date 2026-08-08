@@ -11,6 +11,8 @@ import 'package:iatros_uikit/utils/loading_overlay.dart';
 import 'package:iatros_uikit/widgets/dropdown_widget.dart';
 import 'package:iatros_uikit/widgets/base_card_widget.dart';
 import 'package:iatros_uikit/widgets/text_input_widget.dart';
+import 'package:iatros_uikit/components/inputs/focusable_resizable_input.dart';
+import 'package:iatros_uikit/widgets/focusable_text_input_widget.dart';
 import 'package:iatros_uikit/widgets/iatros_logo_widget.dart';
 import 'package:iatros_uikit/widgets/icon_button_widget.dart';
 import 'package:iatros_uikit/models/biological_sex_type.dart';
@@ -227,6 +229,7 @@ class UiInputs {
     bool isRequired = false,
     InputType type = InputType.dark,
     double? width,
+    FocusNode? focusNode,
   }) =>
       UiDropdown(
         key: key,
@@ -241,6 +244,7 @@ class UiInputs {
         isRequired: isRequired,
         type: type,
         width: width,
+        focusNode: focusNode,
       );
 
   Widget textInput({
@@ -292,6 +296,53 @@ class UiInputs {
         inputFormatters: inputFormatters,
       );
 
+  /// Igual a [textInput] pero acepta un [focusNode] externo, para
+  /// integrarlo a una cadena de foco explícita (p. ej. avanzar con Tab).
+  Widget focusableTextInput({
+    Key? key,
+    String? hint,
+    String? label,
+    int? maxLines,
+    int? maxLength,
+    String? errorText,
+    Widget? prefixIcon,
+    Widget? suffixIcon,
+    VoidCallback? onTap,
+    FocusNode? focusNode,
+    bool isRequired = false,
+    bool isReadOnly = false,
+    bool obscureText = false,
+    TextInputType? keyboardType,
+    ValueChanged<String>? onChanged,
+    Iterable<String>? autofillHints,
+    InputType type = InputType.dark,
+    TextEditingController? controller,
+    String? Function(String?)? validator,
+    List<TextInputFormatter>? inputFormatters,
+  }) =>
+      UiFocusableTextInput(
+        key: key,
+        hint: hint,
+        type: type,
+        label: label,
+        onTap: onTap,
+        focusNode: focusNode,
+        maxLines: maxLines,
+        maxLength: maxLength,
+        validator: validator,
+        errorText: errorText,
+        onChanged: onChanged,
+        controller: controller,
+        prefixIcon: prefixIcon,
+        suffixIcon: suffixIcon,
+        isRequired: isRequired,
+        isReadOnly: isReadOnly,
+        obscureText: obscureText,
+        keyboardType: keyboardType,
+        autofillHints: autofillHints,
+        inputFormatters: inputFormatters,
+      );
+
   Widget passwordInput({
     Key? key,
     String? hint,
@@ -331,6 +382,29 @@ class UiInputs {
         label: label,
         hintText: hintText,
         errorText: errorText,
+        controller: controller,
+        isRequired: isRequired,
+        minLines: minLines,
+      );
+
+  /// Igual a [resizableInput] pero acepta un [focusNode] externo, para
+  /// integrarlo a una cadena de foco explícita (p. ej. avanzar con Tab).
+  Widget focusableResizableInput({
+    Key? key,
+    String? label,
+    String? hintText,
+    String? errorText,
+    FocusNode? focusNode,
+    bool isRequired = false,
+    required TextEditingController controller,
+    int minLines = 5,
+  }) =>
+      FocusableResizableInput(
+        key: key,
+        label: label,
+        hintText: hintText,
+        errorText: errorText,
+        focusNode: focusNode,
         controller: controller,
         isRequired: isRequired,
         minLines: minLines,
@@ -572,6 +646,7 @@ class UiInputs {
     String? labelButton,
     TextEditingController? searchController,
     bool reverseSelectedOrder = false,
+    FocusNode? focusNode,
   }) =>
       UiMultiSelectDropdown<T>(
         key: key,
@@ -590,6 +665,7 @@ class UiInputs {
         labelButton: labelButton,
         searchController: searchController,
         reverseSelectedOrder: reverseSelectedOrder,
+        focusNode: focusNode,
       );
 
   Widget specializationSelector({

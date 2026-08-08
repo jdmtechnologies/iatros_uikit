@@ -52,6 +52,7 @@ export 'widgets/index_widget.dart';
 export 'widgets/dropdown_widget.dart';
 export 'widgets/base_card_widget.dart';
 export 'widgets/text_input_widget.dart';
+export 'widgets/focusable_text_input_widget.dart';
 export 'widgets/icon_button_widget.dart';
 export 'widgets/iatros_logo_widget.dart';
 export 'widgets/image_button_widget.dart';

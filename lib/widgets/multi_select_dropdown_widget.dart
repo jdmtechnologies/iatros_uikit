@@ -20,6 +20,7 @@ class UiMultiSelectDropdown<T> extends StatefulWidget {
   final String? labelButton;
   final TextEditingController? searchController;
   final bool reverseSelectedOrder;
+  final FocusNode? focusNode;
 
   const UiMultiSelectDropdown({
     super.key,
@@ -38,6 +39,7 @@ class UiMultiSelectDropdown<T> extends StatefulWidget {
     required this.displayText,
     required this.selectedItems,
     this.reverseSelectedOrder = false,
+    this.focusNode,
   });
 
   @override
@@ -47,6 +49,7 @@ class UiMultiSelectDropdown<T> extends StatefulWidget {
 
 class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
   TextEditingController? _ownedController;
+  final _resultsScrollController = ScrollController();
   String _searchText = '';
 
   TextEditingController get _effectiveController =>
@@ -91,6 +94,7 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
   void dispose() {
     _effectiveController.removeListener(_onSearchChanged);
     _ownedController?.dispose();
+    _resultsScrollController.dispose();
     super.dispose();
   }
 
@@ -135,6 +139,7 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
           borderRadius: BorderRadius.circular(32),
           child: TextField(
             controller: _effectiveController,
+            focusNode: widget.focusNode,
             textInputAction: TextInputAction.search,
             decoration: InputDecoration(
               hintText: widget.hint,
@@ -206,75 +211,88 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
                 ),
               ],
             ),
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: filteredOptions.length,
-              itemBuilder: (context, index) {
-                final option = filteredOptions[index];
-                final isSelected = widget.selectedItems.contains(option);
+            child: RawScrollbar(
+              controller: _resultsScrollController,
+              thumbVisibility: true,
+              thickness: 6,
+              radius: const Radius.circular(8),
+              thumbColor: AppColors.gray400,
+              child: ListView.builder(
+                controller: _resultsScrollController,
+                shrinkWrap: true,
+                itemCount: filteredOptions.length,
+                itemBuilder: (context, index) {
+                  final option = filteredOptions[index];
+                  final isSelected = widget.selectedItems.contains(option);
 
-                return InkWell(
-                  onTap: () {
-                    final newSelected = List<T>.from(widget.selectedItems);
-                    if (isSelected) {
-                      newSelected.remove(option);
-                    } else {
-                      if (widget.isMultiselect) {
-                        newSelected.add(option);
+                  return InkWell(
+                    onTap: () {
+                      final newSelected = List<T>.from(widget.selectedItems);
+                      if (isSelected) {
+                        newSelected.remove(option);
                       } else {
-                        newSelected.clear();
-                        newSelected.add(option);
+                        if (widget.isMultiselect) {
+                          newSelected.add(option);
+                        } else {
+                          newSelected.clear();
+                          newSelected.add(option);
+                        }
                       }
-                    }
-                    widget.onChanged(newSelected);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(AppSpacing.paddingMD),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppColors.primary.withOpacity(0.1)
-                          : null,
-                    ),
-                    child: Row(
-                      children: [
-                        Checkbox(
-                          value: isSelected,
-                          onChanged: (value) {
-                            final newSelected =
-                                List<T>.from(widget.selectedItems);
-                            if (value == true) {
-                              if (widget.isMultiselect) {
-                                newSelected.add(option);
+                      widget.onChanged(newSelected);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(
+                        left: AppSpacing.paddingMD,
+                        top: AppSpacing.paddingMD,
+                        bottom: AppSpacing.paddingMD,
+                        right: AppSpacing.paddingMD + 14,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? AppColors.primary.withOpacity(0.1)
+                            : null,
+                      ),
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            value: isSelected,
+                            onChanged: (value) {
+                              final newSelected =
+                                  List<T>.from(widget.selectedItems);
+                              if (value == true) {
+                                if (widget.isMultiselect) {
+                                  newSelected.add(option);
+                                } else {
+                                  newSelected.clear();
+                                  newSelected.add(option);
+                                }
                               } else {
-                                newSelected.clear();
-                                newSelected.add(option);
+                                newSelected.remove(option);
                               }
-                            } else {
-                              newSelected.remove(option);
-                            }
-                            widget.onChanged(newSelected);
-                          },
-                          activeColor: AppColors.primary,
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: Text(
-                            widget.displayText(option),
-                            style: AppTypography.bodyMedium.copyWith(
-                              fontWeight: isSelected
-                                  ? FontWeight.w600
-                                  : FontWeight.normal,
-                              color: isSelected
-                                  ? AppColors.primary
-                                  : AppColors.textPrimary,
+                              widget.onChanged(newSelected);
+                            },
+                            activeColor: AppColors.primary,
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Expanded(
+                            child: Text(
+                              widget.displayText(option),
+                              style: AppTypography.bodyMedium.copyWith(
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
+                                color: isSelected
+                                    ? AppColors.primary
+                                    : AppColors.textPrimary,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
         ],
