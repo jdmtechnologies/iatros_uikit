@@ -303,6 +303,7 @@ class UiInputs {
   Widget currencyInput({
     Key? key,
     String? label,
+    String? hint,
     String? helperText,
     String? errorText,
     String currencySymbol = '\$ ',
@@ -316,6 +317,7 @@ class UiInputs {
       UiCurrencyInput(
         key: key,
         label: label,
+        hint: hint,
         helperText: helperText,
         errorText: errorText,
         currencySymbol: currencySymbol,

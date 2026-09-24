@@ -31,6 +31,7 @@ class _ThousandsSeparatorFormatter extends TextInputFormatter {
 /// (que la fachada genérica de texto no expone).
 class UiCurrencyInput extends StatelessWidget {
   final String? label;
+  final String? hint;
   final String? helperText;
   final String? errorText;
   final String currencySymbol;
@@ -44,6 +45,7 @@ class UiCurrencyInput extends StatelessWidget {
   const UiCurrencyInput({
     super.key,
     this.label,
+    this.hint,
     this.helperText,
     this.errorText,
     this.currencySymbol = '\$ ',
@@ -89,6 +91,7 @@ class UiCurrencyInput extends StatelessWidget {
           inputFormatters: [_ThousandsSeparatorFormatter()],
           style: AppTypography.bodyMedium,
           decoration: InputDecoration(
+            hintText: hint,
             prefixText: currencySymbol,
             helperText: helperText,
             errorText: errorText,
