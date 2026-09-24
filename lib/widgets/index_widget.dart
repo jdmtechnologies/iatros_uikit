@@ -21,6 +21,7 @@ import 'package:iatros_uikit/widgets/image_button_widget.dart';
 import 'package:iatros_uikit/widgets/custom_floating_button.dart';
 import 'package:iatros_uikit/widgets/custom_speed_dial_hild.dart';
 import 'package:iatros_uikit/widgets/checkbox_input_widget.dart';
+import 'package:iatros_uikit/widgets/currency_input_widget.dart';
 import 'package:iatros_uikit/widgets/password_input_widget.dart';
 import 'package:iatros_uikit/models/address_location_model.dart';
 import 'package:iatros_uikit/models/medical_specialization.dart';
@@ -294,6 +295,36 @@ class UiInputs {
         semiObscureTextStart: semiObscureTextStart,
         semiObscureTextEnd: semiObscureTextEnd,
         inputFormatters: inputFormatters,
+      );
+
+  /// Input de texto para valores monetarios: mismo estilo que [textInput],
+  /// con separador de miles automático y soporte de `prefixText`/`helperText`
+  /// (que [textInput] no expone, solo `prefixIcon`).
+  Widget currencyInput({
+    Key? key,
+    String? label,
+    String? helperText,
+    String? errorText,
+    String currencySymbol = '\$ ',
+    bool isRequired = false,
+    InputType type = InputType.dark,
+    FocusNode? focusNode,
+    TextEditingController? controller,
+    ValueChanged<String>? onChanged,
+    String? Function(String?)? validator,
+  }) =>
+      UiCurrencyInput(
+        key: key,
+        label: label,
+        helperText: helperText,
+        errorText: errorText,
+        currencySymbol: currencySymbol,
+        isRequired: isRequired,
+        type: type,
+        focusNode: focusNode,
+        controller: controller,
+        onChanged: onChanged,
+        validator: validator,
       );
 
   /// Igual a [textInput] pero acepta un [focusNode] externo, para
