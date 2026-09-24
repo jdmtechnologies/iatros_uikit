@@ -8,6 +8,7 @@ class UiDatePickerInput extends StatelessWidget {
   final String? label;
   final bool isRequired;
   final String? errorText;
+  final String? hintText;
   final DateTime? lastDate;
   final DateTime? firstDate;
   final DateTime? initialDate;
@@ -21,6 +22,7 @@ class UiDatePickerInput extends StatelessWidget {
     this.lastDate,
     this.firstDate,
     this.errorText,
+    this.hintText,
     this.initialDate,
     this.selectedDateNotifier,
     this.isRequired = false,
@@ -77,6 +79,8 @@ class UiDatePickerInput extends StatelessWidget {
       builder: (context, selectedDate, _) {
         final String displayText =
             selectedDate != null ? _formatDate(selectedDate) : '';
+        final String effectiveHintText =
+            hintText ?? 'Selecciona tu fecha de nacimiento';
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,7 +109,7 @@ class UiDatePickerInput extends StatelessWidget {
               onTap: () => _selectDate(context),
               child: InputDecorator(
                 decoration: InputDecoration(
-                  hintText: 'Selecciona tu fecha de nacimiento',
+                  hintText: effectiveHintText,
                   filled: true,
                   fillColor: AppColors.surface,
                   border: OutlineInputBorder(
@@ -157,9 +161,7 @@ class UiDatePickerInput extends StatelessWidget {
                   errorText: errorText,
                 ),
                 child: Text(
-                  displayText.isEmpty
-                      ? 'Selecciona tu fecha de nacimiento'
-                      : displayText,
+                  displayText.isEmpty ? effectiveHintText : displayText,
                   style: AppTypography.bodyMedium.copyWith(
                     color: displayText.isEmpty
                         ? AppColors.textSecondary

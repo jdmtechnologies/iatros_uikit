@@ -420,6 +420,7 @@ class UiInputs {
     ValueChanged<DateTime>? onDateSelected,
     bool isRequired = false,
     String? errorText,
+    String? hintText,
     InputType type = InputType.dark,
   }) =>
       UiDatePickerInput(
@@ -432,6 +433,7 @@ class UiInputs {
         onDateSelected: onDateSelected,
         isRequired: isRequired,
         errorText: errorText,
+        hintText: hintText,
         type: type,
       );
 
