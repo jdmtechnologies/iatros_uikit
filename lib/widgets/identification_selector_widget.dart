@@ -10,6 +10,10 @@ class UiIdentificationSelector extends StatelessWidget {
   final TextEditingController? numberController;
   final ValueChanged<String?>? onTypeChanged;
   final ValueChanged<String>? onNumberChanged;
+
+  /// Se dispara al presionar Enter (o el botón de búsqueda del teclado)
+  /// dentro del campo de número de identificación.
+  final ValueChanged<String>? onSubmitted;
   final String? errorText;
   final bool isRequired;
   final bool readOnly;
@@ -22,6 +26,7 @@ class UiIdentificationSelector extends StatelessWidget {
     this.errorText,
     this.onTypeChanged,
     this.onNumberChanged,
+    this.onSubmitted,
     this.numberController,
     this.isRequired = false,
     this.readOnly = false,
@@ -121,9 +126,11 @@ class UiIdentificationSelector extends StatelessWidget {
         ),
       ),
       keyboardType: TextInputType.number,
+      textInputAction: TextInputAction.search,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       showCursor: !readOnly,
       onChanged: readOnly ? null : onNumberChanged,
+      onFieldSubmitted: readOnly ? null : onSubmitted,
     );
 
     return Column(
