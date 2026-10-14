@@ -37,6 +37,8 @@ import 'package:iatros_uikit/widgets/glassmorphism_card_widget.dart';
 import 'package:iatros_uikit/components/inputs/resizable_input.dart';
 import 'package:iatros_uikit/widgets/medical_background_widget.dart';
 import 'package:iatros_uikit/widgets/blood_type_selector_widget.dart';
+import 'package:iatros_uikit/widgets/chart_type_selector_widget.dart';
+import 'package:iatros_uikit/models/chart_template_model.dart';
 import 'package:iatros_uikit/widgets/multi_select_dropdown_widget.dart';
 import 'package:iatros_uikit/widgets/identification_selector_widget.dart';
 import 'package:iatros_uikit/widgets/simple_medical_background_widget.dart';
@@ -567,6 +569,23 @@ class UiInputs {
       UiBloodTypeSelector(
         key: key,
         selectedBloodTypeNotifier: selectedBloodTypeNotifier,
+        onChanged: onChanged,
+        errorText: errorText,
+        isRequired: isRequired,
+        type: type,
+      );
+
+  Widget chartTypeSelector({
+    Key? key,
+    ValueNotifier<ChartTemplateType?>? selectedChartTypeNotifier,
+    ValueChanged<ChartTemplateType?>? onChanged,
+    String? errorText,
+    bool isRequired = false,
+    InputType type = InputType.dark,
+  }) =>
+      UiChartTypeSelector(
+        key: key,
+        selectedChartTypeNotifier: selectedChartTypeNotifier,
         onChanged: onChanged,
         errorText: errorText,
         isRequired: isRequired,
