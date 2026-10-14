@@ -26,6 +26,7 @@ export 'models/medical_specialization.dart';
 export 'models/suscription_settings_model.dart';
 export 'models/health_administrators_model.dart';
 export 'models/company_response_model.dart';
+export 'models/chart_template_model.dart';
 
 // Extensiones
 export 'extension/context_extension.dart';
