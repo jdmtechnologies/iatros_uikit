@@ -191,6 +191,33 @@ class ChartCoordinateModel {
   Map<String, dynamic> toJson() => {"x": x, "y": y};
 }
 
+/// Un parámetro de la plantilla: un campo del examen físico ([item]) con un
+/// valor numérico asociado ([value]). En JSON: `{"item": "fc", "value": 80}`.
+class ChartParameterModel {
+  final PhysicalExamField item;
+  final double value;
+
+  const ChartParameterModel({required this.item, required this.value});
+
+  ChartParameterModel copyWith({PhysicalExamField? item, double? value}) =>
+      ChartParameterModel(
+        item: item ?? this.item,
+        value: value ?? this.value,
+      );
+
+  /// `null` si `item` no es un [PhysicalExamField] válido.
+  static ChartParameterModel? tryFromJson(Map<String, dynamic> json) {
+    final item = physicalExamFieldFromString(json["item"]?.toString());
+    if (item == null) return null;
+    return ChartParameterModel(
+      item: item,
+      value: ChartTemplateModel._toDouble(json["value"]),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {"item": item.value, "value": value};
+}
+
 /// Plantilla para las gráficas: tipo de gráfica, ejes (nombre, rango y de
 /// qué campo del examen físico sale cada uno), de qué campos toma los datos
 /// y las curvas de referencia — una plantilla puede tener varias curvas en la
@@ -216,6 +243,10 @@ class ChartTemplateModel {
   /// Curvas de referencia: cada lista interna es una curva con sus puntos.
   final List<List<ChartCoordinateModel>> series;
 
+  /// Parámetros de la plantilla: cada uno es un campo del examen físico con
+  /// un valor, ej. `[{"item": "weight", "value": 3.5}]`.
+  final List<ChartParameterModel> parameterization;
+
   ChartTemplateModel({
     this.id,
     required this.name,
@@ -233,6 +264,7 @@ class ChartTemplateModel {
     required this.updateAt,
     this.getDataFrom,
     this.series = const [],
+    this.parameterization = const [],
   });
 
   /// [mainTopicX]/[mainTopicY]/[getDataFrom] aceptan `null` explícito vía
@@ -258,6 +290,7 @@ class ChartTemplateModel {
     List<PhysicalExamField>? getDataFrom,
     bool clearGetDataFrom = false,
     List<List<ChartCoordinateModel>>? series,
+    List<ChartParameterModel>? parameterization,
   }) =>
       ChartTemplateModel(
         id: id ?? this.id,
@@ -277,6 +310,7 @@ class ChartTemplateModel {
         getDataFrom:
             clearGetDataFrom ? null : (getDataFrom ?? this.getDataFrom),
         series: series ?? this.series,
+        parameterization: parameterization ?? this.parameterization,
       );
 
   factory ChartTemplateModel.fromRawJson(String str) =>
@@ -313,6 +347,7 @@ class ChartTemplateModel {
                 .toList()
             : null,
         series: _seriesFromJson(json["series"]),
+        parameterization: _parameterizationFromJson(json["parameterization"]),
       );
 
   factory ChartTemplateModel.init() => ChartTemplateModel(
@@ -348,7 +383,20 @@ class ChartTemplateModel {
         "series": series
             .map((curve) => curve.map((p) => p.toJson()).toList())
             .toList(),
+        "parameterization": parameterization.map((p) => p.toJson()).toList(),
       };
+
+  /// `parameterization` llega como `[{"item":"fc","value":80}, ...]`;
+  /// elementos mal formados o con `item` desconocido se descartan.
+  static List<ChartParameterModel> _parameterizationFromJson(dynamic value) {
+    if (value is! List) return [];
+    return value
+        .whereType<Map>()
+        .map((p) =>
+            ChartParameterModel.tryFromJson(Map<String, dynamic>.from(p)))
+        .whereType<ChartParameterModel>()
+        .toList();
+  }
 
   /// `series` llega como `[[{"x":0,"y":49.9}, ...], [...]]`; filas o puntos
   /// mal formados se descartan en vez de romper toda la plantilla.
