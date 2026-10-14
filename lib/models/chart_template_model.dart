@@ -191,31 +191,131 @@ class ChartCoordinateModel {
   Map<String, dynamic> toJson() => {"x": x, "y": y};
 }
 
-/// Un parámetro de la plantilla: un campo del examen físico ([item]) con un
-/// valor numérico asociado ([value]). En JSON: `{"item": "fc", "value": 80}`.
+/// Comparación que aplica un [ChartParameterModel] entre el campo del
+/// paciente y su valor (ej. Peso `>=` 3.5).
+enum ComparisonOperator {
+  equal, // =
+  notEqual, // ≠
+  greaterThan, // >
+  greaterThanOrEqual, // ≥
+  lessThan, // <
+  lessThanOrEqual, // ≤
+}
+
+extension ComparisonOperatorExtension on ComparisonOperator {
+  /// Símbolo matemático, ej. "≥".
+  String get symbol {
+    switch (this) {
+      case ComparisonOperator.equal:
+        return '=';
+      case ComparisonOperator.notEqual:
+        return '≠';
+      case ComparisonOperator.greaterThan:
+        return '>';
+      case ComparisonOperator.greaterThanOrEqual:
+        return '≥';
+      case ComparisonOperator.lessThan:
+        return '<';
+      case ComparisonOperator.lessThanOrEqual:
+        return '≤';
+    }
+  }
+
+  /// Nombre en español, ej. "Mayor o igual".
+  String get displayName {
+    switch (this) {
+      case ComparisonOperator.equal:
+        return 'Igual';
+      case ComparisonOperator.notEqual:
+        return 'Distinto';
+      case ComparisonOperator.greaterThan:
+        return 'Mayor';
+      case ComparisonOperator.greaterThanOrEqual:
+        return 'Mayor o igual';
+      case ComparisonOperator.lessThan:
+        return 'Menor';
+      case ComparisonOperator.lessThanOrEqual:
+        return 'Menor o igual';
+    }
+  }
+
+  /// Valor guardado en el JSON (`operator`).
+  String get value => name;
+
+  /// `true` si [left] cumple la comparación contra [right].
+  bool evaluate(double left, double right) {
+    switch (this) {
+      case ComparisonOperator.equal:
+        return left == right;
+      case ComparisonOperator.notEqual:
+        return left != right;
+      case ComparisonOperator.greaterThan:
+        return left > right;
+      case ComparisonOperator.greaterThanOrEqual:
+        return left >= right;
+      case ComparisonOperator.lessThan:
+        return left < right;
+      case ComparisonOperator.lessThanOrEqual:
+        return left <= right;
+    }
+  }
+}
+
+ComparisonOperator? comparisonOperatorFromString(String? value) {
+  final v = value?.trim();
+  if (v == null || v.isEmpty) return null;
+  for (final op in ComparisonOperator.values) {
+    if (op.value == v) return op;
+  }
+  return null;
+}
+
+/// Un parámetro de la plantilla: un campo del examen físico ([item]) que se
+/// compara ([operator]) contra un valor ([value]).
+/// En JSON: `{"item": "weight", "operator": "greaterThanOrEqual", "value": 3.5}`.
 class ChartParameterModel {
   final PhysicalExamField item;
+  final ComparisonOperator operator;
   final double value;
 
-  const ChartParameterModel({required this.item, required this.value});
+  const ChartParameterModel({
+    required this.item,
+    this.operator = ComparisonOperator.equal,
+    required this.value,
+  });
 
-  ChartParameterModel copyWith({PhysicalExamField? item, double? value}) =>
+  ChartParameterModel copyWith({
+    PhysicalExamField? item,
+    ComparisonOperator? operator,
+    double? value,
+  }) =>
       ChartParameterModel(
         item: item ?? this.item,
+        operator: operator ?? this.operator,
         value: value ?? this.value,
       );
 
-  /// `null` si `item` no es un [PhysicalExamField] válido.
+  /// `null` si `item` no es un [PhysicalExamField] válido. Si `operator`
+  /// falta o es desconocido se usa [ComparisonOperator.equal].
   static ChartParameterModel? tryFromJson(Map<String, dynamic> json) {
     final item = physicalExamFieldFromString(json["item"]?.toString());
     if (item == null) return null;
     return ChartParameterModel(
       item: item,
+      operator: comparisonOperatorFromString(json["operator"]?.toString()) ??
+          ComparisonOperator.equal,
       value: ChartTemplateModel._toDouble(json["value"]),
     );
   }
 
-  Map<String, dynamic> toJson() => {"item": item.value, "value": value};
+  /// `true` si [patientValue] cumple este parámetro.
+  bool matches(double patientValue) => operator.evaluate(patientValue, value);
+
+  Map<String, dynamic> toJson() => {
+        "item": item.value,
+        "operator": operator.value,
+        "value": value,
+      };
 }
 
 /// Plantilla para las gráficas: tipo de gráfica, ejes (nombre, rango y de
@@ -243,8 +343,9 @@ class ChartTemplateModel {
   /// Curvas de referencia: cada lista interna es una curva con sus puntos.
   final List<List<ChartCoordinateModel>> series;
 
-  /// Parámetros de la plantilla: cada uno es un campo del examen físico con
-  /// un valor, ej. `[{"item": "weight", "value": 3.5}]`.
+  /// Parámetros de la plantilla: cada uno compara un campo del examen físico
+  /// contra un valor, ej.
+  /// `[{"item": "weight", "operator": "greaterThanOrEqual", "value": 3.5}]`.
   final List<ChartParameterModel> parameterization;
 
   ChartTemplateModel({
@@ -386,7 +487,8 @@ class ChartTemplateModel {
         "parameterization": parameterization.map((p) => p.toJson()).toList(),
       };
 
-  /// `parameterization` llega como `[{"item":"fc","value":80}, ...]`;
+  /// `parameterization` llega como
+  /// `[{"item":"fc","operator":"lessThan","value":80}, ...]`;
   /// elementos mal formados o con `item` desconocido se descartan.
   static List<ChartParameterModel> _parameterizationFromJson(dynamic value) {
     if (value is! List) return [];
