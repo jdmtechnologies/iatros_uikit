@@ -13,6 +13,7 @@ enum PhysicalExamField {
   height, // Altura
   weight, // Peso
   imc, // Índice de masa corporal
+  age, // Edad del paciente al momento de la consulta (no es un input)
 }
 
 extension PhysicalExamFieldExtension on PhysicalExamField {
@@ -39,6 +40,8 @@ extension PhysicalExamFieldExtension on PhysicalExamField {
         return 'Peso';
       case PhysicalExamField.imc:
         return 'IMC';
+      case PhysicalExamField.age:
+        return 'Edad';
     }
   }
 
@@ -65,11 +68,14 @@ extension PhysicalExamFieldExtension on PhysicalExamField {
         return 'Kg';
       case PhysicalExamField.imc:
         return 'Índice de masa corporal';
+      case PhysicalExamField.age:
+        return 'Años';
     }
   }
 
   /// Valor guardado en el JSON — coincide con la columna de
-  /// `clinical_histories`.
+  /// `clinical_histories`, salvo [PhysicalExamField.age], que se calcula con
+  /// la fecha de nacimiento del paciente.
   String get value => name;
 }
 
