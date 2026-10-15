@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui' show Color;
 
 /// Campos del formulario "Objetivo - Examen físico" de la historia clínica
 /// que pueden alimentar una gráfica (ver [ChartTemplateModel.getDataFrom]).
@@ -178,8 +179,9 @@ ChartTemplateType? chartTemplateTypeFromString(String? value) {
 /// Un punto (X, Y) de una curva ([ChartSeriesModel.points]).
 ///
 /// JSON: `{"x": 36, "y": 102.4, "x_is_blocked": false, "y_is_blocked": false,
-/// "is_required": false, "name": null}`. Los campos nuevos son opcionales al
-/// leer, así que también se leen los puntos guardados como `{"x":…,"y":…}`.
+/// "is_required": false}`. Los campos nuevos son opcionales al leer, así que
+/// también se leen los puntos guardados como `{"x":…,"y":…}`. Un `"name"`
+/// guardado antes se ignora y desaparece al volver a guardar.
 ///
 /// [x] y [y] pueden ser `null` cuando ese valor lo completa el cliente
 /// (ver [ChartSeriesModel.getExternalData]).
@@ -196,23 +198,19 @@ class ChartCoordinateModel {
   /// El punto es obligatorio.
   final bool isRequired;
 
-  /// Nombre del punto (fila); `null` si no tiene.
-  final String? name;
-
   const ChartCoordinateModel({
     this.x,
     this.y,
     this.xIsBlocked = false,
     this.yIsBlocked = false,
     this.isRequired = false,
-    this.name,
   });
 
   /// `true` si tiene X y Y (se puede dibujar).
   bool get isComplete => x != null && y != null;
 
-  /// [x]/[y]/[name] aceptan `null` explícito vía [clearX]/[clearY]/
-  /// [clearName], ya que `null` en sí significa "no cambiar".
+  /// [x]/[y] aceptan `null` explícito vía [clearX]/[clearY], ya que `null`
+  /// en sí significa "no cambiar".
   ChartCoordinateModel copyWith({
     double? x,
     bool clearX = false,
@@ -221,8 +219,6 @@ class ChartCoordinateModel {
     bool? xIsBlocked,
     bool? yIsBlocked,
     bool? isRequired,
-    String? name,
-    bool clearName = false,
   }) =>
       ChartCoordinateModel(
         x: clearX ? null : (x ?? this.x),
@@ -230,7 +226,6 @@ class ChartCoordinateModel {
         xIsBlocked: xIsBlocked ?? this.xIsBlocked,
         yIsBlocked: yIsBlocked ?? this.yIsBlocked,
         isRequired: isRequired ?? this.isRequired,
-        name: clearName ? null : (name ?? this.name),
       );
 
   factory ChartCoordinateModel.fromJson(Map<String, dynamic> json) =>
@@ -240,7 +235,6 @@ class ChartCoordinateModel {
         xIsBlocked: json["x_is_blocked"] == true,
         yIsBlocked: json["y_is_blocked"] == true,
         isRequired: json["is_required"] == true,
-        name: ChartTemplateModel._toNullableString(json["name"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -249,13 +243,45 @@ class ChartCoordinateModel {
         "x_is_blocked": xIsBlocked,
         "y_is_blocked": yIsBlocked,
         "is_required": isRequired,
-        "name": name,
       };
+}
+
+/// Forma del marcador que se dibuja en cada punto de una curva.
+enum ChartMarkerShape {
+  circle, // Círculo
+  triangle, // Triángulo
+  cross, // X
+}
+
+extension ChartMarkerShapeExtension on ChartMarkerShape {
+  String get displayName {
+    switch (this) {
+      case ChartMarkerShape.circle:
+        return 'Círculo';
+      case ChartMarkerShape.triangle:
+        return 'Triángulo';
+      case ChartMarkerShape.cross:
+        return 'X';
+    }
+  }
+
+  /// Valor guardado en el JSON (`marker_shape`).
+  String get value => name;
+}
+
+ChartMarkerShape? chartMarkerShapeFromString(String? value) {
+  final v = value?.trim();
+  if (v == null || v.isEmpty) return null;
+  for (final shape in ChartMarkerShape.values) {
+    if (shape.value == v) return shape;
+  }
+  return null;
 }
 
 /// Una curva de la plantilla (un elemento de `series`).
 ///
 /// JSON: `{"name": "P50", "get_external_data": false, "is_required": false,
+/// "marker_shape": "circle", "color": "#1E88E5",
 /// "points": [{"x": 0, "y": 49.9, ...}, ...]}`.
 class ChartSeriesModel {
   /// Nombre de la curva (ej. "P50"); `null` si no tiene.
@@ -269,30 +295,63 @@ class ChartSeriesModel {
   /// La curva es obligatoria.
   final bool isRequired;
 
+  /// Forma del marcador de todos los puntos de la curva.
+  final ChartMarkerShape markerShape;
+
+  /// Color de la línea (y sus marcadores) en hex `#RRGGBB`; `null` para el
+  /// color automático de la gráfica. Ver [displayColor].
+  final String? color;
+
   final List<ChartCoordinateModel> points;
 
   const ChartSeriesModel({
     this.name,
     this.getExternalData = false,
     this.isRequired = false,
+    this.markerShape = ChartMarkerShape.circle,
+    this.color,
     this.points = const [],
   });
 
-  /// [name] acepta `null` explícito vía [clearName], ya que `null` en sí
-  /// significa "no cambiar".
+  /// [color] como [Color]; `null` si no tiene o no es un hex válido.
+  Color? get displayColor => colorFromHex(color);
+
+  /// [name]/[color] aceptan `null` explícito vía [clearName]/[clearColor],
+  /// ya que `null` en sí significa "no cambiar".
   ChartSeriesModel copyWith({
     String? name,
     bool clearName = false,
     bool? getExternalData,
     bool? isRequired,
+    ChartMarkerShape? markerShape,
+    String? color,
+    bool clearColor = false,
     List<ChartCoordinateModel>? points,
   }) =>
       ChartSeriesModel(
         name: clearName ? null : (name ?? this.name),
         getExternalData: getExternalData ?? this.getExternalData,
         isRequired: isRequired ?? this.isRequired,
+        markerShape: markerShape ?? this.markerShape,
+        color: clearColor ? null : (color ?? this.color),
         points: points ?? this.points,
       );
+
+  /// "#RRGGBB" (o "RRGGBB", "#AARRGGBB") → [Color]; `null` si no es válido.
+  static Color? colorFromHex(String? hex) {
+    var h = hex?.trim().replaceFirst('#', '');
+    if (h == null) return null;
+    if (h.length == 6) h = 'FF$h';
+    if (h.length != 8) return null;
+    final argb = int.tryParse(h, radix: 16);
+    return argb == null ? null : Color(argb);
+  }
+
+  /// [Color] → "#RRGGBB" (sin transparencia).
+  static String colorToHex(Color color) {
+    final rgb = color.toARGB32() & 0xFFFFFF;
+    return '#${rgb.toRadixString(16).padLeft(6, '0').toUpperCase()}';
+  }
 
   /// Lee el formato nuevo (objeto) y el anterior (lista de puntos sin más
   /// datos). Devuelve `null` si [value] no es ninguno de los dos.
@@ -307,6 +366,13 @@ class ChartSeriesModel {
       name: ChartTemplateModel._toNullableString(json["name"]),
       getExternalData: json["get_external_data"] == true,
       isRequired: json["is_required"] == true,
+      markerShape:
+          chartMarkerShapeFromString(json["marker_shape"]?.toString()) ??
+              ChartMarkerShape.circle,
+      // Solo se conserva un hex válido.
+      color: colorFromHex(json["color"]?.toString()) == null
+          ? null
+          : json["color"].toString().trim(),
       points: _pointsFromJson(json["points"]),
     );
   }
@@ -324,6 +390,8 @@ class ChartSeriesModel {
         "name": name,
         "get_external_data": getExternalData,
         "is_required": isRequired,
+        "marker_shape": markerShape.value,
+        "color": color,
         "points": points.map((p) => p.toJson()).toList(),
       };
 }
