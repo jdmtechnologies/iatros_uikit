@@ -175,20 +175,148 @@ ChartTemplateType? chartTemplateTypeFromString(String? value) {
   return null;
 }
 
-/// Un punto (X, Y) de una de las curvas de la plantilla.
+/// Un punto (X, Y) de una curva ([ChartSeriesModel.points]).
+///
+/// JSON: `{"x": 36, "y": 102.4, "x_is_blocked": false, "y_is_blocked": false,
+/// "is_required": false, "name": null}`. Los campos nuevos son opcionales al
+/// leer, así que también se leen los puntos guardados como `{"x":…,"y":…}`.
 class ChartCoordinateModel {
   final double x;
   final double y;
 
-  const ChartCoordinateModel({required this.x, required this.y});
+  /// X no se puede editar.
+  final bool xIsBlocked;
+
+  /// Y no se puede editar.
+  final bool yIsBlocked;
+
+  /// El punto es obligatorio.
+  final bool isRequired;
+
+  /// Nombre del punto (fila); `null` si no tiene.
+  final String? name;
+
+  const ChartCoordinateModel({
+    required this.x,
+    required this.y,
+    this.xIsBlocked = false,
+    this.yIsBlocked = false,
+    this.isRequired = false,
+    this.name,
+  });
+
+  /// [name] acepta `null` explícito vía [clearName], ya que `null` en sí
+  /// significa "no cambiar".
+  ChartCoordinateModel copyWith({
+    double? x,
+    double? y,
+    bool? xIsBlocked,
+    bool? yIsBlocked,
+    bool? isRequired,
+    String? name,
+    bool clearName = false,
+  }) =>
+      ChartCoordinateModel(
+        x: x ?? this.x,
+        y: y ?? this.y,
+        xIsBlocked: xIsBlocked ?? this.xIsBlocked,
+        yIsBlocked: yIsBlocked ?? this.yIsBlocked,
+        isRequired: isRequired ?? this.isRequired,
+        name: clearName ? null : (name ?? this.name),
+      );
 
   factory ChartCoordinateModel.fromJson(Map<String, dynamic> json) =>
       ChartCoordinateModel(
         x: ChartTemplateModel._toDouble(json["x"]),
         y: ChartTemplateModel._toDouble(json["y"]),
+        xIsBlocked: json["x_is_blocked"] == true,
+        yIsBlocked: json["y_is_blocked"] == true,
+        isRequired: json["is_required"] == true,
+        name: ChartTemplateModel._toNullableString(json["name"]),
       );
 
-  Map<String, dynamic> toJson() => {"x": x, "y": y};
+  Map<String, dynamic> toJson() => {
+        "x": x,
+        "y": y,
+        "x_is_blocked": xIsBlocked,
+        "y_is_blocked": yIsBlocked,
+        "is_required": isRequired,
+        "name": name,
+      };
+}
+
+/// Una curva de la plantilla (un elemento de `series`).
+///
+/// JSON: `{"name": "P50", "get_external_data": false, "is_required": false,
+/// "points": [{"x": 0, "y": 49.9, ...}, ...]}`.
+class ChartSeriesModel {
+  /// Nombre de la curva (ej. "P50"); `null` si no tiene.
+  final String? name;
+
+  /// `true` si los datos de la curva los aporta el cliente (la app) y no el
+  /// administrador.
+  final bool getExternalData;
+
+  /// La curva es obligatoria.
+  final bool isRequired;
+
+  final List<ChartCoordinateModel> points;
+
+  const ChartSeriesModel({
+    this.name,
+    this.getExternalData = false,
+    this.isRequired = false,
+    this.points = const [],
+  });
+
+  /// [name] acepta `null` explícito vía [clearName], ya que `null` en sí
+  /// significa "no cambiar".
+  ChartSeriesModel copyWith({
+    String? name,
+    bool clearName = false,
+    bool? getExternalData,
+    bool? isRequired,
+    List<ChartCoordinateModel>? points,
+  }) =>
+      ChartSeriesModel(
+        name: clearName ? null : (name ?? this.name),
+        getExternalData: getExternalData ?? this.getExternalData,
+        isRequired: isRequired ?? this.isRequired,
+        points: points ?? this.points,
+      );
+
+  /// Lee el formato nuevo (objeto) y el anterior (lista de puntos sin más
+  /// datos). Devuelve `null` si [value] no es ninguno de los dos.
+  static ChartSeriesModel? tryFromJson(dynamic value) {
+    if (value is List) {
+      // Formato anterior: `[{"x":0,"y":49.9}, ...]`.
+      return ChartSeriesModel(points: _pointsFromJson(value));
+    }
+    if (value is! Map) return null;
+    final json = Map<String, dynamic>.from(value);
+    return ChartSeriesModel(
+      name: ChartTemplateModel._toNullableString(json["name"]),
+      getExternalData: json["get_external_data"] == true,
+      isRequired: json["is_required"] == true,
+      points: _pointsFromJson(json["points"]),
+    );
+  }
+
+  /// Puntos mal formados se descartan en vez de romper la curva.
+  static List<ChartCoordinateModel> _pointsFromJson(dynamic value) {
+    if (value is! List) return [];
+    return value
+        .whereType<Map>()
+        .map((p) => ChartCoordinateModel.fromJson(Map<String, dynamic>.from(p)))
+        .toList();
+  }
+
+  Map<String, dynamic> toJson() => {
+        "name": name,
+        "get_external_data": getExternalData,
+        "is_required": isRequired,
+        "points": points.map((p) => p.toJson()).toList(),
+      };
 }
 
 /// Comparación que aplica un [ChartParameterModel] entre el campo del
@@ -340,8 +468,8 @@ class ChartTemplateModel {
   final DateTime updateAt;
   final List<PhysicalExamField>? getDataFrom;
 
-  /// Curvas de referencia: cada lista interna es una curva con sus puntos.
-  final List<List<ChartCoordinateModel>> series;
+  /// Curvas de referencia, cada una con sus puntos ([ChartSeriesModel]).
+  final List<ChartSeriesModel> series;
 
   /// Parámetros de la plantilla: cada uno compara un campo del examen físico
   /// contra un valor, ej.
@@ -390,7 +518,7 @@ class ChartTemplateModel {
     DateTime? updateAt,
     List<PhysicalExamField>? getDataFrom,
     bool clearGetDataFrom = false,
-    List<List<ChartCoordinateModel>>? series,
+    List<ChartSeriesModel>? series,
     List<ChartParameterModel>? parameterization,
   }) =>
       ChartTemplateModel(
@@ -481,9 +609,8 @@ class ChartTemplateModel {
         "create_at": createAt.toIso8601String(),
         "update_at": updateAt.toIso8601String(),
         "get_data_from": getDataFrom?.map((e) => e.value).toList(),
-        "series": series
-            .map((curve) => curve.map((p) => p.toJson()).toList())
-            .toList(),
+        // Siempre se guarda en el formato nuevo.
+        "series": series.map((curve) => curve.toJson()).toList(),
         "parameterization": parameterization.map((p) => p.toJson()).toList(),
       };
 
@@ -500,22 +627,22 @@ class ChartTemplateModel {
         .toList();
   }
 
-  /// `series` llega como `[[{"x":0,"y":49.9}, ...], [...]]`; filas o puntos
-  /// mal formados se descartan en vez de romper toda la plantilla.
-  static List<List<ChartCoordinateModel>> _seriesFromJson(dynamic value) {
+  /// `series` puede llegar en el formato nuevo,
+  /// `[{"name": …, "points": [{"x":0,"y":49.9, …}]}, …]`, o en el anterior,
+  /// `[[{"x":0,"y":49.9}, …], …]`; ambos se leen como [ChartSeriesModel].
+  /// Elementos mal formados se descartan en vez de romper la plantilla.
+  static List<ChartSeriesModel> _seriesFromJson(dynamic value) {
     if (value is! List) return [];
     return value
-        .whereType<List>()
-        .map(
-          (curve) => curve
-              .whereType<Map>()
-              .map(
-                (p) =>
-                    ChartCoordinateModel.fromJson(Map<String, dynamic>.from(p)),
-              )
-              .toList(),
-        )
+        .map(ChartSeriesModel.tryFromJson)
+        .whereType<ChartSeriesModel>()
         .toList();
+  }
+
+  /// Texto recortado, o `null` si está vacío.
+  static String? _toNullableString(dynamic value) {
+    final text = value?.toString().trim();
+    return (text == null || text.isEmpty) ? null : text;
   }
 
   static double _toDouble(dynamic value) {
