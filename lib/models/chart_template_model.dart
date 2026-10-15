@@ -1,8 +1,16 @@
 import 'dart:convert';
 import 'dart:ui' show Color;
 
-/// Campos del formulario "Objetivo - Examen físico" de la historia clínica
-/// que pueden alimentar una gráfica (ver [ChartTemplateModel.getDataFrom]).
+import 'package:iatros_uikit/models/gender_type.dart';
+
+/// Campos del paciente que pueden alimentar una gráfica o condicionar una
+/// plantilla (ver [ChartTemplateModel.getDataFrom] y
+/// [ChartTemplateModel.parameterization]): los del formulario "Objetivo -
+/// Examen físico", la edad y el género.
+///
+/// La edad y la altura existen en dos unidades: el dato del paciente es uno
+/// solo (fecha de nacimiento, altura en cm) y se convierte a la unidad del
+/// campo (ver `ChartPatientDataModel.numericValueOf`).
 enum PhysicalExamField {
   fc, // Frecuencia cardíaca
   systolic, // TA sistólica
@@ -11,10 +19,13 @@ enum PhysicalExamField {
   fr, // Frecuencia respiratoria
   temperature, // Temperatura
   so2, // Saturación de oxígeno
-  height, // Altura
+  heightCm, // Altura en centímetros (como se escribe en el formulario)
+  heightM, // Altura en metros
   weight, // Peso
   imc, // Índice de masa corporal
-  age, // Edad del paciente al momento de la consulta (no es un input)
+  ageMonths, // Edad en meses al momento de la consulta (no es un input)
+  ageYears, // Edad en años al momento de la consulta (no es un input)
+  gender, // Género del paciente (no es numérico, ver [isNumeric])
 }
 
 extension PhysicalExamFieldExtension on PhysicalExamField {
@@ -35,14 +46,20 @@ extension PhysicalExamFieldExtension on PhysicalExamField {
         return 'T';
       case PhysicalExamField.so2:
         return 'SO2 (%)';
-      case PhysicalExamField.height:
-        return 'Altura';
+      case PhysicalExamField.heightCm:
+        return 'Altura (CM)';
+      case PhysicalExamField.heightM:
+        return 'Altura (MT)';
       case PhysicalExamField.weight:
         return 'Peso';
       case PhysicalExamField.imc:
         return 'IMC';
-      case PhysicalExamField.age:
-        return 'Edad';
+      case PhysicalExamField.ageMonths:
+        return 'Edad (Mes)';
+      case PhysicalExamField.ageYears:
+        return 'Edad (Año)';
+      case PhysicalExamField.gender:
+        return 'Género';
     }
   }
 
@@ -63,28 +80,55 @@ extension PhysicalExamFieldExtension on PhysicalExamField {
         return 'Temperatura';
       case PhysicalExamField.so2:
         return 'Saturación de oxígeno';
-      case PhysicalExamField.height:
+      case PhysicalExamField.heightCm:
         return 'Centímetros';
+      case PhysicalExamField.heightM:
+        return 'Metros';
       case PhysicalExamField.weight:
         return 'Kg';
       case PhysicalExamField.imc:
         return 'Índice de masa corporal';
-      case PhysicalExamField.age:
+      case PhysicalExamField.ageMonths:
+        return 'Meses';
+      case PhysicalExamField.ageYears:
         return 'Años';
+      case PhysicalExamField.gender:
+        return 'Masculino / Femenino / Otro';
     }
   }
 
-  /// Valor guardado en el JSON — coincide con la columna de
-  /// `clinical_histories`, salvo [PhysicalExamField.age], que se calcula con
-  /// la fecha de nacimiento del paciente.
+  /// `false` solo para [PhysicalExamField.gender]: no se grafica ni se
+  /// compara con números, solo con `=` / `≠` contra un [Gender].
+  bool get isNumeric => this != PhysicalExamField.gender;
+
+  /// Valor guardado en el JSON.
   String get value => name;
 }
 
+/// Acepta además los valores anteriores a que la edad y la altura tuvieran
+/// unidad: `age` (que ya se guardaba en meses) y `height` (en cm).
 PhysicalExamField? physicalExamFieldFromString(String? value) {
   final v = value?.trim();
   if (v == null || v.isEmpty) return null;
+  switch (v) {
+    case 'age':
+      return PhysicalExamField.ageMonths;
+    case 'height':
+      return PhysicalExamField.heightCm;
+  }
   for (final field in PhysicalExamField.values) {
     if (field.value == v) return field;
+  }
+  return null;
+}
+
+/// [Gender] desde su nombre (`male`, `female`, `other`); `null` si no es
+/// válido.
+Gender? genderFromString(String? value) {
+  final v = value?.trim();
+  if (v == null || v.isEmpty) return null;
+  for (final g in Gender.values) {
+    if (g.name == v) return g;
   }
   return null;
 }
@@ -486,29 +530,47 @@ ComparisonOperator? comparisonOperatorFromString(String? value) {
   return null;
 }
 
-/// Un parámetro de la plantilla: un campo del examen físico ([item]) que se
-/// compara ([operator]) contra un valor ([value]).
-/// En JSON: `{"item": "weight", "operator": "greaterThanOrEqual", "value": 3.5}`.
+/// Un parámetro de la plantilla: un campo del paciente ([item]) que se
+/// compara ([operator]) contra un valor. Para campos numéricos el valor es
+/// [value] (en la unidad del campo: meses o años, cm o metros); para
+/// [PhysicalExamField.gender] es [gender] y solo aplican `=` / `≠`.
+///
+/// En JSON: `{"item": "ageMonths", "operator": "lessThan", "value": 60}` o
+/// `{"item": "gender", "operator": "equal", "value": "female"}`.
+///
+/// Para saber si un paciente lo cumple, ver `isSatisfiedBy` en
+/// `chart_template_extension.dart`.
 class ChartParameterModel {
   final PhysicalExamField item;
   final ComparisonOperator operator;
+
+  /// Valor de comparación de un campo numérico; `0` para [gender].
   final double value;
+
+  /// Valor de comparación cuando [item] es [PhysicalExamField.gender].
+  final Gender? gender;
 
   const ChartParameterModel({
     required this.item,
     this.operator = ComparisonOperator.equal,
-    required this.value,
+    this.value = 0,
+    this.gender,
   });
 
+  /// [gender] acepta `null` explícito vía [clearGender], ya que `null` en sí
+  /// significa "no cambiar".
   ChartParameterModel copyWith({
     PhysicalExamField? item,
     ComparisonOperator? operator,
     double? value,
+    Gender? gender,
+    bool clearGender = false,
   }) =>
       ChartParameterModel(
         item: item ?? this.item,
         operator: operator ?? this.operator,
         value: value ?? this.value,
+        gender: clearGender ? null : (gender ?? this.gender),
       );
 
   /// `null` si `item` no es un [PhysicalExamField] válido. Si `operator`
@@ -516,21 +578,45 @@ class ChartParameterModel {
   static ChartParameterModel? tryFromJson(Map<String, dynamic> json) {
     final item = physicalExamFieldFromString(json["item"]?.toString());
     if (item == null) return null;
+    final operator =
+        comparisonOperatorFromString(json["operator"]?.toString()) ??
+            ComparisonOperator.equal;
+    if (!item.isNumeric) {
+      return ChartParameterModel(
+        item: item,
+        operator: operator,
+        gender: genderFromString(json["value"]?.toString()),
+      );
+    }
     return ChartParameterModel(
       item: item,
-      operator: comparisonOperatorFromString(json["operator"]?.toString()) ??
-          ComparisonOperator.equal,
+      operator: operator,
       value: ChartTemplateModel._toDouble(json["value"]),
     );
   }
 
-  /// `true` si [patientValue] cumple este parámetro.
+  /// `true` si [patientValue] (en la unidad de [item]) cumple este
+  /// parámetro. Solo para campos numéricos; para el género, ver
+  /// [matchesGender].
   bool matches(double patientValue) => operator.evaluate(patientValue, value);
+
+  /// `true` si [patientGender] cumple este parámetro de género. Solo `=` y
+  /// `≠` tienen sentido; cualquier otro operador no se cumple.
+  bool matchesGender(Gender patientGender) {
+    switch (operator) {
+      case ComparisonOperator.equal:
+        return patientGender == gender;
+      case ComparisonOperator.notEqual:
+        return patientGender != gender;
+      default:
+        return false;
+    }
+  }
 
   Map<String, dynamic> toJson() => {
         "item": item.value,
         "operator": operator.value,
-        "value": value,
+        "value": item.isNumeric ? value : gender?.name,
       };
 }
 

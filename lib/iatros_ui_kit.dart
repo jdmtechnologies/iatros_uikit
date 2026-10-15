@@ -27,9 +27,11 @@ export 'models/suscription_settings_model.dart';
 export 'models/health_administrators_model.dart';
 export 'models/company_response_model.dart';
 export 'models/chart_template_model.dart';
+export 'models/chart_patient_data_model.dart';
 
 // Extensiones
 export 'extension/context_extension.dart';
+export 'extension/chart_template_extension.dart';
 export 'extensions/string_extension.dart';
 
 // Enums
