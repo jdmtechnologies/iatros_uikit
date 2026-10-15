@@ -280,12 +280,17 @@ ChartMarkerShape? chartMarkerShapeFromString(String? value) {
 
 /// Una curva de la plantilla (un elemento de `series`).
 ///
-/// JSON: `{"name": "P50", "get_external_data": false, "is_required": false,
+/// JSON: `{"name": "P50", "key": "p50", "get_external_data": false,
+/// "is_required": false,
 /// "marker_shape": "circle", "color": "#1E88E5",
 /// "points": [{"x": 0, "y": 49.9, ...}, ...]}`.
 class ChartSeriesModel {
   /// Nombre de la curva (ej. "P50"); `null` si no tiene.
   final String? name;
+
+  /// Llave de la curva, para relacionarla con curvas de otras gráficas;
+  /// `null` si no tiene.
+  final String? key;
 
   /// `true` si el cliente (la app) completa los datos de la curva. Sus
   /// [points] indican cuántos datos agrega y pueden traer valores ya puestos
@@ -306,6 +311,7 @@ class ChartSeriesModel {
 
   const ChartSeriesModel({
     this.name,
+    this.key,
     this.getExternalData = false,
     this.isRequired = false,
     this.markerShape = ChartMarkerShape.circle,
@@ -316,11 +322,13 @@ class ChartSeriesModel {
   /// [color] como [Color]; `null` si no tiene o no es un hex válido.
   Color? get displayColor => colorFromHex(color);
 
-  /// [name]/[color] aceptan `null` explícito vía [clearName]/[clearColor],
-  /// ya que `null` en sí significa "no cambiar".
+  /// [name]/[key]/[color] aceptan `null` explícito vía [clearName]/
+  /// [clearKey]/[clearColor], ya que `null` en sí significa "no cambiar".
   ChartSeriesModel copyWith({
     String? name,
     bool clearName = false,
+    String? key,
+    bool clearKey = false,
     bool? getExternalData,
     bool? isRequired,
     ChartMarkerShape? markerShape,
@@ -330,6 +338,7 @@ class ChartSeriesModel {
   }) =>
       ChartSeriesModel(
         name: clearName ? null : (name ?? this.name),
+        key: clearKey ? null : (key ?? this.key),
         getExternalData: getExternalData ?? this.getExternalData,
         isRequired: isRequired ?? this.isRequired,
         markerShape: markerShape ?? this.markerShape,
@@ -364,6 +373,7 @@ class ChartSeriesModel {
     final json = Map<String, dynamic>.from(value);
     return ChartSeriesModel(
       name: ChartTemplateModel._toNullableString(json["name"]),
+      key: ChartTemplateModel._toNullableString(json["key"]),
       getExternalData: json["get_external_data"] == true,
       isRequired: json["is_required"] == true,
       markerShape:
@@ -388,6 +398,7 @@ class ChartSeriesModel {
 
   Map<String, dynamic> toJson() => {
         "name": name,
+        "key": key,
         "get_external_data": getExternalData,
         "is_required": isRequired,
         "marker_shape": markerShape.value,
