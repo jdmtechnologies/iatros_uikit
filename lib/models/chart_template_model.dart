@@ -180,9 +180,12 @@ ChartTemplateType? chartTemplateTypeFromString(String? value) {
 /// JSON: `{"x": 36, "y": 102.4, "x_is_blocked": false, "y_is_blocked": false,
 /// "is_required": false, "name": null}`. Los campos nuevos son opcionales al
 /// leer, así que también se leen los puntos guardados como `{"x":…,"y":…}`.
+///
+/// [x] y [y] pueden ser `null` cuando ese valor lo completa el cliente
+/// (ver [ChartSeriesModel.getExternalData]).
 class ChartCoordinateModel {
-  final double x;
-  final double y;
+  final double? x;
+  final double? y;
 
   /// X no se puede editar.
   final bool xIsBlocked;
@@ -197,19 +200,24 @@ class ChartCoordinateModel {
   final String? name;
 
   const ChartCoordinateModel({
-    required this.x,
-    required this.y,
+    this.x,
+    this.y,
     this.xIsBlocked = false,
     this.yIsBlocked = false,
     this.isRequired = false,
     this.name,
   });
 
-  /// [name] acepta `null` explícito vía [clearName], ya que `null` en sí
-  /// significa "no cambiar".
+  /// `true` si tiene X y Y (se puede dibujar).
+  bool get isComplete => x != null && y != null;
+
+  /// [x]/[y]/[name] aceptan `null` explícito vía [clearX]/[clearY]/
+  /// [clearName], ya que `null` en sí significa "no cambiar".
   ChartCoordinateModel copyWith({
     double? x,
+    bool clearX = false,
     double? y,
+    bool clearY = false,
     bool? xIsBlocked,
     bool? yIsBlocked,
     bool? isRequired,
@@ -217,8 +225,8 @@ class ChartCoordinateModel {
     bool clearName = false,
   }) =>
       ChartCoordinateModel(
-        x: x ?? this.x,
-        y: y ?? this.y,
+        x: clearX ? null : (x ?? this.x),
+        y: clearY ? null : (y ?? this.y),
         xIsBlocked: xIsBlocked ?? this.xIsBlocked,
         yIsBlocked: yIsBlocked ?? this.yIsBlocked,
         isRequired: isRequired ?? this.isRequired,
@@ -227,8 +235,8 @@ class ChartCoordinateModel {
 
   factory ChartCoordinateModel.fromJson(Map<String, dynamic> json) =>
       ChartCoordinateModel(
-        x: ChartTemplateModel._toDouble(json["x"]),
-        y: ChartTemplateModel._toDouble(json["y"]),
+        x: ChartTemplateModel._toNullableDouble(json["x"]),
+        y: ChartTemplateModel._toNullableDouble(json["y"]),
         xIsBlocked: json["x_is_blocked"] == true,
         yIsBlocked: json["y_is_blocked"] == true,
         isRequired: json["is_required"] == true,
@@ -253,8 +261,9 @@ class ChartSeriesModel {
   /// Nombre de la curva (ej. "P50"); `null` si no tiene.
   final String? name;
 
-  /// `true` si los datos de la curva los aporta el cliente (la app) y no el
-  /// administrador.
+  /// `true` si el cliente (la app) completa los datos de la curva. Sus
+  /// [points] indican cuántos datos agrega y pueden traer valores ya puestos
+  /// por el administrador (ej. todas las Y, y el cliente pone las X).
   final bool getExternalData;
 
   /// La curva es obligatoria.
@@ -637,6 +646,12 @@ class ChartTemplateModel {
         .map(ChartSeriesModel.tryFromJson)
         .whereType<ChartSeriesModel>()
         .toList();
+  }
+
+  /// Número, o `null` si falta o no es número.
+  static double? _toNullableDouble(dynamic value) {
+    if (value is num) return value.toDouble();
+    return double.tryParse(value?.toString() ?? "");
   }
 
   /// Texto recortado, o `null` si está vacío.
