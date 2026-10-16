@@ -295,6 +295,8 @@ enum ChartMarkerShape {
   circle, // Círculo
   triangle, // Triángulo
   cross, // X
+  square, // Cuadrado
+  none, // Sin marcador (solo la línea)
 }
 
 extension ChartMarkerShapeExtension on ChartMarkerShape {
@@ -306,6 +308,10 @@ extension ChartMarkerShapeExtension on ChartMarkerShape {
         return 'Triángulo';
       case ChartMarkerShape.cross:
         return 'X';
+      case ChartMarkerShape.square:
+        return 'Cuadrado';
+      case ChartMarkerShape.none:
+        return 'Sin marcador';
     }
   }
 
