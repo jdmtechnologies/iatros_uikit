@@ -38,6 +38,7 @@ import 'package:iatros_uikit/components/inputs/resizable_input.dart';
 import 'package:iatros_uikit/widgets/medical_background_widget.dart';
 import 'package:iatros_uikit/widgets/blood_type_selector_widget.dart';
 import 'package:iatros_uikit/widgets/chart_type_selector_widget.dart';
+import 'package:iatros_uikit/widgets/text_input_popup_widget.dart';
 import 'package:iatros_uikit/models/chart_template_model.dart';
 import 'package:iatros_uikit/widgets/multi_select_dropdown_widget.dart';
 import 'package:iatros_uikit/widgets/identification_selector_widget.dart';
@@ -1302,6 +1303,45 @@ class UiPopUp {
             },
             okLabel: okLabel,
             size: size,
+          ),
+        );
+      },
+    );
+  }
+
+  /// Muestra un pop-up para escribir un texto largo (ej. una descripción).
+  /// Devuelve el texto escrito (recortado) o `null` si se cancela o se
+  /// cierra tocando el fondo. Con [isRequired] no deja aceptar vacío.
+  Future<String?> showTextInput(
+    BuildContext context, {
+    required String title,
+    String? description,
+    String? hint,
+    String? initialValue,
+    String confirmLabel = 'Aceptar',
+    String cancelLabel = 'Cancelar',
+    bool isRequired = true,
+    int minLines = 6,
+    int maxLines = 12,
+  }) {
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: AppColors.black.withValues(alpha: 0.4),
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: UiTextInputPopUpContent(
+            title: title,
+            description: description,
+            hint: hint,
+            initialValue: initialValue,
+            confirmLabel: confirmLabel,
+            cancelLabel: cancelLabel,
+            isRequired: isRequired,
+            minLines: minLines,
+            maxLines: maxLines,
           ),
         );
       },
