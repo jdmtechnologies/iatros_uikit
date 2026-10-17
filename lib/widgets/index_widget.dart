@@ -1312,6 +1312,8 @@ class UiPopUp {
   /// Muestra un pop-up para escribir un texto largo (ej. una descripción).
   /// Devuelve el texto escrito (recortado) o `null` si se cancela o se
   /// cierra tocando el fondo. Con [isRequired] no deja aceptar vacío.
+  /// [extraActionLabel]/[onExtraAction] agregan un botón que ejecuta una
+  /// acción sin cerrar el pop-up (ej. ver el PDF actual).
   Future<String?> showTextInput(
     BuildContext context, {
     required String title,
@@ -1323,6 +1325,9 @@ class UiPopUp {
     bool isRequired = true,
     int minLines = 6,
     int maxLines = 12,
+    String? extraActionLabel,
+    IconData? extraActionIcon,
+    VoidCallback? onExtraAction,
   }) {
     return showDialog<String>(
       context: context,
@@ -1342,6 +1347,9 @@ class UiPopUp {
             isRequired: isRequired,
             minLines: minLines,
             maxLines: maxLines,
+            extraActionLabel: extraActionLabel,
+            extraActionIcon: extraActionIcon,
+            onExtraAction: onExtraAction,
           ),
         );
       },

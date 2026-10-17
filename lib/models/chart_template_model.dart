@@ -656,6 +656,19 @@ class ChartTemplateModel {
   /// `[{"item": "weight", "operator": "greaterThanOrEqual", "value": 3.5}]`.
   final List<ChartParameterModel> parameterization;
 
+  /// Plantilla HTML del PDF, generada con IA por el pdf-template-service;
+  /// `null` si la gráfica no tiene. Solo lectura: no va en [toJson] (la
+  /// escribe el backend, y la BD la vacía si cambia la estructura).
+  final String? pdfTemplate;
+
+  /// Historial de indicaciones con las que se generó [pdfTemplate]. Solo
+  /// lectura, igual que [pdfTemplate].
+  final String? promTemplate;
+
+  /// `true` si la gráfica ya tiene plantilla PDF.
+  bool get hasPdfTemplate =>
+      pdfTemplate != null && pdfTemplate!.trim().isNotEmpty;
+
   ChartTemplateModel({
     this.id,
     required this.name,
@@ -674,6 +687,8 @@ class ChartTemplateModel {
     this.getDataFrom,
     this.series = const [],
     this.parameterization = const [],
+    this.pdfTemplate,
+    this.promTemplate,
   });
 
   /// [mainTopicX]/[mainTopicY]/[getDataFrom] aceptan `null` explícito vía
@@ -700,6 +715,8 @@ class ChartTemplateModel {
     bool clearGetDataFrom = false,
     List<ChartSeriesModel>? series,
     List<ChartParameterModel>? parameterization,
+    String? pdfTemplate,
+    String? promTemplate,
   }) =>
       ChartTemplateModel(
         id: id ?? this.id,
@@ -720,6 +737,8 @@ class ChartTemplateModel {
             clearGetDataFrom ? null : (getDataFrom ?? this.getDataFrom),
         series: series ?? this.series,
         parameterization: parameterization ?? this.parameterization,
+        pdfTemplate: pdfTemplate ?? this.pdfTemplate,
+        promTemplate: promTemplate ?? this.promTemplate,
       );
 
   factory ChartTemplateModel.fromRawJson(String str) =>
@@ -757,6 +776,8 @@ class ChartTemplateModel {
             : null,
         series: _seriesFromJson(json["series"]),
         parameterization: _parameterizationFromJson(json["parameterization"]),
+        pdfTemplate: _toNullableString(json["pdf_template"]),
+        promTemplate: _toNullableString(json["prom_template"]),
       );
 
   factory ChartTemplateModel.init() => ChartTemplateModel(

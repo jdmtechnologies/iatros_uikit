@@ -22,6 +22,9 @@ class UiTextInputPopUpContent extends StatefulWidget {
     this.minLines = 6,
     this.maxLines = 12,
     this.maxWidth = 640,
+    this.extraActionLabel,
+    this.extraActionIcon,
+    this.onExtraAction,
   });
 
   final String title;
@@ -36,6 +39,12 @@ class UiTextInputPopUpContent extends StatefulWidget {
   final int minLines;
   final int maxLines;
   final double maxWidth;
+
+  /// Botón opcional que ejecuta [onExtraAction] sin cerrar el pop-up (ej.
+  /// "Ver PDF actual"). Se muestra solo si hay etiqueta y acción.
+  final String? extraActionLabel;
+  final IconData? extraActionIcon;
+  final VoidCallback? onExtraAction;
 
   @override
   State<UiTextInputPopUpContent> createState() =>
@@ -139,6 +148,18 @@ class _UiTextInputPopUpContentState extends State<UiTextInputPopUpContent> {
                 ),
               ),
             ),
+            if (widget.extraActionLabel != null &&
+                widget.onExtraAction != null) ...[
+              const SizedBox(height: AppSpacing.sm),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: widget.onExtraAction,
+                  icon: Icon(widget.extraActionIcon ?? Icons.open_in_new),
+                  label: Text(widget.extraActionLabel!),
+                ),
+              ),
+            ],
             const SizedBox(height: AppSpacing.xl),
             Row(
               children: [
