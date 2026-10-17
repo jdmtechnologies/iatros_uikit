@@ -40,13 +40,10 @@ class ChartPatientDataModel {
     this.imc,
   }) : measuredAt = measuredAt ?? DateTime.now();
 
-  /// Duración promedio de un mes y de un año, en días.
-  static const double daysPerMonth = 30.4375;
-  static const double daysPerYear = 365.25;
-
   /// Valor de [field] en su unidad; `null` si el paciente no lo tiene (o
   /// [field] es [PhysicalExamField.gender], que no es numérico: ver
-  /// [gender]). La edad lleva decimales (6.5 meses = seis meses y medio).
+  /// [gender]). La edad va en meses o años **cumplidos**, sin decimales (ver
+  /// [ageInCompletedMonths]).
   double? numericValueOf(PhysicalExamField field) {
     switch (field) {
       case PhysicalExamField.fc:
@@ -73,19 +70,30 @@ class ChartPatientDataModel {
       case PhysicalExamField.imc:
         return imc;
       case PhysicalExamField.ageMonths:
-        final days = _ageInDays;
-        return days == null ? null : days / daysPerMonth;
+        return ageInCompletedMonths?.toDouble();
       case PhysicalExamField.ageYears:
-        final days = _ageInDays;
-        return days == null ? null : days / daysPerYear;
+        final months = ageInCompletedMonths;
+        return months == null ? null : (months ~/ 12).toDouble();
       case PhysicalExamField.gender:
         return null;
     }
   }
 
-  int? get _ageInDays {
+  /// Meses cumplidos entre [dateOfBirth] y [measuredAt], contados por
+  /// calendario: el mes solo se cumple al llegar al mismo día del mes de
+  /// nacimiento (nacido el 15 de enero: el 14 de marzo tiene 1 mes, el 15 de
+  /// marzo 2). Nacido el 31, en un mes más corto se cumple el último día.
+  /// `null` sin fecha de nacimiento o si es posterior a [measuredAt].
+  int? get ageInCompletedMonths {
     final dob = dateOfBirth;
     if (dob == null || measuredAt.isBefore(dob)) return null;
-    return measuredAt.difference(dob).inDays;
+    var months =
+        (measuredAt.year - dob.year) * 12 + (measuredAt.month - dob.month);
+    final lastDayOfMonth =
+        DateTime(measuredAt.year, measuredAt.month + 1, 0).day;
+    final birthDayThisMonth =
+        dob.day > lastDayOfMonth ? lastDayOfMonth : dob.day;
+    if (measuredAt.day < birthDayThisMonth) months--;
+    return months;
   }
 }
