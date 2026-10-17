@@ -644,6 +644,15 @@ class ChartTemplateModel {
   final double maxY;
   final double minY;
   final bool isActive;
+
+  /// Gráfica invertida: el eje Y crece hacia abajo (ej. audiograma, donde
+  /// más dB es peor audición). JSON: `reverse_graph`.
+  final bool reverseGraph;
+
+  /// Espacios iguales: las X definidas en las curvas se ubican a la misma
+  /// distancia entre sí, sin importar su valor (ej. 250, 500, 1000… Hz).
+  /// JSON: `equal_spaces`.
+  final bool equalSpaces;
   final DateTime createAt;
   final DateTime updateAt;
   final List<PhysicalExamField>? getDataFrom;
@@ -682,6 +691,8 @@ class ChartTemplateModel {
     required this.maxY,
     required this.minY,
     required this.isActive,
+    this.reverseGraph = false,
+    this.equalSpaces = false,
     required this.createAt,
     required this.updateAt,
     this.getDataFrom,
@@ -709,6 +720,8 @@ class ChartTemplateModel {
     double? maxY,
     double? minY,
     bool? isActive,
+    bool? reverseGraph,
+    bool? equalSpaces,
     DateTime? createAt,
     DateTime? updateAt,
     List<PhysicalExamField>? getDataFrom,
@@ -731,6 +744,8 @@ class ChartTemplateModel {
         maxY: maxY ?? this.maxY,
         minY: minY ?? this.minY,
         isActive: isActive ?? this.isActive,
+        reverseGraph: reverseGraph ?? this.reverseGraph,
+        equalSpaces: equalSpaces ?? this.equalSpaces,
         createAt: createAt ?? this.createAt,
         updateAt: updateAt ?? this.updateAt,
         getDataFrom:
@@ -764,6 +779,8 @@ class ChartTemplateModel {
         maxY: _toDouble(json["max_y"]),
         minY: _toDouble(json["min_y"]),
         isActive: json["is_active"] == true,
+        reverseGraph: json["reverse_graph"] == true,
+        equalSpaces: json["equal_spaces"] == true,
         createAt: DateTime.tryParse(json["create_at"]?.toString() ?? "") ??
             DateTime.now(),
         updateAt: DateTime.tryParse(json["update_at"]?.toString() ?? "") ??
@@ -807,6 +824,8 @@ class ChartTemplateModel {
         "max_y": maxY,
         "min_y": minY,
         "is_active": isActive,
+        "reverse_graph": reverseGraph,
+        "equal_spaces": equalSpaces,
         "create_at": createAt.toIso8601String(),
         "update_at": updateAt.toIso8601String(),
         "get_data_from": getDataFrom?.map((e) => e.value).toList(),
