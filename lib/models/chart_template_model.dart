@@ -661,9 +661,9 @@ class ChartTemplateModel {
   /// escribe el backend, y la BD la vacía si cambia la estructura).
   final String? pdfTemplate;
 
-  /// Historial de indicaciones con las que se generó [pdfTemplate]. Solo
-  /// lectura, igual que [pdfTemplate].
-  final String? promTemplate;
+  /// Indicaciones (prompts) con las que se generó y se ha ido mejorando
+  /// [pdfTemplate], en orden. Solo lectura, igual que [pdfTemplate].
+  final List<String> promTemplate;
 
   /// `true` si la gráfica ya tiene plantilla PDF.
   bool get hasPdfTemplate =>
@@ -688,7 +688,7 @@ class ChartTemplateModel {
     this.series = const [],
     this.parameterization = const [],
     this.pdfTemplate,
-    this.promTemplate,
+    this.promTemplate = const [],
   });
 
   /// [mainTopicX]/[mainTopicY]/[getDataFrom] aceptan `null` explícito vía
@@ -716,7 +716,7 @@ class ChartTemplateModel {
     List<ChartSeriesModel>? series,
     List<ChartParameterModel>? parameterization,
     String? pdfTemplate,
-    String? promTemplate,
+    List<String>? promTemplate,
   }) =>
       ChartTemplateModel(
         id: id ?? this.id,
@@ -777,7 +777,7 @@ class ChartTemplateModel {
         series: _seriesFromJson(json["series"]),
         parameterization: _parameterizationFromJson(json["parameterization"]),
         pdfTemplate: _toNullableString(json["pdf_template"]),
-        promTemplate: _toNullableString(json["prom_template"]),
+        promTemplate: _promTemplateFromJson(json["prom_template"]),
       );
 
   factory ChartTemplateModel.init() => ChartTemplateModel(
@@ -844,6 +844,20 @@ class ChartTemplateModel {
   static double? _toNullableDouble(dynamic value) {
     if (value is num) return value.toDouble();
     return double.tryParse(value?.toString() ?? "");
+  }
+
+  /// `prom_template` es `text[]`; por compatibilidad también se lee el texto
+  /// plano anterior, con las indicaciones separadas por "---".
+  static List<String> _promTemplateFromJson(dynamic value) {
+    final raw = value is String
+        ? value.split('\n\n---\n\n')
+        : value is List
+            ? value
+            : const [];
+    return raw
+        .map((p) => p?.toString().trim() ?? '')
+        .where((p) => p.isNotEmpty)
+        .toList();
   }
 
   /// Texto recortado, o `null` si está vacío.
