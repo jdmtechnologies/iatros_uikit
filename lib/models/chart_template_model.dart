@@ -242,12 +242,17 @@ class ChartCoordinateModel {
   /// El punto es obligatorio.
   final bool isRequired;
 
+  /// El punto se dibuja en la curva, pero su X no pone etiqueta ni línea en
+  /// el eje X (ej. 0.1, 0.2… entre 0 y 1, para no saturar el eje).
+  final bool hideXLabel;
+
   const ChartCoordinateModel({
     this.x,
     this.y,
     this.xIsBlocked = false,
     this.yIsBlocked = false,
     this.isRequired = false,
+    this.hideXLabel = false,
   });
 
   /// `true` si tiene X y Y (se puede dibujar).
@@ -263,6 +268,7 @@ class ChartCoordinateModel {
     bool? xIsBlocked,
     bool? yIsBlocked,
     bool? isRequired,
+    bool? hideXLabel,
   }) =>
       ChartCoordinateModel(
         x: clearX ? null : (x ?? this.x),
@@ -270,6 +276,7 @@ class ChartCoordinateModel {
         xIsBlocked: xIsBlocked ?? this.xIsBlocked,
         yIsBlocked: yIsBlocked ?? this.yIsBlocked,
         isRequired: isRequired ?? this.isRequired,
+        hideXLabel: hideXLabel ?? this.hideXLabel,
       );
 
   factory ChartCoordinateModel.fromJson(Map<String, dynamic> json) =>
@@ -279,6 +286,7 @@ class ChartCoordinateModel {
         xIsBlocked: json["x_is_blocked"] == true,
         yIsBlocked: json["y_is_blocked"] == true,
         isRequired: json["is_required"] == true,
+        hideXLabel: json["hide_x_label"] == true,
       );
 
   Map<String, dynamic> toJson() => {
@@ -287,6 +295,7 @@ class ChartCoordinateModel {
         "x_is_blocked": xIsBlocked,
         "y_is_blocked": yIsBlocked,
         "is_required": isRequired,
+        "hide_x_label": hideXLabel,
       };
 }
 
