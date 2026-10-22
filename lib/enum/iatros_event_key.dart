@@ -85,6 +85,13 @@ enum IatrosEventKey {
     IatrosEventCategory.scheduling,
   ),
 
+  /// Se guardó la "Configuración de Disponibilidad" de un médico (horarios
+  /// y duración de consulta).
+  doctorAvailabilitySaved(
+    'doctor_availability_saved',
+    IatrosEventCategory.scheduling,
+  ),
+
   /// Un usuario inició sesión (o lo intentó, con `status` failure).
   iatrosLogin('iatros_login', IatrosEventCategory.auth),
 
