@@ -132,6 +132,9 @@ enum IatrosEventKey {
   /// El usuario cambió la empresa seleccionada.
   companySwitched('company_switched', IatrosEventCategory.account),
 
+  /// Se creó una empresa ("Crear empresa").
+  companyCreated('company_created', IatrosEventCategory.account),
+
   /// Se guardaron cambios de una empresa (nombre, NIT, logo...).
   companyUpdated('company_updated', IatrosEventCategory.account),
 
