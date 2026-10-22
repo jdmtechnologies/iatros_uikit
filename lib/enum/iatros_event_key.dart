@@ -5,6 +5,7 @@ enum IatrosEventCategory {
   clinicalHistory('clinical_history'),
   communication('communication'),
   scheduling('scheduling'),
+  auth('auth'),
   error('error');
 
   final String value;
@@ -80,6 +81,9 @@ enum IatrosEventKey {
     'appointment_scheduled',
     IatrosEventCategory.scheduling,
   ),
+
+  /// Un usuario inició sesión (o lo intentó, con `status` failure).
+  iatrosLogin('iatros_login', IatrosEventCategory.auth),
 
   /// Error capturado en un `try/catch`.
   error('error', IatrosEventCategory.error),
