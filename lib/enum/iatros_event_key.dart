@@ -7,6 +7,7 @@ enum IatrosEventCategory {
   scheduling('scheduling'),
   auth('auth'),
   payments('payments'),
+  account('account'),
   error('error');
 
   final String value;
@@ -116,6 +117,9 @@ enum IatrosEventKey {
     'clinical_history_payment_clicked',
     IatrosEventCategory.payments,
   ),
+
+  /// Se guardaron cambios en "Editar mi perfil".
+  userProfileUpdated('user_profile_updated', IatrosEventCategory.account),
 
   /// Error capturado en un `try/catch`.
   error('error', IatrosEventCategory.error),
