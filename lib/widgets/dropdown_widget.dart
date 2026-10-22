@@ -58,7 +58,10 @@ class _UiDropdownState extends State<UiDropdown> {
     widget.controller.removeListener(_onControllerChanged);
     _focusNode.removeListener(_onFocusChange);
     _internalFocusNode?.dispose();
-    _hideOverlay();
+    // Sin `_hideOverlay()`: su setState en pleno dispose (el elemento ya es
+    // defunct) lanza "_lifecycleState != _ElementLifecycle.defunct".
+    _overlayEntry?.remove();
+    _overlayEntry = null;
     super.dispose();
   }
 
@@ -96,7 +99,7 @@ class _UiDropdownState extends State<UiDropdown> {
   void _hideOverlay() {
     _overlayEntry?.remove();
     _overlayEntry = null;
-    setState(() => _isOverlayOpen = false);
+    if (mounted) setState(() => _isOverlayOpen = false);
   }
 
   void _selectItem(String item) {
