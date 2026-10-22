@@ -6,6 +6,7 @@ enum IatrosEventCategory {
   communication('communication'),
   scheduling('scheduling'),
   auth('auth'),
+  payments('payments'),
   error('error');
 
   final String value;
@@ -84,6 +85,24 @@ enum IatrosEventKey {
 
   /// Un usuario inició sesión (o lo intentó, con `status` failure).
   iatrosLogin('iatros_login', IatrosEventCategory.auth),
+
+  /// Se cerró el banner de pago/suscripción ("Quitar banner").
+  paymentBannerDismissed(
+    'payment_banner_dismissed',
+    IatrosEventCategory.payments,
+  ),
+
+  /// Se hizo clic en pagar una suscripción ("Empezar Ahora" de un plan).
+  subscriptionPaymentClicked(
+    'subscription_payment_clicked',
+    IatrosEventCategory.payments,
+  ),
+
+  /// Se hizo clic en pagar una historia clínica ("Pagar ahora").
+  clinicalHistoryPaymentClicked(
+    'clinical_history_payment_clicked',
+    IatrosEventCategory.payments,
+  ),
 
   /// Error capturado en un `try/catch`.
   error('error', IatrosEventCategory.error),
