@@ -8,6 +8,7 @@ enum IatrosEventCategory {
   auth('auth'),
   payments('payments'),
   account('account'),
+  contracts('contracts'),
   error('error');
 
   final String value;
@@ -129,6 +130,33 @@ enum IatrosEventKey {
 
   /// Se guardó la "Configuración de empresa" (companies_settings).
   companySettingsSaved('company_settings_saved', IatrosEventCategory.account),
+
+  /// Se creó un contrato ("Agregar contrato").
+  contractCreated('contract_created', IatrosEventCategory.contracts),
+
+  /// Se guardó la edición de un contrato ("Editar contrato").
+  contractUpdated('contract_updated', IatrosEventCategory.contracts),
+
+  /// Se editó un precio (servicio) individual de un contrato.
+  contractPriceUpdated(
+    'contract_price_updated',
+    IatrosEventCategory.contracts,
+  ),
+
+  /// Se eliminó un precio (servicio) individual de un contrato.
+  contractPriceDeleted(
+    'contract_price_deleted',
+    IatrosEventCategory.contracts,
+  ),
+
+  /// Se eliminó un contrato completo ("Eliminar todo").
+  contractDeleted('contract_deleted', IatrosEventCategory.contracts),
+
+  /// Se actualizó un contrato desactualizado (botón "Actualizar").
+  contractOutdatedUpdated(
+    'contract_outdated_updated',
+    IatrosEventCategory.contracts,
+  ),
 
   /// Error capturado en un `try/catch`.
   error('error', IatrosEventCategory.error),
