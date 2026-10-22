@@ -124,6 +124,12 @@ enum IatrosEventKey {
   /// El usuario cambió la empresa seleccionada.
   companySwitched('company_switched', IatrosEventCategory.account),
 
+  /// Se guardaron cambios de una empresa (nombre, NIT, logo...).
+  companyUpdated('company_updated', IatrosEventCategory.account),
+
+  /// Se guardó la "Configuración de empresa" (companies_settings).
+  companySettingsSaved('company_settings_saved', IatrosEventCategory.account),
+
   /// Error capturado en un `try/catch`.
   error('error', IatrosEventCategory.error),
 
