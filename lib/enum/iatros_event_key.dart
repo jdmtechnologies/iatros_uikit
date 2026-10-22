@@ -121,6 +121,9 @@ enum IatrosEventKey {
   /// Se guardaron cambios en "Editar mi perfil".
   userProfileUpdated('user_profile_updated', IatrosEventCategory.account),
 
+  /// El usuario cambió la empresa seleccionada.
+  companySwitched('company_switched', IatrosEventCategory.account),
+
   /// Error capturado en un `try/catch`.
   error('error', IatrosEventCategory.error),
 
