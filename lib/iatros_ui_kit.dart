@@ -36,6 +36,7 @@ export 'extensions/string_extension.dart';
 
 // Enums
 export 'enum/email_type.dart';
+export 'enum/iatros_event_key.dart';
 export 'enum/subscription_type.dart';
 export 'enum/company_response_status.dart';
 export 'enum/company_validation_status.dart';
