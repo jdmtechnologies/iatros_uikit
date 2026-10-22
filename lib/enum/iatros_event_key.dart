@@ -86,9 +86,22 @@ enum IatrosEventKey {
   /// Un usuario inició sesión (o lo intentó, con `status` failure).
   iatrosLogin('iatros_login', IatrosEventCategory.auth),
 
-  /// Se cerró el banner de pago/suscripción ("Quitar banner").
-  paymentBannerDismissed(
-    'payment_banner_dismissed',
+  /// Se quitó el banner amarillo de "Pago en proceso".
+  paymentBannerInProcessDismissed(
+    'payment_banner_in_process_dismissed',
+    IatrosEventCategory.payments,
+  ),
+
+  /// Se quitó el banner rojo de "Suscripción expirada" (sin suscripción
+  /// activa).
+  paymentBannerNoSubscriptionDismissed(
+    'payment_banner_no_subscription_dismissed',
+    IatrosEventCategory.payments,
+  ),
+
+  /// Se quitó el banner rojo de "Pago rechazado".
+  paymentBannerDeclinedDismissed(
+    'payment_banner_declined_dismissed',
     IatrosEventCategory.payments,
   ),
 
