@@ -9,6 +9,7 @@ enum IatrosEventCategory {
   payments('payments'),
   account('account'),
   contracts('contracts'),
+  informedConsents('informed_consents'),
   error('error');
 
   final String value;
@@ -166,6 +167,36 @@ enum IatrosEventKey {
   contractOutdatedUpdated(
     'contract_outdated_updated',
     IatrosEventCategory.contracts,
+  ),
+
+  /// Se creó un consentimiento informado en "Configuración de empresa".
+  informedConsentCreated(
+    'informed_consent_created',
+    IatrosEventCategory.informedConsents,
+  ),
+
+  /// Se editó un consentimiento informado.
+  informedConsentUpdated(
+    'informed_consent_updated',
+    IatrosEventCategory.informedConsents,
+  ),
+
+  /// Se desactivó ("eliminó") un consentimiento informado.
+  informedConsentDeactivated(
+    'informed_consent_deactivated',
+    IatrosEventCategory.informedConsents,
+  ),
+
+  /// Se generó el PDF de un consentimiento para un paciente.
+  informedConsentGenerated(
+    'informed_consent_generated',
+    IatrosEventCategory.informedConsents,
+  ),
+
+  /// Se adjuntó el PDF de un consentimiento a los documentos de la consulta.
+  informedConsentAttached(
+    'informed_consent_attached',
+    IatrosEventCategory.informedConsents,
   ),
 
   /// Error capturado en un `try/catch`.
