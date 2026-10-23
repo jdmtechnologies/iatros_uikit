@@ -134,7 +134,7 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
       setState(() {
         _highlightedIndex = (_highlightedIndex + delta).clamp(0, count - 1);
       });
-      _scrollToHighlighted();
+      _scrollToHighlighted(movingDown: delta > 0);
       return KeyEventResult.handled;
     }
     if (event is KeyDownEvent &&
@@ -156,16 +156,18 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
     return KeyEventResult.ignored;
   }
 
-  void _scrollToHighlighted() {
+  /// Hace scroll lo justo para que la opción resaltada se vea: al bajar la
+  /// deja pegada al borde inferior; al subir, al superior.
+  void _scrollToHighlighted({required bool movingDown}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final context = _highlightedKey.currentContext;
       if (context == null) return;
       Scrollable.ensureVisible(
         context,
         duration: const Duration(milliseconds: 100),
-        alignmentPolicy: _highlightedIndex == 0
-            ? ScrollPositionAlignmentPolicy.explicit
-            : ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+        alignmentPolicy: movingDown
+            ? ScrollPositionAlignmentPolicy.keepVisibleAtEnd
+            : ScrollPositionAlignmentPolicy.keepVisibleAtStart,
       );
     });
   }
