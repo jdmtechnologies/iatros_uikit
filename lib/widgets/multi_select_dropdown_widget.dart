@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:iatros_uikit/utils/ui_color.dart';
 import 'package:iatros_uikit/utils/text_style.dart';
 import 'package:iatros_uikit/utils/spacing.dart';
 import 'package:iatros_uikit/utils/ui_helpers.dart';
 
+/// Búsqueda con lista de opciones y selección múltiple.
+///
+/// Teclado (con el foco en la búsqueda): ↓/↑ resaltan la opción siguiente o
+/// anterior, Enter selecciona la resaltada y Esc quita el resaltado.
 class UiMultiSelectDropdown<T> extends StatefulWidget {
   final String? label;
   final String? hint;
@@ -52,6 +57,25 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
   final _resultsScrollController = ScrollController();
   String _searchText = '';
 
+  FocusNode? _ownedFocusNode;
+  FocusNode get _focusNode =>
+      widget.focusNode ?? (_ownedFocusNode ??= FocusNode());
+
+  /// `onKeyEvent` que ya tenía el [FocusNode] recibido, para encadenarlo.
+  FocusOnKeyEventCallback? _previousOnKeyEvent;
+
+  /// Opción resaltada con el teclado (índice en las opciones filtradas); -1
+  /// si ninguna.
+  int _highlightedIndex = -1;
+
+  /// Clave de la opción resaltada, para hacerle scroll (las opciones tienen
+  /// alto variable).
+  final _highlightedKey = GlobalKey();
+
+  /// Opciones visibles en el último build (filtradas y sin las ya
+  /// seleccionadas): sobre ellas se mueve el resaltado.
+  List<T> _filteredOptions = [];
+
   TextEditingController get _effectiveController =>
       widget.searchController ?? _ownedController!;
 
@@ -63,10 +87,103 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
     }
     _effectiveController.addListener(_onSearchChanged);
     _searchText = _effectiveController.text;
+    _attachKeyHandler(_focusNode);
   }
 
   void _onSearchChanged() {
-    setState(() => _searchText = _effectiveController.text);
+    final text = _effectiveController.text;
+    if (text == _searchText) return;
+    // Cambia la búsqueda (y con ella las opciones): se reinicia el
+    // resaltado.
+    setState(() {
+      _searchText = text;
+      _highlightedIndex = -1;
+    });
+  }
+
+  /// Las teclas se atienden en el propio [FocusNode] de la búsqueda: es el
+  /// primero en recibirlas, antes que los atajos del TextField (que usarían
+  /// ↑/↓ para mover el cursor).
+  void _attachKeyHandler(FocusNode node) {
+    _previousOnKeyEvent = node.onKeyEvent;
+    node.onKeyEvent = _handleKeyEvent;
+  }
+
+  void _detachKeyHandler(FocusNode node) {
+    if (node.onKeyEvent == _handleKeyEvent) {
+      node.onKeyEvent = _previousOnKeyEvent;
+    }
+    _previousOnKeyEvent = null;
+  }
+
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    final previous = _previousOnKeyEvent?.call(node, event);
+    if (previous != null && previous != KeyEventResult.ignored) {
+      return previous;
+    }
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+      return KeyEventResult.ignored;
+    }
+
+    final key = event.logicalKey;
+    final count = _filteredOptions.length;
+    if (key == LogicalKeyboardKey.arrowDown ||
+        key == LogicalKeyboardKey.arrowUp) {
+      if (count == 0) return KeyEventResult.handled;
+      final delta = key == LogicalKeyboardKey.arrowDown ? 1 : -1;
+      setState(() {
+        _highlightedIndex = (_highlightedIndex + delta).clamp(0, count - 1);
+      });
+      _scrollToHighlighted();
+      return KeyEventResult.handled;
+    }
+    if (event is KeyDownEvent &&
+        (key == LogicalKeyboardKey.enter ||
+            key == LogicalKeyboardKey.numpadEnter) &&
+        _highlightedIndex >= 0 &&
+        _highlightedIndex < count) {
+      // La opción elegida sale de la lista; el resaltado se queda en la
+      // misma posición (la siguiente opción) para elegir varias seguidas.
+      _toggle(_filteredOptions[_highlightedIndex]);
+      return KeyEventResult.handled;
+    }
+    if (event is KeyDownEvent &&
+        key == LogicalKeyboardKey.escape &&
+        _highlightedIndex >= 0) {
+      setState(() => _highlightedIndex = -1);
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
+  void _scrollToHighlighted() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final context = _highlightedKey.currentContext;
+      if (context == null) return;
+      Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 100),
+        alignmentPolicy: _highlightedIndex == 0
+            ? ScrollPositionAlignmentPolicy.explicit
+            : ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+      );
+    });
+  }
+
+  /// Selecciona o quita [option] (con un solo elemento si no es
+  /// multiselección).
+  void _toggle(T option) {
+    final newSelected = List<T>.from(widget.selectedItems);
+    if (newSelected.contains(option)) {
+      newSelected.remove(option);
+    } else if (widget.isMultiselect) {
+      newSelected.add(option);
+    } else {
+      newSelected
+        ..clear()
+        ..add(option);
+    }
+    widget.onChanged(newSelected);
   }
 
   @override
@@ -88,11 +205,18 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
       _searchText = _effectiveController.text;
       setState(() {});
     }
+    if (oldWidget.focusNode != widget.focusNode) {
+      final oldNode = oldWidget.focusNode ?? _ownedFocusNode;
+      if (oldNode != null) _detachKeyHandler(oldNode);
+      _attachKeyHandler(_focusNode);
+    }
   }
 
   @override
   void dispose() {
     _effectiveController.removeListener(_onSearchChanged);
+    _detachKeyHandler(_focusNode);
+    _ownedFocusNode?.dispose();
     _ownedController?.dispose();
     _resultsScrollController.dispose();
     super.dispose();
@@ -111,6 +235,12 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
       final text = widget.displayText(option).toLowerCase();
       return searchWords.every(text.contains);
     }).toList();
+    _filteredOptions = filteredOptions;
+    // Las opciones pueden cambiar (búsqueda en el servidor, selección): el
+    // resaltado no puede quedar fuera de la lista.
+    if (_highlightedIndex >= filteredOptions.length) {
+      _highlightedIndex = filteredOptions.length - 1;
+    }
 
     const showDropdown = true;
 
@@ -139,7 +269,7 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
           borderRadius: BorderRadius.circular(32),
           child: TextField(
             controller: _effectiveController,
-            focusNode: widget.focusNode,
+            focusNode: _focusNode,
             textInputAction: TextInputAction.search,
             decoration: InputDecoration(
               hintText: widget.hint,
@@ -224,22 +354,11 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
                 itemBuilder: (context, index) {
                   final option = filteredOptions[index];
                   final isSelected = widget.selectedItems.contains(option);
+                  final isHighlighted = index == _highlightedIndex;
 
                   return InkWell(
-                    onTap: () {
-                      final newSelected = List<T>.from(widget.selectedItems);
-                      if (isSelected) {
-                        newSelected.remove(option);
-                      } else {
-                        if (widget.isMultiselect) {
-                          newSelected.add(option);
-                        } else {
-                          newSelected.clear();
-                          newSelected.add(option);
-                        }
-                      }
-                      widget.onChanged(newSelected);
-                    },
+                    key: isHighlighted ? _highlightedKey : null,
+                    onTap: () => _toggle(option),
                     child: Container(
                       padding: const EdgeInsets.only(
                         left: AppSpacing.paddingMD,
@@ -248,7 +367,7 @@ class _UiMultiSelectDropdownState<T> extends State<UiMultiSelectDropdown<T>> {
                         right: AppSpacing.paddingMD + 14,
                       ),
                       decoration: BoxDecoration(
-                        color: isSelected
+                        color: isSelected || isHighlighted
                             ? AppColors.primary.withOpacity(0.1)
                             : null,
                       ),
