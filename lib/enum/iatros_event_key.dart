@@ -10,6 +10,7 @@ enum IatrosEventCategory {
   account('account'),
   contracts('contracts'),
   informedConsents('informed_consents'),
+  documents('documents'),
   error('error');
 
   final String value;
@@ -214,6 +215,25 @@ enum IatrosEventKey {
   /// La app del médico recibió el PDF firmado y lo adjuntó a la consulta.
   informedConsentSignedReceived(
     'informed_consent_signed_received',
+    IatrosEventCategory.informedConsents,
+  ),
+
+  /// Se agregó un documento en la pestaña "Documentos" de la consulta.
+  documentAdded('document_added', IatrosEventCategory.documents),
+
+  /// Se descargó un PDF desde la vista previa ("Descargar").
+  pdfDownloaded('pdf_downloaded', IatrosEventCategory.documents),
+
+  /// El médico subió su firma en "Editar mi perfil".
+  doctorSignatureUploaded(
+    'doctor_signature_uploaded',
+    IatrosEventCategory.account,
+  ),
+
+  /// El paciente escaneó el QR y abrió la página para firmar el
+  /// consentimiento.
+  informedConsentQrScanned(
+    'informed_consent_qr_scanned',
     IatrosEventCategory.informedConsents,
   ),
 
