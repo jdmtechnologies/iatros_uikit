@@ -199,6 +199,24 @@ enum IatrosEventKey {
     IatrosEventCategory.informedConsents,
   ),
 
+  /// El médico generó el QR para que el paciente firme en su celular.
+  informedConsentSigningStarted(
+    'informed_consent_signing_started',
+    IatrosEventCategory.informedConsents,
+  ),
+
+  /// El paciente firmó el consentimiento en su celular.
+  informedConsentSignedByPatient(
+    'informed_consent_signed_by_patient',
+    IatrosEventCategory.informedConsents,
+  ),
+
+  /// La app del médico recibió el PDF firmado y lo adjuntó a la consulta.
+  informedConsentSignedReceived(
+    'informed_consent_signed_received',
+    IatrosEventCategory.informedConsents,
+  ),
+
   /// Error capturado en un `try/catch`.
   error('error', IatrosEventCategory.error),
 
