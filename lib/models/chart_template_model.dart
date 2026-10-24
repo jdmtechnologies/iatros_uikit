@@ -306,7 +306,12 @@ enum ChartMarkerShape {
   cross, // X
   square, // Cuadrado
   none, // Sin marcador (solo la línea)
+  text, // Letra o símbolo escrito ([ChartSeriesModel.markerText])
 }
+
+/// Símbolos sugeridos para el marcador [ChartMarkerShape.text]; también se
+/// puede escribir cualquier otro.
+const chartMarkerSymbols = ['★', '♥', '◆', '●', '■', '▲', '▼', '+', '✓', '✱'];
 
 extension ChartMarkerShapeExtension on ChartMarkerShape {
   String get displayName {
@@ -321,6 +326,8 @@ extension ChartMarkerShapeExtension on ChartMarkerShape {
         return 'Cuadrado';
       case ChartMarkerShape.none:
         return 'Sin marcador';
+      case ChartMarkerShape.text:
+        return 'Letra o símbolo';
     }
   }
 
@@ -342,7 +349,9 @@ ChartMarkerShape? chartMarkerShapeFromString(String? value) {
 /// JSON: `{"name": "P50", "key": "p50", "get_external_data": false,
 /// "is_required": false,
 /// "marker_shape": "circle", "color": "#1E88E5",
-/// "points": [{"x": 0, "y": 49.9, ...}, ...]}`.
+/// "points": [{"x": 0, "y": 49.9, ...}, ...]}`. Con `"marker_shape": "text"`
+/// también van `"marker_text": "A"`, `"marker_bold": true` y
+/// `"marker_size": 14`.
 class ChartSeriesModel {
   /// Nombre de la curva (ej. "P50"); `null` si no tiene.
   final String? name;
@@ -359,8 +368,26 @@ class ChartSeriesModel {
   /// La curva es obligatoria.
   final bool isRequired;
 
-  /// Forma del marcador de todos los puntos de la curva.
+  /// Forma del marcador de todos los puntos de la curva. Usar
+  /// [resolvedMarkerShape] para dibujarla.
   final ChartMarkerShape markerShape;
+
+  /// Letra o símbolo que se dibuja en cada punto con
+  /// [ChartMarkerShape.text] (ej. "A", "★").
+  final String? markerText;
+
+  /// [markerText] en negrita.
+  final bool markerBold;
+
+  /// Tamaño de letra de [markerText].
+  final double markerSize;
+
+  static const double defaultMarkerSize = 14;
+  static const double minMarkerSize = 8;
+  static const double maxMarkerSize = 32;
+
+  /// Máximo de caracteres de [markerText].
+  static const int maxMarkerTextLength = 3;
 
   /// Color de la línea (y sus marcadores) en hex `#RRGGBB`; `null` para el
   /// color automático de la gráfica. Ver [displayColor].
@@ -374,12 +401,23 @@ class ChartSeriesModel {
     this.getExternalData = false,
     this.isRequired = false,
     this.markerShape = ChartMarkerShape.circle,
+    this.markerText,
+    this.markerBold = false,
+    this.markerSize = defaultMarkerSize,
     this.color,
     this.points = const [],
   });
 
   /// [color] como [Color]; `null` si no tiene o no es un hex válido.
   Color? get displayColor => colorFromHex(color);
+
+  /// [markerShape], salvo [ChartMarkerShape.text] sin [markerText], que se
+  /// dibuja como círculo.
+  ChartMarkerShape get resolvedMarkerShape =>
+      markerShape == ChartMarkerShape.text &&
+              (markerText?.trim().isEmpty ?? true)
+          ? ChartMarkerShape.circle
+          : markerShape;
 
   /// [name]/[key]/[color] aceptan `null` explícito vía [clearName]/
   /// [clearKey]/[clearColor], ya que `null` en sí significa "no cambiar".
@@ -391,6 +429,9 @@ class ChartSeriesModel {
     bool? getExternalData,
     bool? isRequired,
     ChartMarkerShape? markerShape,
+    String? markerText,
+    bool? markerBold,
+    double? markerSize,
     String? color,
     bool clearColor = false,
     List<ChartCoordinateModel>? points,
@@ -401,6 +442,9 @@ class ChartSeriesModel {
         getExternalData: getExternalData ?? this.getExternalData,
         isRequired: isRequired ?? this.isRequired,
         markerShape: markerShape ?? this.markerShape,
+        markerText: markerText ?? this.markerText,
+        markerBold: markerBold ?? this.markerBold,
+        markerSize: markerSize ?? this.markerSize,
         color: clearColor ? null : (color ?? this.color),
         points: points ?? this.points,
       );
@@ -438,6 +482,11 @@ class ChartSeriesModel {
       markerShape:
           chartMarkerShapeFromString(json["marker_shape"]?.toString()) ??
               ChartMarkerShape.circle,
+      markerText: ChartTemplateModel._toNullableString(json["marker_text"]),
+      markerBold: json["marker_bold"] == true,
+      markerSize: ((json["marker_size"] as num?)?.toDouble() ??
+              defaultMarkerSize)
+          .clamp(minMarkerSize, maxMarkerSize),
       // Solo se conserva un hex válido.
       color: colorFromHex(json["color"]?.toString()) == null
           ? null
@@ -461,6 +510,9 @@ class ChartSeriesModel {
         "get_external_data": getExternalData,
         "is_required": isRequired,
         "marker_shape": markerShape.value,
+        "marker_text": markerText,
+        "marker_bold": markerBold,
+        "marker_size": markerSize,
         "color": color,
         "points": points.map((p) => p.toJson()).toList(),
       };
