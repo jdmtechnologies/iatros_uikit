@@ -32,6 +32,7 @@ export 'models/chart_patient_data_model.dart';
 // Extensiones
 export 'extension/context_extension.dart';
 export 'extension/chart_template_extension.dart';
+export 'extension/iatros_event_extension.dart';
 export 'extensions/string_extension.dart';
 
 // Enums
