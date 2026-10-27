@@ -309,6 +309,41 @@ enum ChartMarkerShape {
   text, // Letra o símbolo escrito ([ChartSeriesModel.markerText])
 }
 
+/// Lado que toma el marcador cuando comparte punto con los de otras curvas y
+/// la curva no permite superponerse ([ChartSeriesModel.markerOverlap] en
+/// `false`): los marcadores del punto se ponen en fila, primero los de
+/// izquierda, luego los del centro y al final los de derecha.
+enum ChartMarkerAlignment {
+  left, // Izquierda
+  center, // Centro
+  right, // Derecha
+}
+
+extension ChartMarkerAlignmentExtension on ChartMarkerAlignment {
+  String get displayName {
+    switch (this) {
+      case ChartMarkerAlignment.left:
+        return 'Izquierda';
+      case ChartMarkerAlignment.center:
+        return 'Centro';
+      case ChartMarkerAlignment.right:
+        return 'Derecha';
+    }
+  }
+
+  /// Valor guardado en el JSON (`marker_alignment`).
+  String get value => name;
+}
+
+ChartMarkerAlignment? chartMarkerAlignmentFromString(String? value) {
+  final v = value?.trim();
+  if (v == null || v.isEmpty) return null;
+  for (final alignment in ChartMarkerAlignment.values) {
+    if (alignment.value == v) return alignment;
+  }
+  return null;
+}
+
 /// Símbolos sugeridos para el marcador [ChartMarkerShape.text]; también se
 /// puede escribir cualquier otro.
 const chartMarkerSymbols = ['★', '♥', '◆', '●', '■', '▲', '▼', '+', '✓', '✱'];
@@ -351,7 +386,9 @@ ChartMarkerShape? chartMarkerShapeFromString(String? value) {
 /// "marker_shape": "circle", "color": "#1E88E5",
 /// "points": [{"x": 0, "y": 49.9, ...}, ...]}`. Con `"marker_shape": "text"`
 /// también van `"marker_text": "A"`, `"marker_bold": true` y
-/// `"marker_size": 14`.
+/// `"marker_size": 14`. Con `"marker_overlap": true` el marcador va encima
+/// de los de otras curvas en el mismo punto; si no, se pone al lado según
+/// `"marker_alignment"` (`left`, `center`, `right`).
 class ChartSeriesModel {
   /// Nombre de la curva (ej. "P50"); `null` si no tiene.
   final String? name;
@@ -389,6 +426,18 @@ class ChartSeriesModel {
   /// Máximo de caracteres de [markerText].
   static const int maxMarkerTextLength = 3;
 
+  /// "Superposición de capas": el marcador va siempre centrado en el punto,
+  /// encima de los de otras curvas. En `false`, si comparte punto con otros,
+  /// se pone al lado según [markerAlignment] (ver `chartMarkerOffsets`).
+  final bool markerOverlap;
+
+  /// Lado del marcador cuando comparte punto; solo aplica con
+  /// [markerOverlap] en `false` (con `true` siempre va al centro).
+  final ChartMarkerAlignment markerAlignment;
+
+  /// Ancho (y alto) de los marcadores de forma, en píxeles.
+  static const double shapeMarkerSize = 8;
+
   /// Color de la línea (y sus marcadores) en hex `#RRGGBB`; `null` para el
   /// color automático de la gráfica. Ver [displayColor].
   final String? color;
@@ -404,6 +453,8 @@ class ChartSeriesModel {
     this.markerText,
     this.markerBold = false,
     this.markerSize = defaultMarkerSize,
+    this.markerOverlap = false,
+    this.markerAlignment = ChartMarkerAlignment.center,
     this.color,
     this.points = const [],
   });
@@ -432,6 +483,8 @@ class ChartSeriesModel {
     String? markerText,
     bool? markerBold,
     double? markerSize,
+    bool? markerOverlap,
+    ChartMarkerAlignment? markerAlignment,
     String? color,
     bool clearColor = false,
     List<ChartCoordinateModel>? points,
@@ -445,6 +498,8 @@ class ChartSeriesModel {
         markerText: markerText ?? this.markerText,
         markerBold: markerBold ?? this.markerBold,
         markerSize: markerSize ?? this.markerSize,
+        markerOverlap: markerOverlap ?? this.markerOverlap,
+        markerAlignment: markerAlignment ?? this.markerAlignment,
         color: clearColor ? null : (color ?? this.color),
         points: points ?? this.points,
       );
@@ -487,6 +542,10 @@ class ChartSeriesModel {
       markerSize: ((json["marker_size"] as num?)?.toDouble() ??
               defaultMarkerSize)
           .clamp(minMarkerSize, maxMarkerSize),
+      markerOverlap: json["marker_overlap"] == true,
+      markerAlignment:
+          chartMarkerAlignmentFromString(json["marker_alignment"]?.toString()) ??
+              ChartMarkerAlignment.center,
       // Solo se conserva un hex válido.
       color: colorFromHex(json["color"]?.toString()) == null
           ? null
@@ -513,6 +572,8 @@ class ChartSeriesModel {
         "marker_text": markerText,
         "marker_bold": markerBold,
         "marker_size": markerSize,
+        "marker_overlap": markerOverlap,
+        "marker_alignment": markerAlignment.value,
         "color": color,
         "points": points.map((p) => p.toJson()).toList(),
       };
