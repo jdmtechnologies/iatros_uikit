@@ -198,12 +198,17 @@ class _ShapePainter extends CustomPainter {
           fill,
         );
       case ChartMarkerShape.cross:
+        const strokeWidth = 2.0;
         final stroke = Paint()
           ..color = color
-          ..strokeWidth = 2
+          ..strokeWidth = strokeWidth
           ..strokeCap = StrokeCap.round;
-        canvas.drawLine(Offset.zero, Offset(w, h), stroke);
-        canvas.drawLine(Offset(w, 0), Offset(0, h), stroke);
+        // Metida medio trazo: con la punta redonda, la tinta queda justo
+        // dentro de la caja (si no, se sale 1 px por lado y los marcadores
+        // en fila se ven más pegados que [chartMarkerGap]).
+        const i = strokeWidth / 2;
+        canvas.drawLine(const Offset(i, i), Offset(w - i, h - i), stroke);
+        canvas.drawLine(Offset(w - i, i), Offset(i, h - i), stroke);
       case ChartMarkerShape.none:
       case ChartMarkerShape.text:
         break;
@@ -228,55 +233,121 @@ typedef ChartMarkerCurve = ({
 /// Separación entre marcadores que comparten punto.
 const double chartMarkerGap = 3;
 
-/// Cuando dos o más curvas sin "Superposición de capas"
-/// ([ChartSeriesModel.markerOverlap] en `false`) caen en el mismo punto, sus
-/// marcadores se ponen uno al lado del otro en vez de encimados: en fila
-/// horizontal, primero los de [ChartMarkerAlignment.left], luego los del
-/// centro y al final los de la derecha (cada grupo en el orden de [curves]),
-/// con la fila centrada en el punto. Las curvas con superposición quedan
-/// centradas, encima.
+/// Cuando varias curvas caen en el mismo punto, ubica sus marcadores para
+/// que no se encimen, con [chartMarkerGap] entre uno y otro:
+///
+/// * Las curvas con "Superposición de capas"
+///   ([ChartSeriesModel.markerOverlap] en `true`) quedan centradas en el
+///   punto, encima unas de otras.
+/// * Las demás se ponen en fila horizontal. Si en el punto no hay ninguna
+///   superpuesta, la fila queda centrada en el punto: primero las de
+///   [ChartMarkerAlignment.left], luego las del centro y al final las de la
+///   derecha (cada grupo en el orden de [curves]). Si hay superpuestas, la
+///   fila se abre a los lados de ellas: las de la izquierda a su izquierda,
+///   las de la derecha a su derecha y las del centro en el lado con menos
+///   (a la derecha si quedan iguales).
 ///
 /// Devuelve, por curva (mismo orden que [curves]), el corrimiento horizontal
 /// en píxeles de cada punto que lo necesita (índice de punto → dx). Los
-/// puntos que no comparten coordenada no aparecen y quedan centrados.
+/// puntos que no se mueven no aparecen y quedan centrados.
 List<Map<int, double>> chartMarkerOffsets(List<ChartMarkerCurve> curves) {
   final offsets = [for (final _ in curves) <int, double>{}];
 
   // Coordenada (redondeada para no depender de decimales flotantes) →
-  // marcadores que caen ahí: (curva, índice de punto, ancho, alineación).
-  final groups = <String, List<(int, int, double, ChartMarkerAlignment)>>{};
+  // marcadores que caen ahí.
+  final groups = <String, List<_PointMarker>>{};
   for (final (curveIndex, curve) in curves.indexed) {
     final style = curve.style;
-    if (style == null ||
-        style.markerOverlap ||
-        curve.shape == ChartMarkerShape.none) {
-      continue;
-    }
+    if (style == null || curve.shape == ChartMarkerShape.none) continue;
     final width = chartMarkerWidth(style, curve.shape);
     for (final (pointIndex, p) in curve.points.indexed) {
       final key = '${(p.dx * 1e6).round()}|${(p.dy * 1e6).round()}';
       (groups[key] ??= []).add(
-        (curveIndex, pointIndex, width, style.markerAlignment),
+        _PointMarker(
+          curveIndex,
+          pointIndex,
+          width,
+          style.markerAlignment,
+          style.markerOverlap,
+        ),
       );
     }
   }
 
   for (final group in groups.values) {
-    if (group.length < 2) continue;
+    final stacked = group.where((m) => m.overlap).toList();
     // Por alineación, conservando el orden de las curvas dentro de cada una.
-    final ordered = [
+    final row = [
       for (final alignment in ChartMarkerAlignment.values)
-        ...group.where((e) => e.$4 == alignment),
+        ...group.where((m) => !m.overlap && m.alignment == alignment),
     ];
-    final total = ordered.fold<double>(0, (sum, e) => sum + e.$3) +
-        chartMarkerGap * (ordered.length - 1);
-    var cursor = -total / 2;
-    for (final (curveIndex, pointIndex, width, _) in ordered) {
-      offsets[curveIndex][pointIndex] = cursor + width / 2;
-      cursor += width + chartMarkerGap;
+
+    if (stacked.isEmpty) {
+      if (row.length < 2) continue;
+      final total = row.fold<double>(0, (sum, m) => sum + m.width) +
+          chartMarkerGap * (row.length - 1);
+      var cursor = -total / 2;
+      for (final m in row) {
+        offsets[m.curveIndex][m.pointIndex] = cursor + m.width / 2;
+        cursor += m.width + chartMarkerGap;
+      }
+      continue;
+    }
+
+    if (row.isEmpty) continue;
+    // Las superpuestas quedan en el punto; la fila se abre a sus lados.
+    final left = <_PointMarker>[];
+    final right = <_PointMarker>[];
+    double widthOf(List<_PointMarker> side) =>
+        side.fold<double>(0, (sum, m) => sum + m.width);
+    // Primero las de izquierda y derecha; las del centro llenan después el
+    // lado con menos.
+    left.addAll(row.where((m) => m.alignment == ChartMarkerAlignment.left));
+    right.addAll(row.where((m) => m.alignment == ChartMarkerAlignment.right));
+    for (final m in row.where(
+      (m) => m.alignment == ChartMarkerAlignment.center,
+    )) {
+      // Al lado de la pila: a la izquierda va al final (pegada a la pila);
+      // a la derecha, al principio.
+      if (widthOf(left) < widthOf(right)) {
+        left.add(m);
+      } else {
+        right.insert(0, m);
+      }
+    }
+    final stackHalf =
+        stacked.map((m) => m.width).reduce((a, b) => a > b ? a : b) / 2;
+    // Izquierda: del más cercano a la pila hacia afuera (el último de la
+    // lista queda pegado a la pila).
+    var cursor = -stackHalf - chartMarkerGap;
+    for (final m in left.reversed) {
+      offsets[m.curveIndex][m.pointIndex] = cursor - m.width / 2;
+      cursor -= m.width + chartMarkerGap;
+    }
+    cursor = stackHalf + chartMarkerGap;
+    for (final m in right) {
+      offsets[m.curveIndex][m.pointIndex] = cursor + m.width / 2;
+      cursor += m.width + chartMarkerGap;
     }
   }
   return offsets;
+}
+
+/// Un marcador en un punto, para [chartMarkerOffsets].
+class _PointMarker {
+  const _PointMarker(
+    this.curveIndex,
+    this.pointIndex,
+    this.width,
+    this.alignment,
+    this.overlap,
+  );
+
+  final int curveIndex;
+  final int pointIndex;
+  final double width;
+  final ChartMarkerAlignment alignment;
+  final bool overlap;
 }
 
 /// Ancho del marcador tal como lo dibuja [ChartMarkerGlyph].
