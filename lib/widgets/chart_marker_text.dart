@@ -1,3 +1,5 @@
+import 'dart:ui' show PictureRecorder;
+
 import 'package:flutter/material.dart';
 import 'package:iatros_uikit/models/chart_template_model.dart';
 import 'package:iatros_uikit/utils/ui_color.dart';
@@ -6,7 +8,13 @@ import 'package:iatros_uikit/utils/ui_color.dart';
 /// con el tamaño y la negrita de la curva. Syncfusion no tiene marcadores de
 /// texto, así que se dibuja como etiqueta de cada punto
 /// (`DataLabelSettings.builder`), igual en la app y en administración.
-class ChartMarkerText extends StatelessWidget {
+///
+/// Syncfusion centra la caja del texto en el punto, pero la letra no siempre
+/// está centrada en su caja: una minúscula sin ascendente ("x", "o") o un
+/// "[" quedan abajo. Por eso se mide la tinta real de la letra (una vez por
+/// texto/fuente/tamaño/negrita, ver [_InkCenter]) y se corre para que el
+/// centro de lo dibujado quede en el punto.
+class ChartMarkerText extends StatefulWidget {
   const ChartMarkerText({super.key, required this.series, this.color});
 
   final ChartSeriesModel series;
@@ -15,17 +23,117 @@ class ChartMarkerText extends StatelessWidget {
   final Color? color;
 
   @override
+  State<ChartMarkerText> createState() => _ChartMarkerTextState();
+}
+
+class _ChartMarkerTextState extends State<ChartMarkerText> {
+  @override
   Widget build(BuildContext context) {
-    return Text(
-      series.markerText?.trim() ?? '',
-      textAlign: TextAlign.center,
-      style: TextStyle(
-        fontSize: series.markerSize,
-        height: 1,
-        fontWeight: series.markerBold ? FontWeight.w800 : FontWeight.w400,
-        color: color ?? AppColors.textPrimary,
-      ),
+    final text = widget.series.markerText?.trim() ?? '';
+    final style = TextStyle(
+      fontSize: widget.series.markerSize,
+      height: 1,
+      fontWeight: widget.series.markerBold ? FontWeight.w800 : FontWeight.w400,
+      color: widget.color ?? AppColors.textPrimary,
     );
+    final label = Text(text, textAlign: TextAlign.center, style: style);
+    if (text.isEmpty) return label;
+
+    final effective = DefaultTextStyle.of(context).style.merge(style);
+    final textScaler = MediaQuery.textScalerOf(context);
+    final dy = _InkCenter.offsetFor(text, effective, textScaler, () {
+      if (mounted) setState(() {});
+    });
+    // Solo el dibujo: la caja (lo que Syncfusion centra y lo que se usa para
+    // ponerlos en fila) no cambia.
+    return dy == null || dy.abs() < 0.05
+        ? label
+        : Transform.translate(offset: Offset(0, dy), child: label);
+  }
+}
+
+/// Mide dónde queda la tinta de un texto dentro de su caja y guarda, por
+/// texto/fuente/tamaño/negrita, cuánto hay que correrlo en Y para que el
+/// centro de la tinta coincida con el centro de la caja. Se mide pintando el
+/// texto en una imagen (asíncrono): la primera vez el marcador se ve sin
+/// corregir un instante y luego se corrige.
+abstract final class _InkCenter {
+  static final Map<String, double> _offsets = {};
+  static final Map<String, List<VoidCallback>> _waiting = {};
+
+  /// Resolución de la medición (píxeles por punto lógico).
+  static const _scale = 4.0;
+
+  static double? offsetFor(
+    String text,
+    TextStyle style,
+    TextScaler textScaler,
+    VoidCallback onMeasured,
+  ) {
+    final key = [
+      text,
+      style.fontFamily,
+      style.fontSize,
+      style.fontWeight?.value,
+      style.height,
+      textScaler.scale(100),
+    ].join('|');
+    final known = _offsets[key];
+    if (known != null) return known;
+
+    final waiting = _waiting[key];
+    if (waiting != null) {
+      waiting.add(onMeasured);
+      return null;
+    }
+    _waiting[key] = [onMeasured];
+    _measure(text, style, textScaler).then((dy) {
+      _offsets[key] = dy;
+      for (final callback in _waiting.remove(key) ?? const <VoidCallback>[]) {
+        callback();
+      }
+    });
+    return null;
+  }
+
+  static Future<double> _measure(
+    String text,
+    TextStyle style,
+    TextScaler textScaler,
+  ) async {
+    final painter = TextPainter(
+      text: TextSpan(text: text, style: style.copyWith(color: Colors.black)),
+      textDirection: TextDirection.ltr,
+      textScaler: textScaler,
+    )..layout();
+    final width = painter.width, height = painter.height;
+    final recorder = PictureRecorder();
+    final canvas = Canvas(recorder)..scale(_scale);
+    painter.paint(canvas, Offset.zero);
+    painter.dispose();
+    final picture = recorder.endRecording();
+    final w = (width * _scale).ceil(), h = (height * _scale).ceil();
+    if (w <= 0 || h <= 0) return 0;
+    final image = await picture.toImage(w, h);
+    picture.dispose();
+    final bytes = await image.toByteData();
+    image.dispose();
+    if (bytes == null) return 0;
+
+    int? top, bottom;
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        // Canal alfa (RGBA): hay tinta.
+        if (bytes.getUint8((y * w + x) * 4 + 3) > 32) {
+          top ??= y;
+          bottom = y;
+          break;
+        }
+      }
+    }
+    if (top == null || bottom == null) return 0;
+    final inkCenter = (top + bottom + 1) / 2 / _scale;
+    return height / 2 - inkCenter;
   }
 }
 
@@ -136,8 +244,7 @@ List<Map<int, double>> chartMarkerOffsets(List<ChartMarkerCurve> curves) {
 
   // Coordenada (redondeada para no depender de decimales flotantes) →
   // marcadores que caen ahí: (curva, índice de punto, ancho, alineación).
-  final groups =
-      <String, List<(int, int, double, ChartMarkerAlignment)>>{};
+  final groups = <String, List<(int, int, double, ChartMarkerAlignment)>>{};
   for (final (curveIndex, curve) in curves.indexed) {
     final style = curve.style;
     if (style == null ||
@@ -161,8 +268,7 @@ List<Map<int, double>> chartMarkerOffsets(List<ChartMarkerCurve> curves) {
       for (final alignment in ChartMarkerAlignment.values)
         ...group.where((e) => e.$4 == alignment),
     ];
-    final total =
-        ordered.fold<double>(0, (sum, e) => sum + e.$3) +
+    final total = ordered.fold<double>(0, (sum, e) => sum + e.$3) +
         chartMarkerGap * (ordered.length - 1);
     var cursor = -total / 2;
     for (final (curveIndex, pointIndex, width, _) in ordered) {
