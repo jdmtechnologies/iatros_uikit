@@ -226,7 +226,7 @@ typedef ChartMarkerCurve = ({
 });
 
 /// Separación entre marcadores que comparten punto.
-const double chartMarkerGap = 2;
+const double chartMarkerGap = 3;
 
 /// Cuando dos o más curvas sin "Superposición de capas"
 /// ([ChartSeriesModel.markerOverlap] en `false`) caen en el mismo punto, sus
