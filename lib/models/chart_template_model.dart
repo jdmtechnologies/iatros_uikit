@@ -765,6 +765,17 @@ class ChartTemplateModel {
   final double minX;
   final double maxY;
   final double minY;
+
+  /// Cada cuánto va una marca del eje desde el mínimo (ej. min 0, max 10,
+  /// intervalo 2 → 0, 2, 4… 10). `null` = automático. En X no aplica con
+  /// [equalSpaces]. JSON: `interval_x` / `interval_y`.
+  final double? intervalX;
+  final double? intervalY;
+
+  /// Números del eje en vertical en vez de horizontal (cuando hay muchas
+  /// marcas y no caben). JSON: `vertical_labels_x` / `vertical_labels_y`.
+  final bool verticalLabelsX;
+  final bool verticalLabelsY;
   final bool isActive;
 
   /// Gráfica invertida: el eje Y crece hacia abajo (ej. audiograma, donde
@@ -812,6 +823,10 @@ class ChartTemplateModel {
     required this.minX,
     required this.maxY,
     required this.minY,
+    this.intervalX,
+    this.intervalY,
+    this.verticalLabelsX = false,
+    this.verticalLabelsY = false,
     required this.isActive,
     this.reverseGraph = false,
     this.equalSpaces = false,
@@ -824,9 +839,9 @@ class ChartTemplateModel {
     this.promTemplate = const [],
   });
 
-  /// [mainTopicX]/[mainTopicY]/[getDataFrom] aceptan `null` explícito vía
-  /// [clearMainTopicX]/[clearMainTopicY]/[clearGetDataFrom], ya que `null`
-  /// en sí significa "no cambiar".
+  /// [mainTopicX]/[mainTopicY]/[getDataFrom]/[intervalX]/[intervalY]
+  /// aceptan `null` explícito vía `clear…`, ya que `null` en sí significa
+  /// "no cambiar".
   ChartTemplateModel copyWith({
     String? id,
     String? name,
@@ -841,6 +856,12 @@ class ChartTemplateModel {
     double? minX,
     double? maxY,
     double? minY,
+    double? intervalX,
+    bool clearIntervalX = false,
+    double? intervalY,
+    bool clearIntervalY = false,
+    bool? verticalLabelsX,
+    bool? verticalLabelsY,
     bool? isActive,
     bool? reverseGraph,
     bool? equalSpaces,
@@ -865,6 +886,10 @@ class ChartTemplateModel {
         minX: minX ?? this.minX,
         maxY: maxY ?? this.maxY,
         minY: minY ?? this.minY,
+        intervalX: clearIntervalX ? null : (intervalX ?? this.intervalX),
+        intervalY: clearIntervalY ? null : (intervalY ?? this.intervalY),
+        verticalLabelsX: verticalLabelsX ?? this.verticalLabelsX,
+        verticalLabelsY: verticalLabelsY ?? this.verticalLabelsY,
         isActive: isActive ?? this.isActive,
         reverseGraph: reverseGraph ?? this.reverseGraph,
         equalSpaces: equalSpaces ?? this.equalSpaces,
@@ -900,6 +925,10 @@ class ChartTemplateModel {
         minX: _toDouble(json["min_x"]),
         maxY: _toDouble(json["max_y"]),
         minY: _toDouble(json["min_y"]),
+        intervalX: _toPositiveDouble(json["interval_x"]),
+        intervalY: _toPositiveDouble(json["interval_y"]),
+        verticalLabelsX: json["vertical_labels_x"] == true,
+        verticalLabelsY: json["vertical_labels_y"] == true,
         isActive: json["is_active"] == true,
         reverseGraph: json["reverse_graph"] == true,
         equalSpaces: json["equal_spaces"] == true,
@@ -945,6 +974,10 @@ class ChartTemplateModel {
         "min_x": minX,
         "max_y": maxY,
         "min_y": minY,
+        "interval_x": intervalX,
+        "interval_y": intervalY,
+        "vertical_labels_x": verticalLabelsX,
+        "vertical_labels_y": verticalLabelsY,
         "is_active": isActive,
         "reverse_graph": reverseGraph,
         "equal_spaces": equalSpaces,
@@ -1010,5 +1043,13 @@ class ChartTemplateModel {
   static double _toDouble(dynamic value) {
     if (value is num) return value.toDouble();
     return double.tryParse(value?.toString() ?? "") ?? 0;
+  }
+
+  /// `null` si no viene o no es mayor que 0.
+  static double? _toPositiveDouble(dynamic value) {
+    final v = value is num
+        ? value.toDouble()
+        : double.tryParse(value?.toString() ?? "");
+    return v != null && v > 0 ? v : null;
   }
 }
