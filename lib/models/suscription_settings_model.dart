@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:iatros_uikit/enum/subscription_type.dart';
+import 'package:iatros_uikit/enum/subscription_module.dart';
 
 class SuscriptionSettingsModel {
     final String? id;
@@ -13,6 +14,17 @@ class SuscriptionSettingsModel {
     final bool mostRecommended;
     final SubscriptionType? subscriptionType;
 
+    /// Máximo total de miembros (incluye al dueño). `null` = sin límite.
+    /// Solo se usa si [entitlementsConfigured] es true.
+    final int? maxMembers;
+
+    /// Módulos habilitados (Sara IA, Farmacia).
+    final Set<SubscriptionModule> modules;
+
+    /// false = la app usa los límites fijos de siempre según
+    /// [subscriptionType] (planes creados antes de estas columnas).
+    final bool entitlementsConfigured;
+
     SuscriptionSettingsModel({
         this.id,
         this.updateAt,
@@ -24,6 +36,9 @@ class SuscriptionSettingsModel {
         required this.description,
         this.mostRecommended = false,
         this.subscriptionType,
+        this.maxMembers,
+        this.modules = const <SubscriptionModule>{},
+        this.entitlementsConfigured = false,
     });
 
     SuscriptionSettingsModel copyWith({
@@ -37,6 +52,10 @@ class SuscriptionSettingsModel {
         DateTime? createdAt,
         bool? mostRecommended,
         SubscriptionType? subscriptionType,
+        int? maxMembers,
+        bool clearMaxMembers = false,
+        Set<SubscriptionModule>? modules,
+        bool? entitlementsConfigured,
     }) =>
         SuscriptionSettingsModel(
             id: id ?? this.id,
@@ -49,6 +68,10 @@ class SuscriptionSettingsModel {
             description: description ?? this.description,
             mostRecommended: mostRecommended ?? this.mostRecommended,
             subscriptionType: subscriptionType ?? this.subscriptionType,
+            maxMembers: clearMaxMembers ? null : (maxMembers ?? this.maxMembers),
+            modules: modules ?? this.modules,
+            entitlementsConfigured:
+                entitlementsConfigured ?? this.entitlementsConfigured,
         );
 
     factory SuscriptionSettingsModel.fromRawJson(String str) =>
@@ -93,6 +116,9 @@ class SuscriptionSettingsModel {
           createdAt: _parseDateTime(json["created_at"]),
           updateAt: _parseDateTime(json["update_at"]),
           subscriptionType: _parseSubscriptionType(json["subscription_type"]),
+          maxMembers: (json["max_members"] as num?)?.toInt(),
+          modules: SubscriptionModule.parseList(json["modules"]),
+          entitlementsConfigured: json["entitlements_configured"] == true,
         );
 
     Map<String, dynamic> toJson() {
@@ -104,6 +130,9 @@ class SuscriptionSettingsModel {
         "description": description,
         "most_recommended": mostRecommended,
         if (subscriptionType != null) "subscription_type": subscriptionType!.name,
+        "max_members": maxMembers,
+        "modules": SubscriptionModule.toKeys(modules),
+        "entitlements_configured": entitlementsConfigured,
       };
       if (id != null && id!.isNotEmpty) map["id"] = id;
       if (updateAt != null) map["update_at"] = updateAt!.toIso8601String();

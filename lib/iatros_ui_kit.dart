@@ -28,6 +28,8 @@ export 'models/health_administrators_model.dart';
 export 'models/company_response_model.dart';
 export 'models/chart_template_model.dart';
 export 'models/chart_patient_data_model.dart';
+export 'models/composite_subscription_model.dart';
+export 'models/subscription_entitlements.dart';
 
 // Extensiones
 export 'extension/context_extension.dart';
@@ -39,6 +41,7 @@ export 'extensions/string_extension.dart';
 export 'enum/email_type.dart';
 export 'enum/iatros_event_key.dart';
 export 'enum/subscription_type.dart';
+export 'enum/subscription_module.dart';
 export 'enum/company_response_status.dart';
 export 'enum/company_validation_status.dart';
 
