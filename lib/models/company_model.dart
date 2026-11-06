@@ -14,6 +14,8 @@ class CompanyModel {
   final String? companyImageUrl;
   final String? address;
   final String? serviceProviderCode;
+  /// Referencia a `cities."Codigo"` (columna `city_code`).
+  final int? cityCode;
   final CompanyValidationStatus isValidated;
   final bool isSystemProtected;
 
@@ -22,6 +24,7 @@ class CompanyModel {
     this.nitUrl,
     this.address,
     this.serviceProviderCode,
+    this.cityCode,
     this.userOwnerId,
     this.companyImageUrl,
     required this.nit,
@@ -47,6 +50,7 @@ class CompanyModel {
     String? companyImageUrl,
     String? address,
     String? serviceProviderCode,
+    int? cityCode,
     CompanyValidationStatus? isValidated,
     bool? isSystemProtected,
   }) =>
@@ -63,6 +67,7 @@ class CompanyModel {
         companyImageUrl: companyImageUrl ?? this.companyImageUrl,
         address: address ?? this.address,
         serviceProviderCode: serviceProviderCode ?? this.serviceProviderCode,
+        cityCode: cityCode ?? this.cityCode,
         isValidated: isValidated ?? this.isValidated,
         isSystemProtected: isSystemProtected ?? this.isSystemProtected,
       );
@@ -76,6 +81,9 @@ class CompanyModel {
         companyImageUrl: json['company_image']?.toString(),
         address: json['address']?.toString(),
         serviceProviderCode: json['service_provider_code']?.toString(),
+        cityCode: json['city_code'] == null
+            ? null
+            : int.tryParse(json['city_code'].toString()),
         nit: json['nit'] != null && json['nit'] != '' ? json['nit'].toString() : '',
         createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'].toString()) : DateTime.now(),
         companyType: json['company_type'] != null ? CompanyType.fromString(json['company_type'].toString()) : CompanyType.personal,
@@ -108,6 +116,7 @@ class CompanyModel {
     if (companyImageUrl != null) data['company_image'] = companyImageUrl;
     if (address != null) data['address'] = address;
     if (serviceProviderCode != null) data['service_provider_code'] = serviceProviderCode;
+    if (cityCode != null) data['city_code'] = cityCode;
     return data;
   }
 }
