@@ -76,6 +76,7 @@ export 'widgets/time_picker_input_widget.dart';
 export 'widgets/date_picker_input_widget.dart';
 export 'widgets/file_picker_input_widget.dart';
 export 'widgets/glassmorphism_card_widget.dart';
+export 'widgets/notification_media_preview.dart';
 export 'widgets/image_picker_input_widget.dart';
 export 'widgets/medical_background_widget.dart';
 export 'widgets/background_example_widget.dart';

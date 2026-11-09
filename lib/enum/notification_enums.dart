@@ -67,3 +67,45 @@ enum NotificationCompanyScope {
       ? NotificationCompanyScope.selected
       : NotificationCompanyScope.all;
 }
+
+/// Qué hay detrás de la URL de una notificación (`url_type`). Define cómo se
+/// muestra: la imagen dentro de la notificación, la miniatura del video con
+/// botón de play (como WhatsApp) o un botón para abrir el documento.
+enum NotificationMediaType {
+  image('IMAGE'),
+  video('VIDEO'),
+  document('DOCUMENT');
+
+  final String value;
+
+  const NotificationMediaType(this.value);
+
+  String get label => switch (this) {
+    NotificationMediaType.image => 'Imagen',
+    NotificationMediaType.video => 'Video',
+    NotificationMediaType.document => 'Documento',
+  };
+
+  static NotificationMediaType? fromValue(String? value) {
+    for (final type in values) {
+      if (type.value == value) return type;
+    }
+    return null;
+  }
+
+  static final _videoPattern = RegExp(
+    r'(youtube\.com|youtu\.be|vimeo\.com|loom\.com|drive\.google\.com/file)'
+    r'|\.(mp4|webm|mov|m4v|ogv)(\?|#|$)',
+  );
+  static final _imagePattern = RegExp(
+    r'\.(png|jpe?g|gif|webp|bmp|svg|avif)(\?|#|$)',
+  );
+
+  /// Adivina el tipo por la URL; si no es imagen ni video, es documento.
+  static NotificationMediaType detect(String url) {
+    final u = url.trim().toLowerCase();
+    if (_videoPattern.hasMatch(u)) return NotificationMediaType.video;
+    if (_imagePattern.hasMatch(u)) return NotificationMediaType.image;
+    return NotificationMediaType.document;
+  }
+}
