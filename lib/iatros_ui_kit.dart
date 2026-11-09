@@ -18,6 +18,7 @@ export 'models/ethnicity_type.dart';
 export 'models/department_model.dart';
 export 'models/user_record_model.dart';
 export 'models/announcement_model.dart';
+export 'models/notification_model.dart';
 export 'models/biological_sex_type.dart';
 export 'models/disability_category.dart';
 export 'models/discount_codes_model.dart';
@@ -40,6 +41,7 @@ export 'extensions/string_extension.dart';
 // Enums
 export 'enum/email_type.dart';
 export 'enum/iatros_event_key.dart';
+export 'enum/notification_enums.dart';
 export 'enum/subscription_type.dart';
 export 'enum/subscription_module.dart';
 export 'enum/company_response_status.dart';

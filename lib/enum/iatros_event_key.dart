@@ -11,6 +11,7 @@ enum IatrosEventCategory {
   contracts('contracts'),
   informedConsents('informed_consents'),
   documents('documents'),
+  notifications('notifications'),
   error('error');
 
   final String value;
@@ -235,6 +236,22 @@ enum IatrosEventKey {
   informedConsentQrScanned(
     'informed_consent_qr_scanned',
     IatrosEventCategory.informedConsents,
+  ),
+
+  /// Se abrió el panel de notificaciones (metadata: `unread_count`,
+  /// `total_count`).
+  notificationsPanelOpened(
+    'notifications_panel_opened',
+    IatrosEventCategory.notifications,
+  ),
+
+  /// El usuario abrió (leyó) una notificación; `entity_id` es su id.
+  notificationRead('notification_read', IatrosEventCategory.notifications),
+
+  /// Se marcaron todas las notificaciones como leídas (metadata: `count`).
+  notificationsAllRead(
+    'notifications_all_read',
+    IatrosEventCategory.notifications,
   ),
 
   /// Error capturado en un `try/catch`.
