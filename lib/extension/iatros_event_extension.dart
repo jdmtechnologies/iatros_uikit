@@ -53,6 +53,11 @@ extension IatrosEventKeyExtension on IatrosEventKey {
     IatrosEventKey.documentAdded => 'Documento agregado',
     IatrosEventKey.pdfDownloaded => 'PDF descargado',
     IatrosEventKey.doctorSignatureUploaded => 'Firma del médico subida',
+    IatrosEventKey.notificationsPanelOpened =>
+      'Panel de notificaciones abierto',
+    IatrosEventKey.notificationRead => 'Notificación leída',
+    IatrosEventKey.notificationsAllRead =>
+      'Todas las notificaciones marcadas como leídas',
     IatrosEventKey.error => 'Error',
     IatrosEventKey.uncaughtError => 'Error no capturado',
   };
@@ -70,6 +75,7 @@ extension IatrosEventCategoryExtension on IatrosEventCategory {
     IatrosEventCategory.contracts => 'Contratos',
     IatrosEventCategory.informedConsents => 'Consentimientos informados',
     IatrosEventCategory.documents => 'Documentos',
+    IatrosEventCategory.notifications => 'Notificaciones',
     IatrosEventCategory.error => 'Errores',
   };
 }
