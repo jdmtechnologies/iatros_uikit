@@ -25,6 +25,12 @@ class NotificationModel {
   final DateTime? dateEnd;
   final String? createdBy;
 
+  /// Enlace opcional (ej. un video de YouTube) que se abre en otra pestaña.
+  final String? url;
+
+  /// Texto del botón del enlace. Si está vacío se usa [defaultUrlLabel].
+  final String? urlLabel;
+
   final NotificationStatus status;
   final DateTime? readAt;
   final int readCount;
@@ -40,6 +46,8 @@ class NotificationModel {
     required this.createdAt,
     this.dateEnd,
     this.createdBy,
+    this.url,
+    this.urlLabel,
     this.status = NotificationStatus.unread,
     this.readAt,
     this.readCount = 0,
@@ -59,6 +67,33 @@ class NotificationModel {
   bool get isRead => status == NotificationStatus.read;
 
   bool get isExpired => dateEnd != null && dateEnd!.isBefore(DateTime.now());
+
+  bool get hasUrl => url != null && url!.trim().isNotEmpty;
+
+  /// Si [url] apunta a un video (YouTube, Vimeo, Loom, Drive o un archivo de
+  /// video), para mostrar el ícono y el texto adecuados.
+  bool get isVideoUrl {
+    if (!hasUrl) return false;
+    final u = url!.toLowerCase();
+    return RegExp(
+      r'(youtube\.com|youtu\.be|vimeo\.com|loom\.com|drive\.google\.com/file)'
+      r'|\.(mp4|webm|mov|m4v)(\?|#|$)',
+    ).hasMatch(u);
+  }
+
+  String get defaultUrlLabel => isVideoUrl ? 'Ver video' : 'Abrir enlace';
+
+  /// Texto del botón: [urlLabel] o, si no hay, [defaultUrlLabel].
+  String get effectiveUrlLabel =>
+      (urlLabel ?? '').trim().isNotEmpty ? urlLabel!.trim() : defaultUrlLabel;
+
+  /// Valida que [value] sea una URL http(s) con dominio.
+  static bool isValidUrl(String value) {
+    final uri = Uri.tryParse(value.trim());
+    return uri != null &&
+        (uri.scheme == 'http' || uri.scheme == 'https') &&
+        uri.host.contains('.');
+  }
 
   /// Si la ve un usuario con [role] en la empresa [companyId]. La base de
   /// datos (RLS) ya filtra por las empresas del usuario; esto deja solo las de
@@ -83,6 +118,9 @@ class NotificationModel {
     DateTime? dateEnd,
     bool clearDateEnd = false,
     String? createdBy,
+    String? url,
+    String? urlLabel,
+    bool clearUrl = false,
     NotificationStatus? status,
     DateTime? readAt,
     int? readCount,
@@ -97,6 +135,8 @@ class NotificationModel {
     createdAt: createdAt ?? this.createdAt,
     dateEnd: clearDateEnd ? null : (dateEnd ?? this.dateEnd),
     createdBy: createdBy ?? this.createdBy,
+    url: clearUrl ? null : (url ?? this.url),
+    urlLabel: clearUrl ? null : (urlLabel ?? this.urlLabel),
     status: status ?? this.status,
     readAt: readAt ?? this.readAt,
     readCount: readCount ?? this.readCount,
@@ -137,6 +177,8 @@ class NotificationModel {
           ? DateTime.parse(json['date_end']).toLocal()
           : null,
       createdBy: json['created_by'],
+      url: json['url'],
+      urlLabel: json['url_label'],
       status: readAt != null
           ? NotificationStatus.read
           : NotificationStatus.unread,
@@ -157,5 +199,9 @@ class NotificationModel {
         : targetCompanyIds,
     'is_active': isActive,
     'date_end': dateEnd?.toUtc().toIso8601String(),
+    'url': hasUrl ? url!.trim() : null,
+    'url_label': hasUrl && (urlLabel ?? '').trim().isNotEmpty
+        ? urlLabel!.trim()
+        : null,
   };
 }
