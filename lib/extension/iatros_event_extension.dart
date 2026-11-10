@@ -56,6 +56,7 @@ extension IatrosEventKeyExtension on IatrosEventKey {
     IatrosEventKey.notificationsPanelOpened =>
       'Panel de notificaciones abierto',
     IatrosEventKey.notificationRead => 'Notificación leída',
+    IatrosEventKey.notificationLinkOpened => 'Enlace de notificación abierto',
     IatrosEventKey.notificationsAllRead =>
       'Todas las notificaciones marcadas como leídas',
     IatrosEventKey.error => 'Error',

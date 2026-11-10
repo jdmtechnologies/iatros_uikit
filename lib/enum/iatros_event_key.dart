@@ -248,6 +248,13 @@ enum IatrosEventKey {
   /// El usuario abrió (leyó) una notificación; `entity_id` es su id.
   notificationRead('notification_read', IatrosEventCategory.notifications),
 
+  /// El usuario abrió el enlace (ej. video) de una notificación; `entity_id`
+  /// es su id y metadata trae la `url`.
+  notificationLinkOpened(
+    'notification_link_opened',
+    IatrosEventCategory.notifications,
+  ),
+
   /// Se marcaron todas las notificaciones como leídas (metadata: `count`).
   notificationsAllRead(
     'notifications_all_read',

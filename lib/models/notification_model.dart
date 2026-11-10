@@ -25,6 +25,16 @@ class NotificationModel {
   final DateTime? dateEnd;
   final String? createdBy;
 
+  /// Adjunto opcional: imagen, video (ej. YouTube) o documento. Se abre en
+  /// otra pestaña al tocarlo.
+  final String? url;
+
+  /// Tipo del adjunto. Si es null se adivina por la URL ([mediaType]).
+  final NotificationMediaType? urlType;
+
+  /// Texto del botón de un documento. Vacío = [defaultUrlLabel].
+  final String? urlLabel;
+
   final NotificationStatus status;
   final DateTime? readAt;
   final int readCount;
@@ -40,6 +50,9 @@ class NotificationModel {
     required this.createdAt,
     this.dateEnd,
     this.createdBy,
+    this.url,
+    this.urlType,
+    this.urlLabel,
     this.status = NotificationStatus.unread,
     this.readAt,
     this.readCount = 0,
@@ -59,6 +72,91 @@ class NotificationModel {
   bool get isRead => status == NotificationStatus.read;
 
   bool get isExpired => dateEnd != null && dateEnd!.isBefore(DateTime.now());
+
+  bool get hasUrl => url != null && url!.trim().isNotEmpty;
+
+  /// Tipo del adjunto: el guardado o, si no hay, el que sugiere la URL.
+  NotificationMediaType? get mediaType => !hasUrl
+      ? null
+      : (urlType ?? NotificationMediaType.detect(url!));
+
+  bool get isVideoUrl => mediaType == NotificationMediaType.video;
+
+  /// Id de YouTube de [url] (watch?v=, youtu.be/, shorts/, embed/, live/).
+  String? get youtubeId {
+    if (!hasUrl) return null;
+    final uri = Uri.tryParse(url!.trim());
+    if (uri == null) return null;
+    final host = uri.host.replaceFirst('www.', '').replaceFirst('m.', '');
+    if (host == 'youtu.be') {
+      return uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null;
+    }
+    if (!host.endsWith('youtube.com')) return null;
+    final v = uri.queryParameters['v'];
+    if (v != null && v.isNotEmpty) return v;
+    final segments = uri.pathSegments;
+    if (segments.length >= 2 &&
+        const ['shorts', 'embed', 'live', 'v'].contains(segments.first)) {
+      return segments[1];
+    }
+    return null;
+  }
+
+  /// Id numérico de Vimeo de [url] (vimeo.com/123456).
+  String? get vimeoId {
+    if (!hasUrl) return null;
+    final uri = Uri.tryParse(url!.trim());
+    if (uri == null || !uri.host.endsWith('vimeo.com')) return null;
+    for (final s in uri.pathSegments.reversed) {
+      if (RegExp(r'^\d+$').hasMatch(s)) return s;
+    }
+    return null;
+  }
+
+  /// Imagen de vista previa: la propia imagen, o la miniatura del video de
+  /// YouTube/Vimeo. Null para documentos y videos sin miniatura conocida.
+  String? get thumbnailUrl => switch (mediaType) {
+    NotificationMediaType.image => url!.trim(),
+    NotificationMediaType.video =>
+      youtubeId != null
+          ? 'https://img.youtube.com/vi/$youtubeId/hqdefault.jpg'
+          : vimeoId != null
+          ? 'https://vumbnail.com/$vimeoId.jpg'
+          : null,
+    _ => null,
+  };
+
+  /// Nombre del archivo en la URL (ej. `manual.pdf`), para documentos.
+  String? get fileName {
+    if (!hasUrl) return null;
+    final uri = Uri.tryParse(url!.trim());
+    final last = uri?.pathSegments.where((s) => s.isNotEmpty).lastOrNull;
+    return last == null ? null : Uri.decodeComponent(last);
+  }
+
+  /// Sitio de la URL sin `www.` (ej. `youtube.com`).
+  String? get urlHost {
+    if (!hasUrl) return null;
+    return Uri.tryParse(url!.trim())?.host.replaceFirst('www.', '');
+  }
+
+  String get defaultUrlLabel => switch (mediaType) {
+    NotificationMediaType.video => 'Ver video',
+    NotificationMediaType.image => 'Ver imagen',
+    _ => 'Abrir documento',
+  };
+
+  /// Texto del botón: [urlLabel] o, si no hay, [defaultUrlLabel].
+  String get effectiveUrlLabel =>
+      (urlLabel ?? '').trim().isNotEmpty ? urlLabel!.trim() : defaultUrlLabel;
+
+  /// Valida que [value] sea una URL http(s) con dominio.
+  static bool isValidUrl(String value) {
+    final uri = Uri.tryParse(value.trim());
+    return uri != null &&
+        (uri.scheme == 'http' || uri.scheme == 'https') &&
+        uri.host.contains('.');
+  }
 
   /// Si la ve un usuario con [role] en la empresa [companyId]. La base de
   /// datos (RLS) ya filtra por las empresas del usuario; esto deja solo las de
@@ -83,6 +181,10 @@ class NotificationModel {
     DateTime? dateEnd,
     bool clearDateEnd = false,
     String? createdBy,
+    String? url,
+    NotificationMediaType? urlType,
+    String? urlLabel,
+    bool clearUrl = false,
     NotificationStatus? status,
     DateTime? readAt,
     int? readCount,
@@ -97,6 +199,9 @@ class NotificationModel {
     createdAt: createdAt ?? this.createdAt,
     dateEnd: clearDateEnd ? null : (dateEnd ?? this.dateEnd),
     createdBy: createdBy ?? this.createdBy,
+    url: clearUrl ? null : (url ?? this.url),
+    urlType: clearUrl ? null : (urlType ?? this.urlType),
+    urlLabel: clearUrl ? null : (urlLabel ?? this.urlLabel),
     status: status ?? this.status,
     readAt: readAt ?? this.readAt,
     readCount: readCount ?? this.readCount,
@@ -137,6 +242,9 @@ class NotificationModel {
           ? DateTime.parse(json['date_end']).toLocal()
           : null,
       createdBy: json['created_by'],
+      url: json['url'],
+      urlType: NotificationMediaType.fromValue(json['url_type']),
+      urlLabel: json['url_label'],
       status: readAt != null
           ? NotificationStatus.read
           : NotificationStatus.unread,
@@ -157,5 +265,10 @@ class NotificationModel {
         : targetCompanyIds,
     'is_active': isActive,
     'date_end': dateEnd?.toUtc().toIso8601String(),
+    'url': hasUrl ? url!.trim() : null,
+    'url_type': mediaType?.value,
+    'url_label': hasUrl && (urlLabel ?? '').trim().isNotEmpty
+        ? urlLabel!.trim()
+        : null,
   };
 }
