@@ -1,9 +1,12 @@
 import 'package:iatros_uikit/enum/company_type.dart';
+import 'package:iatros_uikit/enum/company_document_type.dart';
 import 'package:iatros_uikit/enum/company_validation_status.dart';
 
 class CompanyModel {
   final String? id;
   final String nit;
+  /// Tipo del documento en [nit]: NIT o cédula.
+  final CompanyDocumentType documentType;
   final bool isActive;
   final String? nitUrl;
   final bool isDeleted;
@@ -28,6 +31,7 @@ class CompanyModel {
     this.userOwnerId,
     this.companyImageUrl,
     required this.nit,
+    this.documentType = CompanyDocumentType.nit,
     this.isActive = true,
     this.isDeleted = false,
     required this.createdAt,
@@ -40,6 +44,7 @@ class CompanyModel {
   CompanyModel copyWith({
     String? id,
     String? nit,
+    CompanyDocumentType? documentType,
     bool? isActive,
     String? nitUrl,
     bool? isDeleted,
@@ -57,6 +62,7 @@ class CompanyModel {
       CompanyModel(
         id: id ?? this.id,
         nit: nit ?? this.nit,
+        documentType: documentType ?? this.documentType,
         nitUrl: nitUrl ?? this.nitUrl,
         isActive: isActive ?? this.isActive,
         createdAt: createdAt ?? this.createdAt,
@@ -85,6 +91,7 @@ class CompanyModel {
             ? null
             : int.tryParse(json['city_code'].toString()),
         nit: json['nit'] != null && json['nit'] != '' ? json['nit'].toString() : '',
+        documentType: CompanyDocumentType.fromString(json['document_type']?.toString()),
         createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'].toString()) : DateTime.now(),
         companyType: json['company_type'] != null ? CompanyType.fromString(json['company_type'].toString()) : CompanyType.personal,
         companyName: json['company_name'] != null && json['company_name'] != '' ? json['company_name'].toString() : '',
@@ -102,6 +109,7 @@ class CompanyModel {
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{
       'nit': nit,
+      'document_type': documentType.value,
       'is_active': isActive,
       'is_deleted': isDeleted,
       'company_name': companyName,

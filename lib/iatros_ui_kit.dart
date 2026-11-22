@@ -46,6 +46,7 @@ export 'enum/subscription_type.dart';
 export 'enum/subscription_module.dart';
 export 'enum/company_response_status.dart';
 export 'enum/company_validation_status.dart';
+export 'enum/company_document_type.dart';
 
 // Utils (colores, tema, estilos, helpers)
 export 'utils/spacing.dart';
