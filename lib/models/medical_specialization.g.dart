@@ -6,17 +6,17 @@ part of 'medical_specialization.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$MedicalSpecializationImpl _$$MedicalSpecializationImplFromJson(
+_MedicalSpecialization _$MedicalSpecializationFromJson(
         Map<String, dynamic> json) =>
-    _$MedicalSpecializationImpl(
+    _MedicalSpecialization(
       id: json['id'] as String,
       name: json['name'] as String,
-      description: json['description'] as String,
+      description: json['description'] as String? ?? '',
       icon: json['icon'] as String?,
     );
 
-Map<String, dynamic> _$$MedicalSpecializationImplToJson(
-        _$MedicalSpecializationImpl instance) =>
+Map<String, dynamic> _$MedicalSpecializationToJson(
+        _MedicalSpecialization instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,

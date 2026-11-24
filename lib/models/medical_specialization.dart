@@ -5,11 +5,11 @@ part 'medical_specialization.g.dart';
 
 //specialization
 @freezed
-class MedicalSpecialization with _$MedicalSpecialization {
+abstract class MedicalSpecialization with _$MedicalSpecialization {
   const factory MedicalSpecialization({
     required String id,
     required String name,
-    required String description,
+    @Default('') String description,
     String? icon,
   }) = _MedicalSpecialization;
 

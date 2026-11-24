@@ -67,19 +67,19 @@ class CityModel {
     String toRawJson() => json.encode(toJson());
 
     factory CityModel.fromJson(Map<String, dynamic> json) => CityModel(
-        tabla: json["Tabla"],
-        codigo: json["Codigo"],
-        nombre: json["Nombre"],
-        habilitado: json["Habilitado"],
+        tabla: json["Tabla"]?.toString() ?? '',
+        codigo: (json["Codigo"] as num?)?.toInt() ?? 0,
+        nombre: json["Nombre"]?.toString() ?? '',
+        habilitado: json["Habilitado"]?.toString() ?? '',
         aplicacion: json["Aplicacion"],
         descripcion: json["Descripcion"],
-        departamento: json["Departamento"],
-        isStandardGel: json["IsStandardGEL"],
+        departamento: (json["Departamento"] as num?)?.toInt() ?? 0,
+        isStandardGel: json["IsStandardGEL"] == true,
         valorRegistro: json["ValorRegistro"],
-        isStandardMsps: json["IsStandardMSPS"],
+        isStandardMsps: json["IsStandardMSPS"] == true,
         isPublicPrivate: json["IsPublicPrivate"],
         usuarioResponsable: json["UsuarioResponsable"],
-        fechaActualizacion: json["Fecha_Actualizacion"],
+        fechaActualizacion: json["Fecha_Actualizacion"]?.toString() ?? '',
     );
 
     Map<String, dynamic> toJson() => {
